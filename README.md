@@ -20,6 +20,16 @@ flowchart TD
 ```mermaid
 classDiagram
 
+Section <-- Schedule
+
+Subject <-- Schedule
+Room <-- Schedule
+Timeslot <-- Schedule
+Day <-- Schedule
+
+Section o-- Subject
+Section o-- Schedule
+
 class Section {
     int id
     String name
