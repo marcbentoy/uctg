@@ -20,15 +20,29 @@ flowchart TD
 ```mermaid
 classDiagram
 
-Section <-- Schedule
-
 Subject <-- Schedule
 Room <-- Schedule
 Timeslot <-- Schedule
 Day <-- Schedule
 
 Section o-- Subject
-Section o-- Schedule
+
+Section *-- Schedule
+Section --* College
+Section --* Department 
+
+class College {
+    int id
+    String name
+    List~int~ departments
+}
+
+class Department {
+    int id
+    String name
+    List~int~ instructors
+    List~int~ sections
+}
 
 class Section {
     int id
