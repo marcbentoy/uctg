@@ -11,7 +11,7 @@ flowchart TD
     3 --> 4(Select)
     4 --> 5(Crossover)
     5 --> 6(Mutate)
-    6 --> 7{Terminate?}
+    6 --> 7{Termination Condition met?}
     7 --> |No| 3
     7 --> |Yes| 8(END)
 ```
