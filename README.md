@@ -4,6 +4,7 @@ A university class timetable generator specific for block sectioning using genet
 
 ## Generator Flow
 
+```mermaid
 flowchart TD
     1(START) --> 2(Initialize Population)
     2 --> 3(Evaluate)
@@ -13,3 +14,4 @@ flowchart TD
     6 --> 7{Terminate?}
     7 --> |No| 3
     7 --> |Yes| 8(END)
+```
