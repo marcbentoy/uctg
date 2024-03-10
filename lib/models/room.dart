@@ -1,4 +1,4 @@
-import 'package:uctg/subject_type.dart';
+import 'package:uctg/models/subject_type.dart';
 
 class Room {
   late int id;

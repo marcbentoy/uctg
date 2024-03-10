@@ -1,4 +1,4 @@
-import 'package:uctg/subject.dart';
+import 'package:uctg/models/subject.dart';
 
 class Section {
   late int id;

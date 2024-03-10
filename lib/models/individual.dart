@@ -1,4 +1,4 @@
-import 'package:uctg/schedule.dart';
+import 'package:uctg/models/schedule.dart';
 
 class Individual {
   late int fitnessScore = 0;

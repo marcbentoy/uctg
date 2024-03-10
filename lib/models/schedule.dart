@@ -1,9 +1,9 @@
-import 'package:uctg/day.dart';
-import 'package:uctg/instructor.dart';
-import 'package:uctg/room.dart';
-import 'package:uctg/section.dart';
-import 'package:uctg/subject.dart';
-import 'package:uctg/timeslot.dart';
+import 'package:uctg/models/day.dart';
+import 'package:uctg/models/instructor.dart';
+import 'package:uctg/models/room.dart';
+import 'package:uctg/models/section.dart';
+import 'package:uctg/models/subject.dart';
+import 'package:uctg/models/timeslot.dart';
 
 class Schedule {
   late int id;

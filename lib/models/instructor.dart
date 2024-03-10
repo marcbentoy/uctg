@@ -1,4 +1,4 @@
-import 'package:uctg/preference.dart';
+import 'package:uctg/models/preference.dart';
 
 class Instructor {
   late int id;

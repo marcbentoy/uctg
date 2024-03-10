@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:uctg/day.dart';
-import 'package:uctg/individual.dart';
-import 'package:uctg/instructor.dart';
-import 'package:uctg/preference.dart';
-import 'package:uctg/room.dart';
-import 'package:uctg/schedule.dart';
-import 'package:uctg/section.dart';
-import 'package:uctg/subject.dart';
-import 'package:uctg/subject_type.dart';
-import 'package:uctg/timeslot.dart';
+import 'package:uctg/models/day.dart';
+import 'package:uctg/models/individual.dart';
+import 'package:uctg/models/instructor.dart';
+import 'package:uctg/models/preference.dart';
+import 'package:uctg/models/room.dart';
+import 'package:uctg/models/schedule.dart';
+import 'package:uctg/models/section.dart';
+import 'package:uctg/models/subject.dart';
+import 'package:uctg/models/subject_type.dart';
+import 'package:uctg/models/timeslot.dart';
 import 'package:uctg/utils.dart';
 
 class Environment {
