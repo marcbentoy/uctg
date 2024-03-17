@@ -1,10 +1,11 @@
-import 'package:uctg/models/subject.dart';
+import 'package:uctg/models/section_type.dart';
 
 class Section {
   late int id;
 
   late String name;
-  List<Subject> subjects = [];
+  late SectionType type;
+  List<int> subjects = [];
 
   Section();
 }

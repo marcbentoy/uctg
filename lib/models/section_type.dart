@@ -1,0 +1,4 @@
+enum SectionType {
+  day,
+  night,
+}

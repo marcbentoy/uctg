@@ -5,6 +5,12 @@ class Individual {
   late int totalSchedules = 0;
   List<Schedule> schedules = [];
 
+  bool hc1 = false;
+  bool hc2 = false;
+  bool hc3 = false;
+  bool hc4 = false;
+  bool hc5 = false;
+
   Individual();
 
   @override

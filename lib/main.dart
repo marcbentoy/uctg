@@ -1,13 +1,12 @@
 import 'package:flutter/widgets.dart';
-import 'package:uctg/environment.dart';
-import 'package:uctg/screens/home_screen.dart';
+import 'package:uctg/app.dart';
 
 void main() {
-  Environment environment = Environment();
+  // Environment environment = Environment();
 
-  environment.initializePopulation();
+  // environment.initializePopulation();
 
-  environment.generate();
+  // environment.generate();
 
-  runApp(const HomeScreen());
+  runApp(const UctgApp());
 }

@@ -1,24 +1,21 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:uctg/models/day.dart';
 import 'package:uctg/models/individual.dart';
 import 'package:uctg/models/instructor.dart';
-import 'package:uctg/models/preference.dart';
 import 'package:uctg/models/room.dart';
 import 'package:uctg/models/schedule.dart';
 import 'package:uctg/models/section.dart';
 import 'package:uctg/models/subject.dart';
-import 'package:uctg/models/subject_type.dart';
 import 'package:uctg/models/timeslot.dart';
 import 'package:uctg/utils.dart';
 
 class Environment {
-  var populationCount = 100;
+  var populationCount = 1;
   var mutationRate = 0.01;
   var generationCount = 0;
-  var highestFitnessScore = -1;
+  var highestFitnessScore = 0;
   var highestFitnessScoreIndividualIndex = 0;
 
   List<Individual> population = [];
@@ -27,6 +24,10 @@ class Environment {
   List<Day> days = [];
   List<Room> rooms = [];
   List<Instructor> instructors = [];
+  List<Subject> subjects = [];
+
+  late Individual bestIndividual;
+
   List<String> tags = [
     "math",
     "science",
@@ -36,180 +37,20 @@ class Environment {
     "advance math",
   ];
 
-  Environment() {
-    sections = [
-      Section()
-        ..id = 0
-        ..name = "S1"
-        ..subjects = [
-          Subject()
-            ..id = 0
-            ..name = "A1"
-            ..tags = [0, 4, 5]
-            ..units = 3
-            ..type = SubjectType.lecture,
-        ],
-      Section()
-        ..id = 1
-        ..name = "S2"
-        ..subjects = [
-          Subject()
-            ..id = 0
-            ..name = "A1"
-            ..tags = [0, 4, 5]
-            ..units = 3
-            ..type = SubjectType.lecture,
-          Subject()
-            ..id = 1
-            ..name = "A2"
-            ..tags = [1]
-            ..units = 2
-            ..type = SubjectType.lab,
-        ],
-    ];
-
-    rooms = [
-      Room()
-        ..id = 0
-        ..name = "R1"
-        ..type = SubjectType.lecture,
-      Room()
-        ..id = 1
-        ..name = "R2"
-        ..type = SubjectType.lab,
-      Room()
-        ..id = 2
-        ..name = "R3"
-        ..type = SubjectType.lecture,
-    ];
-
-    instructors = [
-      Instructor()
-        ..id = 0
-        ..name = "I1"
-        ..preferences = [
-          Preference(),
-        ]
-        ..tags = [
-          1,
-          4,
-          5,
-        ],
-      Instructor()
-        ..id = 1
-        ..name = "I2"
-        ..preferences = [
-          Preference(),
-        ]
-        ..tags = [
-          2,
-        ],
-    ];
-
-    timeslots = [
-      Timeslot()
-        ..id = 0
-        ..startTime = DateTime.parse("2024-01-01 07")
-        ..endTime = DateTime.parse("2024-01-01 08"),
-      Timeslot()
-        ..id = 1
-        ..startTime = DateTime.parse("2024-01-01 08")
-        ..endTime = DateTime.parse("2024-01-01 09"),
-      Timeslot()
-        ..id = 2
-        ..startTime = DateTime.parse("2024-01-01 09")
-        ..endTime = DateTime.parse("2024-01-01 10"),
-      Timeslot()
-        ..id = 3
-        ..startTime = DateTime.parse("2024-01-01 11")
-        ..endTime = DateTime.parse("2024-01-01 12"),
-      Timeslot()
-        ..id = 4
-        ..startTime = DateTime.parse("2024-01-01 13")
-        ..endTime = DateTime.parse("2024-01-01 14"),
-      Timeslot()
-        ..id = 5
-        ..startTime = DateTime.parse("2024-01-01 14")
-        ..endTime = DateTime.parse("2024-01-01 15"),
-      Timeslot()
-        ..id = 6
-        ..startTime = DateTime.parse("2024-01-01 15")
-        ..endTime = DateTime.parse("2024-01-01 16"),
-      Timeslot()
-        ..id = 7
-        ..startTime = DateTime.parse("2024-01-01 17")
-        ..endTime = DateTime.parse("2024-01-01 18"),
-    ];
-
-    days = [
-      Day()
-        ..id = 0
-        ..name = "Monday",
-      Day()
-        ..id = 1
-        ..name = "Tuesday",
-      Day()
-        ..id = 2
-        ..name = "Wednesday",
-    ];
-  }
-
-  void generate() {
-    while (true) {
-      // evaluate
-      evaluator();
-
-      // display current generation summary
-      for (Individual individual in population) {
-        print("Score: ${individual.fitnessScore}");
-      }
-
-      List<Individual> newPopulation = [];
-      // select
-      for (int i = 0; i < populationCount; i++) {
-        Individual parentA = selectIndividual();
-        Individual parentB = selectIndividual();
-
-        // crossover
-        Individual offspring = crossover(parentA, parentB);
-
-        // mutate
-        mutate(offspring);
-
-        // populate
-        newPopulation.add(offspring);
-      }
-
-      population = newPopulation;
-
-      print("- - - -");
-      print("Generation: $generationCount");
-      print("Highest fitness score: $highestFitnessScore");
-      print("- - - -");
-
-      // waiting for input
-      String? line = stdin.readLineSync(encoding: utf8);
-      if (line?.trim() == "s") {
-        break;
-      }
-
-      // increment generationCount
-      generationCount++;
-    }
-  }
+  Environment();
 
   void initializePopulation() {
     for (int i = 0; i < populationCount; i++) {
       Individual individual = Individual();
 
       for (Section section in sections) {
-        for (Subject subject in section.subjects) {
-          for (int u = 0; u < subject.units; u++) {
+        for (int i = 0; i < section.subjects.length; i++) {
+          for (int u = 0; u < subjects[section.subjects[i]].units; u++) {
             Schedule schedule = Schedule()
               // predetermined properties
               ..id = individual.schedules.length
               ..section = section
-              ..subject = subject
+              ..subject = subjects[section.subjects[i]]
 
               // random properties
               ..room = chooseRandomly(rooms)
@@ -224,6 +65,8 @@ class Environment {
 
       population.add(individual);
     }
+
+    debugPrint("Population initialized");
   }
 
   void evaluator() {
@@ -302,6 +145,7 @@ class Environment {
           // update highest fitness score
           highestFitnessScore = individual.fitnessScore;
           highestFitnessScoreIndividualIndex = i;
+          bestIndividual = individual;
         }
       }
     }
