@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uctg/constants/colors.dart';
 
 class AddInputsStep extends StatefulWidget {
   const AddInputsStep({super.key});
@@ -38,7 +39,7 @@ class InputItem extends StatelessWidget {
           height: 36,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-            color: index == currentIndex ? Colors.blue[200] : Colors.white,
+            color: index == currentIndex ? kLightGrayColor : Colors.white,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
@@ -46,15 +47,17 @@ class InputItem extends StatelessWidget {
               Icon(
                 icon,
                 size: 16,
-                color:
-                    index == currentIndex ? Colors.blue[900] : Colors.black38,
+                color: index == currentIndex ? Colors.white : Colors.black38,
               ),
               const SizedBox(
                 width: 8,
               ),
               Text(
                 itemName,
-                style: GoogleFonts.inter(),
+                style: GoogleFonts.inter(
+                  color:
+                      index == currentIndex ? Colors.white : Color(0xff2e2e2e),
+                ),
               ),
             ],
           ),
@@ -206,19 +209,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           dataRows;
                         });
                       case 4:
-                        dataRows[4].add(const DataRow(cells: [
-                          DataCell(Row(
-                            children: [
-                              Icon(Icons.edit),
-                              Text("2"),
-                            ],
-                          )),
-                          DataCell(Text("1A")),
-                          DataCell(Text("Day")),
-                        ]));
-                        setState(() {
-                          dataRows;
-                        });
+                        addTagDataDialog();
                     }
                   },
                   child: const Text("Add Data"),
@@ -473,6 +464,94 @@ class _AddInputsStepState extends State<AddInputsStep> {
         );
       },
     );
+  }
+
+  void addTagDataDialog() {
+    TextEditingController tagController = TextEditingController();
+
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return Dialog(
+            child: Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              width: 320,
+              height: 256,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // title
+                  Text(
+                    "Add new subject tag",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 16,
+                  ),
+
+                  Expanded(
+                    child: Center(
+                      child: TextField(
+                        controller: tagController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Tag",
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 16,
+                  ),
+
+                  // controls
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Discard",
+                          style: GoogleFonts.inter(),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      FilledButton(
+                        onPressed: () {
+                          setState(() {
+                            dataRows[4].add(
+                              DataRow(
+                                cells: [DataCell(Text(tagController.text))],
+                              ),
+                            );
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          "Save",
+                          style: GoogleFonts.inter(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 

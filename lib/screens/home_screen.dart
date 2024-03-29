@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
-  bool _showSidebar = false;
+  bool _showSidebar = true;
 
   @override
   Widget build(BuildContext context) {

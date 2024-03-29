@@ -28,8 +28,16 @@ class _CustomSidebarState extends State<CustomSidebar> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          right: BorderSide(
+            color: kLightGrayColor.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+      ),
       width: 256,
-      color: Colors.white,
       child: Column(
         children: [
           // logo
@@ -38,14 +46,16 @@ class _CustomSidebarState extends State<CustomSidebar> {
             child: Container(
               height: 80,
               decoration: BoxDecoration(
-                color: kPurpleColor,
+                color: kDarkGrayColor.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Center(
                 child: Text(
-                  "UCTG",
+                  "University Class\nTimetable Generator",
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
+                    color: kDarkGrayColor,
                   ),
                 ),
               ),
@@ -84,7 +94,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: kPurpleColor,
+                  color: kDarkGrayColor,
                 ),
                 child: Center(
                   child: Text(

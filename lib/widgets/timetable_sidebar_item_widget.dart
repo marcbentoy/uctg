@@ -42,7 +42,7 @@ class _TimetableSidebarItemWidgetState
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             color: widget.index == widget.currentSelectedTimetableIndex
-                ? kPurpleColor
+                ? kLightGrayColor
                 : Colors.white,
           ),
           child: Row(
@@ -243,7 +243,7 @@ class _TimetableSidebarItemWidgetState
                     setState(() {
                       widget.timetable.name = nameController.text;
                     });
-                    setState(() {});
+                    widget.clickCallback(widget.index);
                     Navigator.of(context).pop();
                   },
                   child: Text(
