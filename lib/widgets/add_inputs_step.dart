@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -170,44 +171,12 @@ class _AddInputsStepState extends State<AddInputsStep> {
                         addSectionDataDialog();
 
                       case 1:
-                        dataRows[1].add(const DataRow(cells: [
-                          DataCell(Text("2")),
-                          DataCell(Text("1A")),
-                          DataCell(Text("Day")),
-                        ]));
-                        setState(() {
-                          dataRows;
-                        });
-
+                        addInstructorDataDialog();
                       case 2:
-                        dataRows[2].add(const DataRow(cells: [
-                          DataCell(Row(
-                            children: [
-                              Icon(Icons.edit),
-                              Text("2"),
-                            ],
-                          )),
-                          DataCell(Text("1A")),
-                          DataCell(Text("Day")),
-                        ]));
-                        setState(() {
-                          dataRows;
-                        });
+                        addRoomDataDialog();
 
                       case 3:
-                        dataRows[3].add(const DataRow(cells: [
-                          DataCell(Row(
-                            children: [
-                              Icon(Icons.edit),
-                              Text("2"),
-                            ],
-                          )),
-                          DataCell(Text("1A")),
-                          DataCell(Text("Day")),
-                        ]));
-                        setState(() {
-                          dataRows;
-                        });
+                        addSubjectDataDialog();
                       case 4:
                         addTagDataDialog();
                     }
@@ -249,14 +218,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // dialog title
-                  Text(
-                    "Add section data",
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xff2e2e2e),
-                    ),
-                  ),
+                  DialogTitleWidget(title: "Add section data"),
 
                   const SizedBox(
                     height: 12,
@@ -320,7 +282,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             showTimePreferencesDialog();
                           },
                           child: Text(
-                            "Time Preferences",
+                            "Timeslots",
                             style: GoogleFonts.inter(),
                           ),
                         ),
@@ -329,24 +291,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   ),
 
                   // dialog controls
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Discard"),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      FilledButton(
-                        onPressed: () {},
-                        child: const Text("Save"),
-                      ),
-                    ],
-                  ),
+                  dialogRowControls(context, () {}),
                 ],
               ),
             ),
@@ -371,11 +316,12 @@ class _AddInputsStepState extends State<AddInputsStep> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
+                  DialogTitleWidget(title: "Select time preferences"),
                   const Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Monday",
                           selections: [
                             false,
@@ -383,7 +329,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Tuesday",
                           selections: [
                             false,
@@ -391,7 +337,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Wednesday",
                           selections: [
                             false,
@@ -399,7 +345,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Thursday",
                           selections: [
                             false,
@@ -407,7 +353,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Friday",
                           selections: [
                             false,
@@ -415,7 +361,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Saturday",
                           selections: [
                             false,
@@ -423,7 +369,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             false,
                           ],
                         ),
-                        TimeslostDaySelectionWidget(
+                        TimeslotDaySelectionWidget(
                           weekday: "Sunday",
                           selections: [
                             false,
@@ -437,25 +383,11 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   const SizedBox(
                     height: 8,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Discard"),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                      ),
-                      FilledButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text("Save"),
-                      ),
-                    ],
+                  dialogRowControls(
+                    context,
+                    () {
+                      Navigator.of(context).pop();
+                    },
                   ),
                 ],
               ),
@@ -485,13 +417,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // title
-                  Text(
-                    "Add new subject tag",
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  DialogTitleWidget(title: "Add new subject tag"),
 
                   SizedBox(
                     height: 16,
@@ -514,38 +440,202 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   ),
 
                   // controls
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          "Discard",
-                          style: GoogleFonts.inter(),
+                  dialogRowControls(context, () {
+                    setState(() {
+                      dataRows[4].add(
+                        DataRow(
+                          cells: [DataCell(Text(tagController.text))],
                         ),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      FilledButton(
-                        onPressed: () {
-                          setState(() {
-                            dataRows[4].add(
-                              DataRow(
-                                cells: [DataCell(Text(tagController.text))],
-                              ),
-                            );
-                          });
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          "Save",
-                          style: GoogleFonts.inter(),
+                      );
+                    });
+                  }),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void addSubjectDataDialog() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return Dialog(
+            child: Container(
+              padding: EdgeInsets.all(16),
+              height: 800,
+              width: 500,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  // title
+                  DialogTitleWidget(title: "Add a subject"),
+
+                  SizedBox(
+                    height: 16,
+                  ),
+
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // subject name
+                        // tags
+                        // units
+                        // type
+                        DropdownButton(
+                          items: [
+                            DropdownMenuItem(
+                              child: Text("Lecture"),
+                              value: "lecture",
+                            ),
+                            DropdownMenuItem(
+                              child: Text("Lab"),
+                              value: "lab",
+                            ),
+                          ],
+                          value: "lecture",
+                          onChanged: (value) {},
                         ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 16,
+                  ),
+
+                  // controls
+                  dialogRowControls(context, () {}),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void addRoomDataDialog() {
+    List<String> roomOpts = ["lecture", "lab"];
+    String selectedRoomType = "lecture";
+    TextEditingController roomNameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, innerSetState) {
+            return Dialog(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                width: 400,
+                height: 324,
+                child: Column(
+                  children: [
+                    DialogTitleWidget(title: "Add room data"),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextField(
+                            controller: roomNameController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: "Room name",
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SelectionWidget(
+                              options: roomOpts,
+                              selected: selectedRoomType,
+                              selectionCallback: (String value) {
+                                innerSetState(() {
+                                  selectedRoomType = value;
+                                });
+                              }),
+                        ],
                       ),
-                    ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    dialogRowControls(
+                      context,
+                      () {
+                        setState(() {
+                          dataRows[2].add(
+                            DataRow(cells: [
+                              DataCell(Text(roomNameController.text)),
+                              DataCell(Text(selectedRoomType)),
+                            ]),
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void addInstructorDataDialog() {
+    showDialog(
+        context: context,
+        builder: (ctx) {
+          return Dialog(
+            child: Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              width: 500,
+              height: 600,
+              child: Column(
+                children: [
+                  DialogTitleWidget(title: "Add instructor data"),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Name",
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            showTimePreferencesDialog();
+                          },
+                          child: Text("Time preferences"),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  dialogRowControls(
+                    context,
+                    () {},
                   ),
                 ],
               ),
@@ -555,23 +645,78 @@ class _AddInputsStepState extends State<AddInputsStep> {
   }
 }
 
-class TimeslostDaySelectionWidget extends StatefulWidget {
+class DialogTitleWidget extends StatelessWidget {
+  final String title;
+  const DialogTitleWidget({
+    super.key,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: GoogleFonts.inter(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: Color(0xff2e2e2e),
+      ),
+    );
+  }
+}
+
+Widget dialogRowControls(BuildContext context, Function saveClickFunction) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: Text(
+          "Discard",
+          style: GoogleFonts.inter(
+            color: kDarkGrayColor,
+          ),
+        ),
+      ),
+      SizedBox(
+        width: 8,
+      ),
+      FilledButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(kLightGrayColor),
+        ),
+        onPressed: () {
+          saveClickFunction();
+          Navigator.of(context).pop();
+        },
+        child: Text(
+          "Save",
+          style: GoogleFonts.inter(),
+        ),
+      ),
+    ],
+  );
+}
+
+class TimeslotDaySelectionWidget extends StatefulWidget {
   final String weekday;
   final List<bool> selections;
 
-  const TimeslostDaySelectionWidget({
+  const TimeslotDaySelectionWidget({
     super.key,
     required this.weekday,
     required this.selections,
   });
 
   @override
-  State<TimeslostDaySelectionWidget> createState() =>
-      _TimeslostDaySelectionWidgetState();
+  State<TimeslotDaySelectionWidget> createState() =>
+      _TimeslotDaySelectionWidgetState();
 }
 
-class _TimeslostDaySelectionWidgetState
-    extends State<TimeslostDaySelectionWidget> {
+class _TimeslotDaySelectionWidgetState
+    extends State<TimeslotDaySelectionWidget> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -671,6 +816,111 @@ class _TimeslostDaySelectionWidgetState
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SelectionWidget extends StatefulWidget {
+  final List<String> options;
+  final String selected;
+  final Function(String) selectionCallback;
+
+  const SelectionWidget({
+    super.key,
+    required this.options,
+    required this.selected,
+    required this.selectionCallback,
+  });
+
+  @override
+  State<SelectionWidget> createState() => _SelectionWidgetState();
+}
+
+class _SelectionWidgetState extends State<SelectionWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: kDarkGrayColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: widget.options.map(
+          (e) {
+            return TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(
+                  e == widget.selected ? kDarkGrayColor : Colors.white,
+                ),
+              ),
+              onPressed: () {
+                widget.selectionCallback(e);
+              },
+              child: Text(
+                e,
+                style: GoogleFonts.inter(
+                  color:
+                      e == widget.selected ? Colors.white : Color(0xff2e2e2e),
+                ),
+              ),
+            );
+          },
+        ).toList(),
+      ),
+    );
+  }
+}
+
+class AddRoomDataWidget extends StatefulWidget {
+  const AddRoomDataWidget({super.key});
+
+  @override
+  State<AddRoomDataWidget> createState() => _AddRoomDataWidgetState();
+}
+
+class _AddRoomDataWidgetState extends State<AddRoomDataWidget> {
+  @override
+  Widget build(BuildContext context) {
+    String selectedOption = "good";
+    return Dialog(
+      child: Container(
+        padding: EdgeInsets.all(16),
+        width: 200,
+        height: 200,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DialogTitleWidget(title: "Add new room"),
+            SizedBox(
+              height: 16,
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  SelectionWidget(
+                    options: ["something", "good"],
+                    selected: selectedOption,
+                    selectionCallback: (String value) {
+                      setState(() {
+                        selectedOption = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            dialogRowControls(context, () {}),
           ],
         ),
       ),

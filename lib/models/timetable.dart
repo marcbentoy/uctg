@@ -77,6 +77,7 @@ class Timeslot {
 class Individual {
   int score = 0;
   List<Schedule> schedules = [];
+  List<String> tags = [];
 }
 
 @embedded
