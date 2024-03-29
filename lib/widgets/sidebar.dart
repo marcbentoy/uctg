@@ -72,11 +72,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                widget.timetables.add(
-                  Timetable()
-                    ..dateCreated = DateTime.now()
-                    ..name = "timetable",
-                );
+                widget.timetables.add(Timetable());
                 setState(() {
                   widget.timetables;
                 });
@@ -85,7 +81,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
               child: Container(
                 height: 48,
                 width: double.infinity,
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                   color: kPurpleColor,

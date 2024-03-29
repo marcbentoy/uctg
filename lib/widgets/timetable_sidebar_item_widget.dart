@@ -26,7 +26,7 @@ class TimetableSidebarItemWidget extends StatefulWidget {
 
 class _TimetableSidebarItemWidgetState
     extends State<TimetableSidebarItemWidget> {
-  bool _isEditing = false;
+  // bool _isEditing = false;
   TextEditingController nameController = TextEditingController();
 
   @override
@@ -49,7 +49,7 @@ class _TimetableSidebarItemWidgetState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                widget.timetable.name ?? "Untitled Timetable",
+                widget.timetable.name,
                 style: GoogleFonts.inter(
                   color: widget.index == widget.currentSelectedTimetableIndex
                       ? const Color(0xffffffff)
@@ -100,58 +100,9 @@ class _TimetableSidebarItemWidgetState
             showDialog(
               context: context,
               builder: (ctx) {
-                nameController.text =
-                    widget.timetable.name ?? "Untitled timetable";
+                nameController.text = widget.timetable.name;
 
-                return Dialog(
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    height: 200,
-                    width: 500,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Edit timetable name",
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff2e2e2e),
-                          ),
-                        ),
-                        TextField(
-                          autofocus: true,
-                          controller: nameController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: "Timetable name",
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            TextButton(onPressed: () {}, child: Text("Cancel")),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  widget.timetable.name = nameController.text;
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Save",
-                                style: GoogleFonts.inter(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return showRenameDialog();
               },
             );
 
@@ -164,10 +115,147 @@ class _TimetableSidebarItemWidgetState
             style: GoogleFonts.inter(),
           ),
           onTap: () {
-            widget.deleteTimetableCallback(widget.index);
+            showDialog(
+              context: context,
+              builder: (ctx) {
+                return Dialog(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.all(16),
+                    width: 320,
+                    height: 256,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // title
+                        Text(
+                          "Confirm deletion?",
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: Color(0xff2e2e2e),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 16,
+                        ),
+
+                        // Content
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  widget.deleteTimetableCallback(widget.index);
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "Yes",
+                                  style: GoogleFonts.inter(),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "No",
+                                  style: GoogleFonts.inter(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
           },
         ),
       ],
+    );
+  }
+
+  Widget showRenameDialog() {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        height: 200,
+        width: 500,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Edit timetable name",
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xff2e2e2e),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    autofocus: true,
+                    controller: nameController,
+                    style: GoogleFonts.inter(),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "Timetable name",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Cancel",
+                    style: GoogleFonts.inter(),
+                  ),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                FilledButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.timetable.name = nameController.text;
+                    });
+                    setState(() {});
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Save",
+                    style: GoogleFonts.inter(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

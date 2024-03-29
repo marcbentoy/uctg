@@ -18,10 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentStep = 0; // Variable to track current step
   List<Step> _steps = []; // List of steps
 
-  List<Timetable> timetables = [
-    Timetable()..name = "1st sem 24-25",
-    Timetable()..name = "2nd sem 24-25",
-  ];
+  List<Timetable> timetables = [];
 
   int currentSelectedTimetableIndex = 0;
 
@@ -30,15 +27,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _steps = [
       // add input step
-      const Step(
-        title: Text('Add Inputs'),
+      Step(
+        title: Text(
+          'Add Inputs',
+          style: GoogleFonts.inter(),
+        ),
         content: AddInputsStep(),
         isActive: true,
       ),
 
       // configure ai step
-      const Step(
-        title: Text('Configure Generator'),
+      Step(
+        title: Text(
+          'Configure Generator',
+          style: GoogleFonts.inter(),
+        ),
         content: ConfigureAiStep(),
         isActive: true,
       ),
@@ -52,15 +55,21 @@ class _HomeScreenState extends State<HomeScreen> {
       // ),
 
       // generation step
-      const Step(
-        title: Text('Generation'),
+      Step(
+        title: Text(
+          'Generation',
+          style: GoogleFonts.inter(),
+        ),
         content: GenerationStep(),
         isActive: true,
       ),
 
       // results
-      const Step(
-        title: Text('Results'),
+      Step(
+        title: Text(
+          'Results',
+          style: GoogleFonts.inter(),
+        ),
         content: ResultStep(),
         isActive: true,
       ),
@@ -91,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Row(
         children: [
           // sidebar
@@ -123,8 +133,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     // timetable title
                     Text(
-                      timetables[currentSelectedTimetableIndex].name ??
-                          "Untitled Timetable",
+                      timetables.isEmpty
+                          ? "No timetables"
+                          : timetables[currentSelectedTimetableIndex].name,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
                         color: Color(0xff2e2e2e),
@@ -135,19 +146,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // main content
                 Expanded(
-                  child: Stepper(
-                    steps: _steps,
-                    currentStep: _currentStep,
-                    type: StepperType.horizontal,
-                    controlsBuilder: (context, details) {
-                      return const SizedBox.shrink();
-                    },
-                    onStepTapped: (step) {
-                      setState(() {
-                        _currentStep = step;
-                      });
-                    },
-                  ),
+                  child: timetables.isEmpty
+                      ? Center(
+                          child: Text(
+                            "No timetables created yet.\nCreate a timetable by clicking the \"New Timetable\" button in the sidebar.",
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : Stepper(
+                          steps: _steps,
+                          currentStep: _currentStep,
+                          type: StepperType.horizontal,
+                          controlsBuilder: (context, details) {
+                            return const SizedBox.shrink();
+                          },
+                          onStepTapped: (step) {
+                            setState(() {
+                              _currentStep = step;
+                            });
+                          },
+                        ),
                 ),
               ],
             ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:timetable_view/timetable_view.dart';
-import 'package:uctg/app.dart';
 
 class ResultStep extends StatefulWidget {
   const ResultStep({super.key});
@@ -48,19 +47,19 @@ class ResultStepState extends State<ResultStep> {
     ];
   }
 
-  List<DropdownMenuItem> sectionDropdownItems = generator.sections.map((e) {
-    return DropdownMenuItem(
-      child: Text(e.name),
-      value: e.name,
-    );
-  }).toList();
+  // List<DropdownMenuItem> sectionDropdownItems = generator.sections.map((e) {
+  //   return DropdownMenuItem(
+  //     child: Text(e.name),
+  //     value: e.name,
+  //   );
+  // }).toList();
 
-  List<DropdownMenuItem> instructorDropdownItems = generator.sections.map((e) {
-    return DropdownMenuItem(
-      child: Text(e.name),
-      value: e.name,
-    );
-  }).toList();
+  // List<DropdownMenuItem> instructorDropdownItems = generator.sections.map((e) {
+  //   return DropdownMenuItem(
+  //     child: Text(e.name),
+  //     value: e.name,
+  //   );
+  // }).toList();
 
   String selectedView = "Sections";
   String selectedSection = "";
@@ -97,26 +96,26 @@ class ResultStepState extends State<ResultStep> {
           ),
 
           // view value selection
-          Column(
-            children: [
-              Text(selectedView.toLowerCase() == "sections"
-                  ? "Sections"
-                  : "Instructors"),
-              DropdownButton(
-                items: (selectedView.toString() == "sections"
-                    ? sectionDropdownItems
-                    : instructorDropdownItems),
-                onChanged: (selectedItem) {
-                  setState(() {
-                    selectedSection = selectedItem!;
-                  });
-                },
-                value: selectedView.toLowerCase() == "sections"
-                    ? selectedSection
-                    : selectedInstructor,
-              ),
-            ],
-          ),
+          // Column(
+          //   children: [
+          //     Text(selectedView.toLowerCase() == "sections"
+          //         ? "Sections"
+          //         : "Instructors"),
+          //     DropdownButton(
+          //       items: (selectedView.toString() == "sections"
+          //           ? sectionDropdownItems
+          //           : instructorDropdownItems),
+          //       onChanged: (selectedItem) {
+          //         setState(() {
+          //           selectedSection = selectedItem!;
+          //         });
+          //       },
+          //       value: selectedView.toLowerCase() == "sections"
+          //           ? selectedSection
+          //           : selectedInstructor,
+          //     ),
+          //   ],
+          // ),
         ]),
         Container(
           height: 400,

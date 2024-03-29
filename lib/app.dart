@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uctg/generator/generator.dart';
 import 'package:uctg/screens/home_screen.dart';
 
-Generator generator = Generator();
 bool isGenerating = false;
 
 class UctgApp extends StatefulWidget {

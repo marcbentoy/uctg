@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uctg/app.dart';
-import 'package:uctg/generator/individual.dart';
 
 class GenerationStep extends StatefulWidget {
   const GenerationStep({super.key});
@@ -20,54 +19,6 @@ class _GenerationStepState extends State<GenerationStep> {
   bool sc3 = false;
   bool sc4 = false;
 
-  void generate() async {
-    debugPrint("Performing evaluation");
-    // evaluate
-    setState(() {
-      generator.evaluator();
-    });
-
-    // display current generation summary
-    // for (Individual individual in environment.population) {
-    //   debugPrint("Score: ${individual.fitnessScore}");
-    // }
-
-    List<Individual> newPopulation = [];
-    debugPrint("Selecting");
-    // select
-    for (int i = 0; i < generator.populationCount; i++) {
-      Individual parentA = generator.selectIndividual();
-      Individual parentB = generator.selectIndividual();
-
-      debugPrint("Performing crossover");
-      // crossover
-      Individual offspring = generator.crossover(parentA, parentB);
-
-      debugPrint("Performing mutation");
-      // mutate
-      generator.mutate(offspring);
-
-      // populate
-      newPopulation.add(offspring);
-    }
-
-    setState(() {
-      generator.population = newPopulation;
-    });
-
-    debugPrint("- - - -");
-    debugPrint("Generation: ${generator.generationCount}");
-    debugPrint("Highest fitness score: ${generator.highestFitnessScore}");
-    debugPrint("- - - -");
-
-    // increment generationCount
-    setState(() {
-      generator.generationCount++;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 10));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -76,14 +27,6 @@ class _GenerationStepState extends State<GenerationStep> {
           onPressed: () {
             setState(() {
               isGenerating = !isGenerating;
-
-              try {
-                // while (isGenerating) {
-                generate();
-                // }
-              } catch (e) {
-                debugPrint("$e");
-              }
             });
           },
           child: const Text("Generate"),
@@ -91,11 +34,11 @@ class _GenerationStepState extends State<GenerationStep> {
         const Text("Generation Summary"),
         Row(
           children: [
-            Text("Generation: ${generator.generationCount}"),
+            Text("Generation:"),
             SizedBox(
               width: 4,
             ),
-            Text("Highest Fitness Score: ${generator.highestFitnessScore}"),
+            Text("Highest Fitness Score: "),
           ],
         ),
         const Text("Best Individual:"),
