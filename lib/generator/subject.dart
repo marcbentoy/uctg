@@ -1,4 +1,4 @@
-import 'package:uctg/models/subject_type.dart';
+import 'package:uctg/generator/subject_type.dart';
 
 class Subject {
   late int id;

@@ -1,17 +1,17 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:uctg/models/day.dart';
-import 'package:uctg/models/individual.dart';
-import 'package:uctg/models/instructor.dart';
-import 'package:uctg/models/room.dart';
-import 'package:uctg/models/schedule.dart';
-import 'package:uctg/models/section.dart';
-import 'package:uctg/models/subject.dart';
-import 'package:uctg/models/timeslot.dart';
+import 'package:uctg/generator/day.dart';
+import 'package:uctg/generator/individual.dart';
+import 'package:uctg/generator/instructor.dart';
+import 'package:uctg/generator/room.dart';
+import 'package:uctg/generator/schedule.dart';
+import 'package:uctg/generator/section.dart';
+import 'package:uctg/generator/subject.dart';
+import 'package:uctg/generator/timeslot.dart';
 import 'package:uctg/utils.dart';
 
-class Environment {
+class Generator {
   var populationCount = 1;
   var mutationRate = 0.01;
   var generationCount = 0;
@@ -37,7 +37,7 @@ class Environment {
     "advance math",
   ];
 
-  Environment();
+  Generator();
 
   void initializePopulation() {
     for (int i = 0; i < populationCount; i++) {

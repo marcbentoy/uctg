@@ -1,15 +1,18 @@
-import 'package:uctg/models/day.dart';
-import 'package:uctg/models/instructor.dart';
-import 'package:uctg/models/room.dart';
-import 'package:uctg/models/schedule.dart';
-import 'package:uctg/models/section.dart';
-import 'package:uctg/models/subject.dart';
-import 'package:uctg/models/timeslot.dart';
+import 'package:uctg/generator/day.dart';
+import 'package:uctg/generator/instructor.dart';
+import 'package:uctg/generator/room.dart';
+import 'package:uctg/generator/schedule.dart';
+import 'package:uctg/generator/section.dart';
+import 'package:uctg/generator/subject.dart';
+import 'package:uctg/generator/timeslot.dart';
+import 'package:isar/isar.dart';
 
+@collection
 class Timetable {
-  late int id;
-  late String name;
-  late DateTime dateCreated;
+  Id id = Isar.autoIncrement;
+
+  String? name;
+  DateTime? dateCreated;
 
   List<Schedule> schedules = [];
 
@@ -23,7 +26,5 @@ class Timetable {
   List<Day> days = [];
 
   // AI Configuration
-  late double mutationRate;
-
-  Timetable();
+  double? mutationRate;
 }

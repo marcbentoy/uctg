@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
 import 'package:uctg/widgets/generation_step.dart';
 import 'package:uctg/widgets/result_step.dart';
 import 'package:uctg/widgets/sidebar.dart';
-import 'package:uctg/widgets/termination_condition_step.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
     Timetable()..name = "1st sem 24-25",
     Timetable()..name = "2nd sem 24-25",
   ];
+
+  int currentSelectedTimetableIndex = 0;
 
   @override
   void initState() {
@@ -69,28 +71,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Timetable currTimetable = timetables[0];
-
-    int currentIndex = 0;
-
     void onItemSelectedCallback(int value) {
-      debugPrint("performing item click callback function");
-
       setState(() {
-        currentIndex = value;
-        currTimetable = timetables[currentIndex];
+        currentSelectedTimetableIndex = value;
       });
+    }
 
-      debugPrint("Current item index: $currentIndex");
+    void onNewTimetableClick(int value) {
+      setState(() {
+        currentSelectedTimetableIndex = value;
+      });
+    }
+
+    void onDeleteTimetableCallback(int value) {
+      setState(() {
+        timetables.removeAt(value);
+        currentSelectedTimetableIndex = 0;
+      });
     }
 
     return Scaffold(
       body: Row(
         children: [
           // sidebar
-
           _showSidebar
               ? CustomSidebar(
+                  deleteTimetableCallback: onDeleteTimetableCallback,
+                  newTimetableClickCallback: onNewTimetableClick,
+                  currentSelectedTimetableIndex: currentSelectedTimetableIndex,
                   timetables: timetables,
                   onItemSelected: onItemSelectedCallback,
                 )
@@ -98,57 +106,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // content
           Expanded(
-            child: Container(
-              child: Column(
-                children: [
-                  // Custom app bar
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            // Toggle sidebar visibility
-                            _showSidebar = !_showSidebar;
-                          });
-                        },
-                        icon: const Icon(Icons.menu),
-                      ),
-
-                      // timetable title
-                      Text(currTimetable.name),
-                    ],
-                  ),
-
-                  // main content
-                  Expanded(
-                    child: Stepper(
-                      steps: _steps,
-                      currentStep: _currentStep,
-                      type: StepperType.horizontal,
-                      controlsBuilder: (context, details) {
-                        return SizedBox.shrink();
-                      },
-                      onStepContinue: () {
+            child: Column(
+              children: [
+                // Custom app bar
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
                         setState(() {
-                          _currentStep < _steps.length - 1
-                              ? _currentStep += 1
-                              : null;
+                          // Toggle sidebar visibility
+                          _showSidebar = !_showSidebar;
                         });
                       },
-                      onStepCancel: () {
-                        setState(() {
-                          _currentStep > 0 ? _currentStep -= 1 : null;
-                        });
-                      },
-                      onStepTapped: (step) {
-                        setState(() {
-                          _currentStep = step;
-                        });
-                      },
+                      icon: const Icon(Icons.menu),
                     ),
+
+                    // timetable title
+                    Text(
+                      timetables[currentSelectedTimetableIndex].name ??
+                          "Untitled Timetable",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff2e2e2e),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // main content
+                Expanded(
+                  child: Stepper(
+                    steps: _steps,
+                    currentStep: _currentStep,
+                    type: StepperType.horizontal,
+                    controlsBuilder: (context, details) {
+                      return const SizedBox.shrink();
+                    },
+                    onStepTapped: (step) {
+                      setState(() {
+                        _currentStep = step;
+                      });
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

@@ -48,15 +48,14 @@ class ResultStepState extends State<ResultStep> {
     ];
   }
 
-  List<DropdownMenuItem> sectionDropdownItems = environment.sections.map((e) {
+  List<DropdownMenuItem> sectionDropdownItems = generator.sections.map((e) {
     return DropdownMenuItem(
       child: Text(e.name),
       value: e.name,
     );
   }).toList();
 
-  List<DropdownMenuItem> instructorDropdownItems =
-      environment.sections.map((e) {
+  List<DropdownMenuItem> instructorDropdownItems = generator.sections.map((e) {
     return DropdownMenuItem(
       child: Text(e.name),
       value: e.name,

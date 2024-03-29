@@ -2,22 +2,20 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:dotted_border/dotted_border.dart';
+import 'package:dynamic_table/dynamic_table.dart';
 import 'package:filepicker_windows/filepicker_windows.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/app.dart';
-import 'package:uctg/constants/colors.dart';
-import 'package:uctg/models/day.dart';
-import 'package:uctg/models/instructor.dart';
-import 'package:uctg/models/preference.dart';
-import 'package:uctg/models/room.dart';
-import 'package:uctg/models/section.dart';
-import 'package:uctg/models/section_type.dart';
-import 'package:uctg/models/subject.dart';
-import 'package:uctg/models/subject_type.dart';
-import 'package:uctg/models/timeslot.dart';
+import 'package:uctg/generator/day.dart';
+import 'package:uctg/generator/instructor.dart';
+import 'package:uctg/generator/room.dart';
+import 'package:uctg/generator/section.dart';
+import 'package:uctg/generator/section_type.dart';
+import 'package:uctg/generator/subject.dart';
+import 'package:uctg/generator/subject_type.dart';
+import 'package:uctg/generator/timeslot.dart';
 
 class AddInputsStep extends StatefulWidget {
   const AddInputsStep({super.key});
@@ -26,88 +24,385 @@ class AddInputsStep extends StatefulWidget {
   State<AddInputsStep> createState() => _AddInputsStepState();
 }
 
+class InputItem extends StatelessWidget {
+  final IconData icon;
+  final String itemName;
+  final int index;
+  final int currentIndex;
+  final void Function(int) clickCallback;
+
+  const InputItem({
+    super.key,
+    required this.icon,
+    required this.itemName,
+    required this.index,
+    required this.currentIndex,
+    required this.clickCallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: GestureDetector(
+        onTap: () {
+          clickCallback(index);
+        },
+        child: Container(
+          height: 36,
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: index == currentIndex ? Colors.blue[200] : Colors.white,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color:
+                    index == currentIndex ? Colors.blue[900] : Colors.black38,
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              Text(
+                itemName,
+                style: GoogleFonts.inter(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _AddInputsStepState extends State<AddInputsStep> {
   bool _isDragging = false;
   List<String?> csvFiles = [];
 
+  List inputItems = [
+    ["Sections", Icons.category_rounded],
+    ["Instructors", Icons.assignment_ind_rounded],
+    ["Rooms", Icons.meeting_room_rounded],
+    ["Subjects", Icons.menu_book_rounded],
+    ["Tags", Icons.bookmarks_rounded],
+  ];
+
+  int currentSelectedInput = 0;
+
+  void inputItemCallback(int index) {
+    debugPrint("item clicked $index");
+    setState(() {
+      currentSelectedInput = index;
+    });
+  }
+
+  List<List<DataColumn>> dataCols = [
+    // sections data columns
+    [
+      DataColumn(label: Text("ID")),
+      DataColumn(label: Text("Name")),
+      DataColumn(label: Text("Shift")),
+    ],
+    // instructors data columns
+    [
+      DataColumn(label: Text("ID")),
+      DataColumn(label: Text("Name")),
+      DataColumn(label: Text("Expertise")),
+    ],
+    // rooms' data columns
+    [
+      DataColumn(label: Text("ID")),
+      DataColumn(label: Text("Name")),
+      DataColumn(label: Text("Expertise")),
+    ],
+    // subjects' data columns
+    [
+      DataColumn(label: Text("ID")),
+      DataColumn(label: Text("Name")),
+      DataColumn(label: Text("Expertise")),
+    ],
+    // tags' data columns
+    [
+      DataColumn(label: Text("ID")),
+      DataColumn(label: Text("Name")),
+      DataColumn(label: Text("Expertise")),
+    ],
+  ];
+
+  List<List<DataRow>> dataRows = [
+    // sections' data rows
+    [
+      DataRow(cells: [
+        DataCell(Text("0")),
+        DataCell(Text("4A")),
+        DataCell(Text("Day")),
+      ]),
+      DataRow(cells: [
+        DataCell(Text("1")),
+        DataCell(Text("3B")),
+        DataCell(Text("Day")),
+      ]),
+    ],
+    // instructors' data rows
+    [
+      DataRow(cells: [
+        DataCell(Text("0")),
+        DataCell(Text("Danlag")),
+        DataCell(Text("Math, Computer")),
+      ]),
+      DataRow(cells: [
+        DataCell(Text("1")),
+        DataCell(Text("Mayet")),
+        DataCell(Text("No, Thing")),
+      ]),
+    ],
+    // rooms' data rows
+    [],
+    // subjects' data rows
+    [],
+    // tags' data rows
+    [],
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // select a directory feature
-        TextButton(
-          onPressed: selectDirectory,
-          child: Text(
-            "Select a folder",
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              color: Colors.black,
-              decoration: TextDecoration.underline,
-              decorationColor: kPurpleColor,
-            ),
+        // input data selection
+        SizedBox(
+          width: 200,
+          height: 500,
+          child: ListView.builder(
+            itemCount: inputItems.length,
+            itemBuilder: (ctx, index) {
+              return InputItem(
+                icon: inputItems[index][1],
+                itemName: inputItems[index][0],
+                index: index,
+                currentIndex: currentSelectedInput,
+                clickCallback: inputItemCallback,
+              );
+            },
           ),
         ),
 
-        const SizedBox(
-          height: 16,
-        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Row(
+                children: [
+                  // add row data
+                  FilledButton(
+                      onPressed: () {
+                        switch (currentSelectedInput) {
+                          case 0:
+                            dataRows[0].add(DataRow(
+                              cells: [
+                                DataCell(Row(
+                                  children: [
+                                    Icon(Icons.edit),
+                                    Text("2"),
+                                  ],
+                                )),
+                                DataCell(Text("1A")),
+                                DataCell(Text("Day")),
+                              ],
+                              onLongPress: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (ctx) {
+                                      return Dialog(
+                                        child: Container(
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  FilledButton(
+                                                      onPressed: () {},
+                                                      child: Text("Delete")),
+                                                  FilledButton(
+                                                      onPressed: () {},
+                                                      child: Text("Save")),
+                                                ],
+                                              ),
+                                              Center(
+                                                child: Text(
+                                                    "Editing data table row"),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              },
+                            ));
+                            setState(() {
+                              dataRows;
+                            });
 
-        // alternative option text
-        Text(
-          "or",
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            color: kTextColor,
-          ),
-        ),
+                          case 1:
+                            dataRows[1].add(DataRow(cells: [
+                              DataCell(Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  Text("2"),
+                                ],
+                              )),
+                              DataCell(Text("1A")),
+                              DataCell(Text("Day")),
+                            ]));
+                            setState(() {
+                              dataRows;
+                            });
 
-        const SizedBox(
-          height: 24,
-        ), // drop-off area
+                          case 2:
+                            dataRows[2].add(DataRow(cells: [
+                              DataCell(Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  Text("2"),
+                                ],
+                              )),
+                              DataCell(Text("1A")),
+                              DataCell(Text("Day")),
+                            ]));
+                            setState(() {
+                              dataRows;
+                            });
 
-        DropTarget(
-          onDragEntered: (details) {
-            setState(() {
-              _isDragging = !_isDragging;
-            });
-          },
-          // files are dropped
-          onDragDone: dropItems,
-          onDragExited: (details) {
-            setState(() {
-              _isDragging = !_isDragging;
-            });
-          },
-          enable: true,
-          child: SizedBox(
-            height: 200,
-            width: 400,
-            child: DottedBorder(
-              radius: const Radius.circular(12),
-              borderType: BorderType.RRect,
-              color: _isDragging ? kGreenColor : kLightGrayColor,
-              dashPattern: const [8, 8],
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Drag and drop image/s to analyze",
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        color: _isDragging ? kGreenColor : kTextColor,
-                      ),
-                    ),
-                  ],
-                ),
+                          case 3:
+                            dataRows[3].add(DataRow(cells: [
+                              DataCell(Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  Text("2"),
+                                ],
+                              )),
+                              DataCell(Text("1A")),
+                              DataCell(Text("Day")),
+                            ]));
+                            setState(() {
+                              dataRows;
+                            });
+                          case 4:
+                            dataRows[4].add(DataRow(cells: [
+                              DataCell(Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  Text("2"),
+                                ],
+                              )),
+                              DataCell(Text("1A")),
+                              DataCell(Text("Day")),
+                            ]));
+                            setState(() {
+                              dataRows;
+                            });
+                        }
+                      },
+                      child: Text("Add Data")),
+                ],
               ),
             ),
-          ),
+
+            // input data table editor
+            DataTable(
+              columns: dataCols[currentSelectedInput],
+              rows: dataRows[currentSelectedInput],
+              dataTextStyle: GoogleFonts.inter(),
+              headingTextStyle: GoogleFonts.inter(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ],
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Column(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: [
+  //       // select a directory feature
+  //       TextButton(
+  //         onPressed: selectDirectory,
+  //         child: Text(
+  //           "Select a folder",
+  //           style: GoogleFonts.inter(
+  //             fontSize: 16,
+  //             color: Colors.black,
+  //             decoration: TextDecoration.underline,
+  //             decorationColor: kPurpleColor,
+  //           ),
+  //         ),
+  //       ),
+
+  //       const SizedBox(
+  //         height: 16,
+  //       ),
+
+  //       // alternative option text
+  //       Text(
+  //         "or",
+  //         style: GoogleFonts.inter(
+  //           fontSize: 16,
+  //           color: kTextColor,
+  //         ),
+  //       ),
+
+  //       const SizedBox(
+  //         height: 24,
+  //       ), // drop-off area
+
+  //       DropTarget(
+  //         onDragEntered: (details) {
+  //           setState(() {
+  //             _isDragging = !_isDragging;
+  //           });
+  //         },
+  //         // files are dropped
+  //         onDragDone: dropItems,
+  //         onDragExited: (details) {
+  //           setState(() {
+  //             _isDragging = !_isDragging;
+  //           });
+  //         },
+  //         enable: true,
+  //         child: SizedBox(
+  //           height: 200,
+  //           width: 400,
+  //           child: DottedBorder(
+  //             radius: const Radius.circular(12),
+  //             borderType: BorderType.RRect,
+  //             color: _isDragging ? kGreenColor : kLightGrayColor,
+  //             dashPattern: const [8, 8],
+  //             child: Center(
+  //               child: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   Text(
+  //                     "Drag and drop image/s to analyze",
+  //                     style: GoogleFonts.inter(
+  //                       fontSize: 16,
+  //                       color: _isDragging ? kGreenColor : kTextColor,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   final List<String> requiredInputFiles = [
     "days",
@@ -182,44 +477,44 @@ class _AddInputsStepState extends State<AddInputsStep> {
     }
 
     debugPrint("Printing inputted tags");
-    for (String tag in environment.tags) {
+    for (String tag in generator.tags) {
       debugPrint(tag);
     }
 
     debugPrint("Printing inputted subjects");
-    for (var subject in environment.subjects) {
+    for (var subject in generator.subjects) {
       debugPrint(
           "${subject.id}: ${subject.name} | ${subject.units} | ${subject.tags} | ${subject.type}");
     }
 
     debugPrint("Printing inputted instructors");
-    for (var instructor in environment.instructors) {
+    for (var instructor in generator.instructors) {
       debugPrint(
           "${instructor.id}: ${instructor.name} | ${instructor.preferences} | ${instructor.tags}");
     }
 
     debugPrint("Printing inputted sections");
-    for (var section in environment.sections) {
+    for (var section in generator.sections) {
       debugPrint(
           "${section.id}: ${section.name} | ${section.subjects} | ${section.type}");
     }
 
     debugPrint("Printing inputted rooms");
-    for (var room in environment.rooms) {
+    for (var room in generator.rooms) {
       debugPrint("${room.id}: ${room.name} | ${room.type}");
     }
 
     debugPrint("Printing inputted timeslots");
-    for (var timeslot in environment.timeslots) {
+    for (var timeslot in generator.timeslots) {
       debugPrint("${timeslot.id}: ${timeslot.startTime} | ${timeslot.endTime}");
     }
 
     debugPrint("Printing inputted days");
-    for (var day in environment.days) {
+    for (var day in generator.days) {
       debugPrint("${day.id}: ${day.name}");
     }
 
-    environment.initializePopulation();
+    generator.initializePopulation();
 
     // navigateToAnalizationScreen();
     debugPrint("Done select directory feature. Proceed to analization screen.");
@@ -237,10 +532,10 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "tags") {
         debugPrint("Parsing tags data");
 
-        environment.tags.clear();
+        generator.tags.clear();
         for (var rowContent in csvContent) {
           for (var colContent in rowContent) {
-            environment.tags.add(colContent.toString().trim());
+            generator.tags.add(colContent.toString().trim());
           }
         }
       }
@@ -249,7 +544,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "subjects") {
         debugPrint("Parsing subjects data");
 
-        environment.subjects.clear();
+        generator.subjects.clear();
 
         for (var rowContent in csvContent) {
           Subject subjectToAdd = Subject();
@@ -266,7 +561,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
               ? SubjectType.lecture
               : SubjectType.lab;
 
-          environment.subjects.add(subjectToAdd);
+          generator.subjects.add(subjectToAdd);
         }
       }
 
@@ -274,7 +569,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "instructors") {
         debugPrint("Parsing instructors data");
 
-        environment.instructors.clear();
+        generator.instructors.clear();
 
         for (var rowContent in csvContent) {
           Instructor instructorToAdd = Instructor();
@@ -287,7 +582,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           instructorToAdd.tags =
               rawInstructorTags.split("-").map((e) => int.parse(e)).toList();
 
-          environment.instructors.add(instructorToAdd);
+          generator.instructors.add(instructorToAdd);
         }
       }
 
@@ -295,7 +590,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "sections") {
         debugPrint("Parsing sections data");
 
-        environment.sections.clear();
+        generator.sections.clear();
 
         for (var rowContent in csvContent) {
           Section sectionToAdd = Section();
@@ -310,7 +605,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
               ? SectionType.day
               : SectionType.night;
 
-          environment.sections.add(sectionToAdd);
+          generator.sections.add(sectionToAdd);
         }
       }
 
@@ -318,7 +613,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "rooms") {
         debugPrint("Parsing rooms data");
 
-        environment.rooms.clear();
+        generator.rooms.clear();
 
         for (var rowContent in csvContent) {
           Room roomToAdd = Room();
@@ -328,7 +623,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
               ? SubjectType.lecture
               : SubjectType.lab;
 
-          environment.rooms.add(roomToAdd);
+          generator.rooms.add(roomToAdd);
         }
       }
 
@@ -336,7 +631,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "timeslots") {
         debugPrint("Parsing timeslots data");
 
-        environment.timeslots.clear();
+        generator.timeslots.clear();
 
         for (var rowContent in csvContent) {
           Timeslot timeslotToAdd = Timeslot();
@@ -345,7 +640,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           timeslotToAdd.endTime =
               timeslotToAdd.startTime.add(Duration(hours: 1));
 
-          environment.timeslots.add(timeslotToAdd);
+          generator.timeslots.add(timeslotToAdd);
         }
       }
 
@@ -353,7 +648,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       if (getFilename(file) == "days") {
         debugPrint("Parsing days data");
 
-        environment.days.clear();
+        generator.days.clear();
 
         for (var rowContent in csvContent) {
           Day dayToAdd = Day();
@@ -361,7 +656,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           dayToAdd.id = int.parse(rowContent[0].toString());
           dayToAdd.name = rowContent[1].toString().trim();
 
-          environment.days.add(dayToAdd);
+          generator.days.add(dayToAdd);
         }
       }
     }
