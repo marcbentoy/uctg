@@ -5,7 +5,7 @@ import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step/add_instructor_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_section_dialog_widget.dart';
-import 'package:uctg/widgets/add_inputs_step/add_section_input.dart';
+import 'package:uctg/widgets/add_inputs_step/add_subject_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_tag_dialog_widget.dart';
 
 class AddInputsStep extends StatefulWidget {
@@ -181,6 +181,15 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             });
                       case 2:
                       case 3:
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(
+                                  builder: (context, innerSetState) {
+                                return AddSubjectDialogWidget(
+                                    innerSetState: innerSetState);
+                              });
+                            });
                       case 4:
                         showDialog(
                             context: context,

@@ -8,7 +8,7 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
 
   return Dialog(
     child: Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -19,9 +19,9 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // title
-          DialogTitleWidget(title: "Add new subject tag"),
+          const DialogTitleWidget(title: "Add new subject tag"),
 
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
 
@@ -29,7 +29,7 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
             child: Center(
               child: TextField(
                 controller: tagController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Tag",
                 ),
@@ -37,7 +37,7 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
             ),
           ),
 
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
 
@@ -49,12 +49,6 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
 
               currentTimetable.tags = newTags;
               isarService.saveTimetable(currentTimetable);
-
-              // dataRows[4].add(
-              //   DataRow(
-              //     cells: [DataCell(Text(tagController.text))],
-              //   ),
-              // );
             });
           }),
         ],
