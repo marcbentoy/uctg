@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/main.dart';
-import 'package:uctg/widgets/add_inputs_step.dart';
+import 'package:uctg/widgets/add_inputs_step/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
 import 'package:uctg/widgets/generation_step.dart';
 import 'package:uctg/widgets/result_step.dart';
@@ -101,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       if (timetables.isNotEmpty) {
         debugPrint("Printing tags");
-        debugPrint(timetables[currentSelectedTimetableIndex].tags.first);
+        if (timetables[currentSelectedTimetableIndex].tags.isNotEmpty) {
+          debugPrint(timetables[currentSelectedTimetableIndex].tags.first);
+        }
       }
     }
 
