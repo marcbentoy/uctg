@@ -31,25 +31,25 @@ class _TimeslotWeekSelectionWidgetState
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   TimeslotDaySelectionWidget(
-                    weekday: "Monday",
+                    weekday: "Mon",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Tuesday",
+                    weekday: "Tue",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Wednesday",
+                    weekday: "Wed",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Thursday",
+                    weekday: "Thu",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Friday",
+                    weekday: "Fri",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Saturday",
+                    weekday: "Sat",
                   ),
                   TimeslotDaySelectionWidget(
-                    weekday: "Sunday",
+                    weekday: "Sun",
                   ),
                 ],
               ),

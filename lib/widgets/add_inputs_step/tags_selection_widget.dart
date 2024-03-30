@@ -26,7 +26,6 @@ class _TagsSelectionWidgetState extends State<TagsSelectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO : update all currently selected tags of specific subject
     selectedTags = widget.currentSelectedTags;
 
     return Dialog(

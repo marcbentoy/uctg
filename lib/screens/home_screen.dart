@@ -81,6 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
         getSteps();
       });
     });
+
+    if (timetables.isNotEmpty) {
+      setState(() {
+        currentTimetable = timetables[0];
+      });
+    }
   }
 
   bool _showSidebar = true;
@@ -175,19 +181,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             textAlign: TextAlign.center,
                           ),
                         )
-                      : Stepper(
-                          steps: _steps,
-                          currentStep: _currentStep,
-                          type: StepperType.horizontal,
-                          controlsBuilder: (context, details) {
-                            return const SizedBox.shrink();
-                          },
-                          onStepTapped: (step) {
-                            setState(() {
-                              _currentStep = step;
-                            });
-                          },
-                        ),
+                      : currentTimetable.name == ""
+                          ? Center(
+                              child: Text(
+                                "Select a timetable",
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : Stepper(
+                              steps: _steps,
+                              currentStep: _currentStep,
+                              type: StepperType.horizontal,
+                              controlsBuilder: (context, details) {
+                                return const SizedBox.shrink();
+                              },
+                              onStepTapped: (step) {
+                                setState(() {
+                                  _currentStep = step;
+                                });
+                              },
+                            ),
                 ),
               ],
             ),

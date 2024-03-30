@@ -8,6 +8,6 @@ List<Timetable> timetables = [];
 late Timetable currentTimetable;
 
 void main() {
-  currentTimetable = Timetable();
+  currentTimetable = Timetable()..name = "";
   runApp(const UctgApp());
 }
