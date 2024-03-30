@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
+import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 
 class TimetableSidebarItemWidget extends StatefulWidget {
@@ -151,7 +152,8 @@ class _TimetableSidebarItemWidgetState
                             children: [
                               TextButton(
                                 onPressed: () {
-                                  widget.deleteTimetableCallback(widget.index);
+                                  widget.deleteTimetableCallback(
+                                      widget.timetable.id);
                                   Navigator.of(context).pop();
                                 },
                                 child: Text(
@@ -242,8 +244,10 @@ class _TimetableSidebarItemWidgetState
                   onPressed: () {
                     setState(() {
                       widget.timetable.name = nameController.text;
+                      isarService.saveTimetable(widget.timetable);
                     });
-                    widget.clickCallback(widget.index);
+                    widget.clickCallback(widget
+                        .index); // for updating the app bar timetable name
                     Navigator.of(context).pop();
                   },
                   child: Text(

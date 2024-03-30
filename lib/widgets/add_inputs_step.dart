@@ -201,201 +201,237 @@ class _AddInputsStepState extends State<AddInputsStep> {
     );
   }
 
-  void addSectionDataDialog() {
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return Dialog(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              width: 500,
-              height: 364,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // dialog title
-                  DialogTitleWidget(title: "Add section data"),
+  void _showMultiSelect(List<String> items, List<String> selectedItems) async {
+    final List<String>? results = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelectWidget(items: items);
+      },
+    );
 
-                  const SizedBox(
-                    height: 12,
-                  ),
-
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextField(
-                          style: GoogleFonts.inter(),
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            hintText: "Name",
-                            hintStyle: GoogleFonts.inter(),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        TextField(
-                          style: GoogleFonts.inter(),
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            hintText: "Subjects",
-                            hintStyle: GoogleFonts.inter(),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        DropdownButton(
-                          hint: Text(
-                            "Shift",
-                            style: GoogleFonts.inter(),
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: "Day",
-                              child: Text(
-                                "Day",
-                                style: GoogleFonts.inter(),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: "Night",
-                              child: Text(
-                                "Night",
-                                style: GoogleFonts.inter(),
-                              ),
-                            ),
-                          ],
-                          onChanged: (newValue) {},
-                          value: "Day",
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            showTimePreferencesDialog();
-                          },
-                          child: Text(
-                            "Timeslots",
-                            style: GoogleFonts.inter(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // dialog controls
-                  dialogRowControls(context, () {}),
-                ],
-              ),
-            ),
-          );
-        });
+    // Update UI
+    if (results != null) {
+      setState(() {
+        selectedItems = results;
+      });
+    }
   }
 
-  void showTimePreferencesDialog() {
+  void addSectionDataDialog() {
+    String selectedShiftType = "day";
+    List<String> selectedSubjects = [];
+    List<List<bool>> selectedTimeslots = [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ];
+    List<String> selectedTimeslotsText = [];
+
     showDialog(
       context: context,
       builder: (ctx) {
-        return Dialog(
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            width: 800,
-            height: 600,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  DialogTitleWidget(title: "Select time preferences"),
-                  const Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TimeslotDaySelectionWidget(
-                          weekday: "Monday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Tuesday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Wednesday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Thursday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Friday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Saturday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                        TimeslotDaySelectionWidget(
-                          weekday: "Sunday",
-                          selections: [
-                            false,
-                            false,
-                            false,
-                          ],
-                        ),
-                      ],
+        return StatefulBuilder(
+          builder: (context, innerSetState) {
+            return Dialog(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                width: 600,
+                height: 800,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // dialog title
+                    DialogTitleWidget(title: "Add section data"),
+
+                    const SizedBox(
+                      height: 16,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  dialogRowControls(
-                    context,
-                    () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextField(
+                            style: GoogleFonts.inter(),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              hintText: "Name",
+                              hintStyle: GoogleFonts.inter(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              _showMultiSelect([
+                                "math",
+                                "science",
+                                "advance math",
+                                "brocolli"
+                              ], selectedSubjects);
+                            },
+                            child: Text(
+                              "Select Subjects",
+                              style: GoogleFonts.inter(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Wrap(
+                            children: selectedSubjects.isEmpty
+                                ? [
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color:
+                                              kLightGrayColor.withOpacity(0.2),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "No subject selected yet",
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                    )
+                                  ]
+                                : selectedSubjects
+                                    .map(
+                                      (e) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Chip(
+                                          label: Text(
+                                            e,
+                                            style: GoogleFonts.inter(),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                "Section's shift: ",
+                                style: GoogleFonts.inter(),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              SelectionWidget(
+                                  options: ["day", "night"],
+                                  selected: selectedShiftType,
+                                  selectionCallback: (String value) {
+                                    innerSetState(() {
+                                      selectedShiftType = value;
+                                    });
+                                  }),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              showTimePreferencesDialog();
+                            },
+                            child: Text(
+                              "Select Timeslots",
+                              style: GoogleFonts.inter(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Wrap(
+                            children: selectedTimeslots.isEmpty
+                                ? [
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color:
+                                              kLightGrayColor.withOpacity(0.2),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "No timeslots selected yet",
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                    )
+                                  ]
+                                : selectedTimeslotsText
+                                    .map((e) => Text(
+                                          e,
+                                          style: GoogleFonts.inter(),
+                                        ))
+                                    .toList(),
+                          )
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+
+                    // dialog controls
+                    dialogRowControls(context, () {}),
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
+  }
+
+  Future<List<List<bool>>> showTimePreferencesDialog() async {
+    List<List<bool>> selectedTimeslots = [
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+      [false, false, false],
+    ];
+
+    void CheckboxCallback() {}
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, innerSetState) {
+            return Dialog(
+              child: TimesloWeekSelectionWidget(),
+            );
+          },
+        );
+      },
+    );
+
+    return selectedTimeslots;
   }
 
   void addTagDataDialog() {
@@ -700,14 +736,82 @@ Widget dialogRowControls(BuildContext context, Function saveClickFunction) {
   );
 }
 
+class TimesloWeekSelectionWidget extends StatefulWidget {
+  const TimesloWeekSelectionWidget({super.key});
+
+  @override
+  State<TimesloWeekSelectionWidget> createState() =>
+      _TimesloWeekSelectionWidgetState();
+}
+
+class _TimesloWeekSelectionWidgetState
+    extends State<TimesloWeekSelectionWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      width: 800,
+      height: 600,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TimeslotDaySelectionWidget(
+                    weekday: "Monday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Tuesday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Wednesday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Thursday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Friday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Saturday",
+                  ),
+                  TimeslotDaySelectionWidget(
+                    weekday: "Sunday",
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            dialogRowControls(
+              context,
+              () {
+                Navigator.pop(
+                  context,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class TimeslotDaySelectionWidget extends StatefulWidget {
   final String weekday;
-  final List<bool> selections;
 
   const TimeslotDaySelectionWidget({
     super.key,
     required this.weekday,
-    required this.selections,
   });
 
   @override
@@ -717,42 +821,59 @@ class TimeslotDaySelectionWidget extends StatefulWidget {
 
 class _TimeslotDaySelectionWidgetState
     extends State<TimeslotDaySelectionWidget> {
+  List<bool> selectedTimeslots = [false, false, false];
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.all(2.0),
         child: Column(
           children: [
             Text(
               widget.weekday,
-              style: GoogleFonts.inter(),
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(
               height: 8,
             ),
             Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    widget.selections[0] = !widget.selections[0];
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: widget.selections[0] ? Colors.blue : Colors.white,
-                  ),
-                  child: Center(
-                    child: Text(
-                      "7AM-12PM",
-                      style: GoogleFonts.inter(
-                        color: widget.selections[0]
-                            ? Colors.white
-                            : const Color(0xff2e2e2e),
-                      ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: selectedTimeslots[0] ? Colors.blue : Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          focusColor: Colors.white,
+                          activeColor: kDarkGrayColor,
+                          value: selectedTimeslots[0],
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTimeslots[0] = !selectedTimeslots[0];
+                            });
+                          },
+                        ),
+                        Text(
+                          "7AM-12PM",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            color: selectedTimeslots[0]
+                                ? Colors.white
+                                : const Color(0xff2e2e2e),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -760,27 +881,40 @@ class _TimeslotDaySelectionWidgetState
               height: 20,
             ),
             Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    widget.selections[1] = !widget.selections[1];
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: widget.selections[1] ? Colors.blue : Colors.white,
-                  ),
-                  child: Center(
-                    child: Text(
-                      "1PM-4PM",
-                      style: GoogleFonts.inter(
-                        color: widget.selections[1]
-                            ? Colors.white
-                            : const Color(0xff2e2e2e),
-                      ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: selectedTimeslots[1] ? Colors.blue : Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          activeColor: kDarkGrayColor,
+                          focusColor: Colors.white,
+                          value: selectedTimeslots[1],
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTimeslots[1] = !selectedTimeslots[1];
+                            });
+                          },
+                        ),
+                        Text(
+                          "1PM-4PM",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            color: selectedTimeslots[1]
+                                ? Colors.white
+                                : const Color(0xff2e2e2e),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -788,31 +922,39 @@ class _TimeslotDaySelectionWidgetState
               height: 10,
             ),
             Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    widget.selections[2] = !widget.selections[2];
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: widget.selections[2] ? Colors.blue : Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Text(
-                        "4:30PM-9:30PM",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          color: widget.selections[2]
-                              ? Colors.white
-                              : const Color(0xff2e2e2e),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: selectedTimeslots[2] ? Colors.blue : Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          value: selectedTimeslots[2],
+                          activeColor: kDarkGrayColor,
+                          focusColor: Colors.white,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedTimeslots[2] = !selectedTimeslots[2];
+                            });
+                          },
                         ),
-                      ),
+                        Text(
+                          "4:30PM-\n9:30PM",
+                          style: GoogleFonts.inter(
+                            color: selectedTimeslots[2]
+                                ? Colors.white
+                                : const Color(0xff2e2e2e),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -924,6 +1066,68 @@ class _AddRoomDataWidgetState extends State<AddRoomDataWidget> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class MultiSelectWidget extends StatefulWidget {
+  final List<String> items;
+
+  const MultiSelectWidget({super.key, required this.items});
+
+  @override
+  State<StatefulWidget> createState() => _MultiSelectWidgetState();
+}
+
+class _MultiSelectWidgetState extends State<MultiSelectWidget> {
+  final List<String> _selectedItems = [];
+
+  void _itemChange(String itemValue, bool isSelected) {
+    setState(() {
+      if (isSelected) {
+        _selectedItems.add(itemValue);
+      } else {
+        _selectedItems.remove(itemValue);
+      }
+    });
+  }
+
+  void _cancel() {
+    Navigator.pop(context);
+  }
+
+  void _submit() {
+    Navigator.pop(context, _selectedItems);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: DialogTitleWidget(
+        title: "Select subjects",
+      ),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: widget.items
+              .map((item) => CheckboxListTile(
+                    value: _selectedItems.contains(item),
+                    title: Text(item),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    onChanged: (isChecked) => _itemChange(item, isChecked!),
+                  ))
+              .toList(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _cancel,
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _submit,
+          child: const Text('Submit'),
+        ),
+      ],
     );
   }
 }

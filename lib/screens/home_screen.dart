@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
@@ -25,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    isarService.listenToTimetables().listen((event) {
+      setState(() {
+        timetables = event;
+      });
+    });
+
     _steps = [
       // add input step
       Step(
@@ -93,10 +100,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     void onDeleteTimetableCallback(int value) {
+      isarService.deleteTimetable(value);
       setState(() {
-        timetables.removeAt(value);
         currentSelectedTimetableIndex = 0;
       });
+      debugPrint("Deletion process done.");
+      for (var t in timetables) {
+        debugPrint(t.name);
+      }
     }
 
     return Scaffold(

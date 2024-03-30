@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
+import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/timetable_sidebar_item_widget.dart';
 
@@ -64,16 +65,32 @@ class _CustomSidebarState extends State<CustomSidebar> {
 
           // timetables
           Expanded(
-            child: ListView.builder(
-              itemCount: widget.timetables.length,
-              itemBuilder: (ctx, index) {
-                return TimetableSidebarItemWidget(
-                    deleteTimetableCallback: widget.deleteTimetableCallback,
-                    timetable: widget.timetables[index],
-                    currentSelectedTimetableIndex:
-                        widget.currentSelectedTimetableIndex,
-                    index: index,
-                    clickCallback: widget.onItemSelected);
+            child: StreamBuilder<List<Timetable>>(
+              stream: isarService.listenToTimetables(),
+              builder: (context, snapshot) {
+                return snapshot.hasData
+                    ? ListView.builder(
+                        itemCount: snapshot.data?.length,
+                        itemBuilder: (context, index) {
+                          return TimetableSidebarItemWidget(
+                              deleteTimetableCallback:
+                                  widget.deleteTimetableCallback,
+                              timetable: widget.timetables[index],
+                              currentSelectedTimetableIndex:
+                                  widget.currentSelectedTimetableIndex,
+                              index: index,
+                              clickCallback: widget.onItemSelected);
+                        },
+                      )
+                    : SizedBox.shrink();
+
+                // return TimetableSidebarItemWidget(
+                //     currentSelectedTimetableIndex:
+                //         widget.currentSelectedTimetableIndex,
+                //     index: ,
+                //     clickCallback: clickCallback,
+                //     timetable: timetable,
+                //     deleteTimetableCallback: widget.deleteTimetableCallback);
               },
             ),
           ),
@@ -82,10 +99,13 @@ class _CustomSidebarState extends State<CustomSidebar> {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
+                isarService.saveTimetable(Timetable());
+
                 widget.timetables.add(Timetable());
                 setState(() {
                   widget.timetables;
                 });
+
                 widget.newTimetableClickCallback(widget.timetables.length - 1);
               },
               child: Container(
