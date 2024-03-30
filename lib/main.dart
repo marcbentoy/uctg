@@ -4,12 +4,10 @@ import 'package:uctg/isar_service.dart';
 import 'package:uctg/models/timetable.dart';
 
 IsarService isarService = IsarService();
+List<Timetable> timetables = [];
+late Timetable currentTimetable;
 
 void main() {
-  isarService.getAllTimetables().then((value) {
-    for (Timetable t in value) {
-      debugPrint(t.name);
-    }
-  });
+  currentTimetable = Timetable();
   runApp(const UctgApp());
 }

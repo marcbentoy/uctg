@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
+import 'package:uctg/main.dart';
+import 'package:uctg/models/timetable.dart';
 
 class AddInputsStep extends StatefulWidget {
-  const AddInputsStep({super.key});
+  const AddInputsStep({
+    super.key,
+  });
 
   @override
   State<AddInputsStep> createState() => _AddInputsStepState();
@@ -121,19 +122,6 @@ class _AddInputsStepState extends State<AddInputsStep> {
     ],
   ];
 
-  List<List<DataRow>> dataRows = [
-    // section
-    [],
-    // instructor
-    [],
-    // room
-    [],
-    // subject
-    [],
-    // tag
-    [],
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -181,6 +169,11 @@ class _AddInputsStepState extends State<AddInputsStep> {
                         addTagDataDialog();
                     }
                   },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                      kLightGrayColor,
+                    ),
+                  ),
                   child: const Text("Add Data"),
                 ),
               ],
@@ -189,7 +182,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
             // input data table editor
             DataTable(
               columns: dataCols[currentSelectedInput],
-              rows: dataRows[currentSelectedInput],
+              rows: getRowsData(),
               dataTextStyle: GoogleFonts.inter(),
               headingTextStyle: GoogleFonts.inter(
                 fontWeight: FontWeight.bold,
@@ -199,6 +192,78 @@ class _AddInputsStepState extends State<AddInputsStep> {
         ),
       ],
     );
+  }
+
+  List<DataRow> getRowsData() {
+    switch (currentSelectedInput) {
+      // sections
+      case 0:
+        return currentTimetable.sections.map((e) {
+          String subjects = "";
+          String timeslotsCodes = "";
+
+          for (var s in e.subjects) {
+            subjects += "${s.name}, ";
+          }
+          for (var s in e.timeslots) {
+            timeslotsCodes += "${s.timeCode}, ";
+          }
+
+          return DataRow(cells: [
+            DataCell(Text(e.name)),
+            DataCell(Text(subjects)),
+            DataCell(Text(e.shift)),
+            DataCell(Text(timeslotsCodes)),
+          ]);
+        }).toList();
+      // instructors
+      case 1:
+        return currentTimetable.instructors.map((e) {
+          String timePreferences = "";
+          String expertise = "";
+
+          for (var t in e.timePreferences) {
+            timePreferences += "${t.timeCode}, ";
+          }
+          for (var ex in e.expertise) {
+            timePreferences += "$ex, ";
+          }
+
+          return DataRow(cells: [
+            DataCell(Text(e.name)),
+            DataCell(Text(timePreferences)),
+            DataCell(Text(expertise)),
+          ]);
+        }).toList();
+      // rooms
+      case 2:
+        return currentTimetable.rooms
+            .map((e) => DataRow(cells: [
+                  DataCell(Text(e.name)),
+                  DataCell(
+                      Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
+                ]))
+            .toList();
+      // subjects
+      case 3:
+        return currentTimetable.subjects.map((e) {
+          String subjectTags = "";
+          for (var t in e.tags) {
+            subjectTags += "$t, ";
+          }
+          return DataRow(cells: [
+            DataCell(Text(e.name)),
+            DataCell(Text(subjectTags)),
+            DataCell(Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
+          ]);
+        }).toList();
+      // tags
+      case 4:
+        return currentTimetable.tags
+            .map((e) => DataRow(cells: [DataCell(Text(e))]))
+            .toList();
+    }
+    return [];
   }
 
   void _showMultiSelect(List<String> items, List<String> selectedItems) async {
@@ -273,12 +338,11 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              _showMultiSelect([
-                                "math",
-                                "science",
-                                "advance math",
-                                "brocolli"
-                              ], selectedSubjects);
+                              _showMultiSelect(
+                                  currentTimetable.subjects
+                                      .map((e) => e.name)
+                                      .toList(),
+                                  selectedSubjects);
                             },
                             child: Text(
                               "Select Subjects",
@@ -478,11 +542,17 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   // controls
                   dialogRowControls(context, () {
                     setState(() {
-                      dataRows[4].add(
-                        DataRow(
-                          cells: [DataCell(Text(tagController.text))],
-                        ),
-                      );
+                      var newTags = List<String>.from(currentTimetable.tags);
+                      newTags.add(tagController.text);
+
+                      currentTimetable.tags = newTags;
+                      isarService.saveTimetable(currentTimetable);
+
+                      // dataRows[4].add(
+                      //   DataRow(
+                      //     cells: [DataCell(Text(tagController.text))],
+                      //   ),
+                      // );
                     });
                   }),
                 ],
@@ -610,12 +680,12 @@ class _AddInputsStepState extends State<AddInputsStep> {
                       context,
                       () {
                         setState(() {
-                          dataRows[2].add(
-                            DataRow(cells: [
-                              DataCell(Text(roomNameController.text)),
-                              DataCell(Text(selectedRoomType)),
-                            ]),
-                          );
+                          // dataRows[2].add(
+                          //   DataRow(cells: [
+                          //     DataCell(Text(roomNameController.text)),
+                          //     DataCell(Text(selectedRoomType)),
+                          //   ]),
+                          // );
                         });
                       },
                     ),

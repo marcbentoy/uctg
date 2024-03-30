@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/main.dart';
-import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
 import 'package:uctg/widgets/generation_step.dart';
@@ -19,19 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentStep = 0; // Variable to track current step
   List<Step> _steps = []; // List of steps
 
-  List<Timetable> timetables = [];
-
   int currentSelectedTimetableIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    isarService.listenToTimetables().listen((event) {
-      setState(() {
-        timetables = event;
-      });
-    });
-
+  void getSteps() {
     _steps = [
       // add input step
       Step(
@@ -39,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Add Inputs',
           style: GoogleFonts.inter(),
         ),
-        content: AddInputsStep(),
+        content: timetables.isEmpty ? SizedBox.shrink() : AddInputsStep(),
         isActive: true,
       ),
 
@@ -83,6 +72,17 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
+  @override
+  void initState() {
+    super.initState();
+    isarService.listenToTimetables().listen((event) {
+      setState(() {
+        timetables = event;
+        getSteps();
+      });
+    });
+  }
+
   bool _showSidebar = true;
 
   @override
@@ -90,6 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
     void onItemSelectedCallback(int value) {
       setState(() {
         currentSelectedTimetableIndex = value;
+        currentTimetable = timetables[currentSelectedTimetableIndex];
+        getSteps();
       });
     }
 
@@ -97,6 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         currentSelectedTimetableIndex = value;
       });
+      if (timetables.isNotEmpty) {
+        debugPrint("Printing tags");
+        debugPrint(timetables[currentSelectedTimetableIndex].tags.first);
+      }
     }
 
     void onDeleteTimetableCallback(int value) {
@@ -120,7 +126,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   deleteTimetableCallback: onDeleteTimetableCallback,
                   newTimetableClickCallback: onNewTimetableClick,
                   currentSelectedTimetableIndex: currentSelectedTimetableIndex,
-                  timetables: timetables,
                   onItemSelected: onItemSelectedCallback,
                 )
               : const SizedBox.shrink(),
@@ -144,7 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     // timetable title
                     Text(
-                      timetables.isEmpty
+                      (timetables.isEmpty ||
+                              currentSelectedTimetableIndex == -1)
                           ? "No timetables"
                           : timetables[currentSelectedTimetableIndex].name,
                       style: GoogleFonts.inter(

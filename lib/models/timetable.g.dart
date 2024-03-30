@@ -76,6 +76,17 @@ const TimetableSchema = CollectionSchema(
       name: r'sections',
       type: IsarType.objectList,
       target: r'Section',
+    ),
+    r'subjects': PropertySchema(
+      id: 11,
+      name: r'subjects',
+      type: IsarType.objectList,
+      target: r'Subject',
+    ),
+    r'tags': PropertySchema(
+      id: 12,
+      name: r'tags',
+      type: IsarType.stringList,
     )
   },
   estimateSize: _timetableEstimateSize,
@@ -143,6 +154,21 @@ int _timetableEstimateSize(
       bytesCount += SectionSchema.estimateSize(value, offsets, allOffsets);
     }
   }
+  bytesCount += 3 + object.subjects.length * 3;
+  {
+    final offsets = allOffsets[Subject]!;
+    for (var i = 0; i < object.subjects.length; i++) {
+      final value = object.subjects[i];
+      bytesCount += SubjectSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
+  bytesCount += 3 + object.tags.length * 3;
+  {
+    for (var i = 0; i < object.tags.length; i++) {
+      final value = object.tags[i];
+      bytesCount += value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -188,6 +214,13 @@ void _timetableSerialize(
     SectionSchema.serialize,
     object.sections,
   );
+  writer.writeObjectList<Subject>(
+    offsets[11],
+    allOffsets,
+    SubjectSchema.serialize,
+    object.subjects,
+  );
+  writer.writeStringList(offsets[12], object.tags);
 }
 
 Timetable _timetableDeserialize(
@@ -238,6 +271,14 @@ Timetable _timetableDeserialize(
         Section(),
       ) ??
       [];
+  object.subjects = reader.readObjectList<Subject>(
+        offsets[11],
+        SubjectSchema.deserialize,
+        allOffsets,
+        Subject(),
+      ) ??
+      [];
+  object.tags = reader.readStringList(offsets[12]) ?? [];
   return object;
 }
 
@@ -299,6 +340,16 @@ P _timetableDeserializeProp<P>(
             Section(),
           ) ??
           []) as P;
+    case 11:
+      return (reader.readObjectList<Subject>(
+            offset,
+            SubjectSchema.deserialize,
+            allOffsets,
+            Subject(),
+          ) ??
+          []) as P;
+    case 12:
+      return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1259,6 +1310,313 @@ extension TimetableQueryFilter
       );
     });
   }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      subjectsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'subjects',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      tagsElementGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'tags',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      tagsElementStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'tags',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsElementMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'tags',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      tagsElementIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'tags',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      tagsElementIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'tags',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      tagsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> tagsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'tags',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
 }
 
 extension TimetableQueryObject
@@ -1295,6 +1653,13 @@ extension TimetableQueryObject
       FilterQuery<Section> q) {
     return QueryBuilder.apply(this, (query) {
       return query.object(q, r'sections');
+    });
+  }
+
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition> subjectsElement(
+      FilterQuery<Subject> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'subjects');
     });
   }
 }
@@ -1477,6 +1842,12 @@ extension TimetableQueryWhereDistinct
       return query.addDistinctBy(r'populationSize');
     });
   }
+
+  QueryBuilder<Timetable, Timetable, QDistinct> distinctByTags() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'tags');
+    });
+  }
 }
 
 extension TimetableQueryProperty
@@ -1554,6 +1925,18 @@ extension TimetableQueryProperty
   QueryBuilder<Timetable, List<Section>, QQueryOperations> sectionsProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'sections');
+    });
+  }
+
+  QueryBuilder<Timetable, List<Subject>, QQueryOperations> subjectsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'subjects');
+    });
+  }
+
+  QueryBuilder<Timetable, List<String>, QQueryOperations> tagsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'tags');
     });
   }
 }
@@ -2777,14 +3160,19 @@ const SectionSchema = Schema(
       name: r'name',
       type: IsarType.string,
     ),
-    r'subjects': PropertySchema(
+    r'shift': PropertySchema(
       id: 1,
+      name: r'shift',
+      type: IsarType.string,
+    ),
+    r'subjects': PropertySchema(
+      id: 2,
       name: r'subjects',
       type: IsarType.objectList,
       target: r'Subject',
     ),
     r'timeslots': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'timeslots',
       type: IsarType.objectList,
       target: r'Timeslot',
@@ -2803,6 +3191,7 @@ int _sectionEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.shift.length * 3;
   bytesCount += 3 + object.subjects.length * 3;
   {
     final offsets = allOffsets[Subject]!;
@@ -2829,14 +3218,15 @@ void _sectionSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.name);
+  writer.writeString(offsets[1], object.shift);
   writer.writeObjectList<Subject>(
-    offsets[1],
+    offsets[2],
     allOffsets,
     SubjectSchema.serialize,
     object.subjects,
   );
   writer.writeObjectList<Timeslot>(
-    offsets[2],
+    offsets[3],
     allOffsets,
     TimeslotSchema.serialize,
     object.timeslots,
@@ -2851,15 +3241,16 @@ Section _sectionDeserialize(
 ) {
   final object = Section();
   object.name = reader.readString(offsets[0]);
+  object.shift = reader.readString(offsets[1]);
   object.subjects = reader.readObjectList<Subject>(
-        offsets[1],
+        offsets[2],
         SubjectSchema.deserialize,
         allOffsets,
         Subject(),
       ) ??
       [];
   object.timeslots = reader.readObjectList<Timeslot>(
-        offsets[2],
+        offsets[3],
         TimeslotSchema.deserialize,
         allOffsets,
         Timeslot(),
@@ -2878,6 +3269,8 @@ P _sectionDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
       return (reader.readObjectList<Subject>(
             offset,
             SubjectSchema.deserialize,
@@ -2885,7 +3278,7 @@ P _sectionDeserializeProp<P>(
             Subject(),
           ) ??
           []) as P;
-    case 2:
+    case 3:
       return (reader.readObjectList<Timeslot>(
             offset,
             TimeslotSchema.deserialize,
@@ -3025,6 +3418,136 @@ extension SectionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'name',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'shift',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'shift',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'shift',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'shift',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Section, Section, QAfterFilterCondition> shiftIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'shift',
         value: '',
       ));
     });
@@ -3878,6 +4401,11 @@ const TimeslotSchema = Schema(
       id: 1,
       name: r'startTime',
       type: IsarType.dateTime,
+    ),
+    r'timeCode': PropertySchema(
+      id: 2,
+      name: r'timeCode',
+      type: IsarType.string,
     )
   },
   estimateSize: _timeslotEstimateSize,
@@ -3892,6 +4420,7 @@ int _timeslotEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.timeCode.length * 3;
   return bytesCount;
 }
 
@@ -3903,6 +4432,7 @@ void _timeslotSerialize(
 ) {
   writer.writeDateTime(offsets[0], object.endTime);
   writer.writeDateTime(offsets[1], object.startTime);
+  writer.writeString(offsets[2], object.timeCode);
 }
 
 Timeslot _timeslotDeserialize(
@@ -3914,6 +4444,7 @@ Timeslot _timeslotDeserialize(
   final object = Timeslot();
   object.endTime = reader.readDateTime(offsets[0]);
   object.startTime = reader.readDateTime(offsets[1]);
+  object.timeCode = reader.readString(offsets[2]);
   return object;
 }
 
@@ -3928,6 +4459,8 @@ P _timeslotDeserializeProp<P>(
       return (reader.readDateTime(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -4037,6 +4570,136 @@ extension TimeslotQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'timeCode',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'timeCode',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'timeCode',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'timeCode',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Timeslot, Timeslot, QAfterFilterCondition> timeCodeIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'timeCode',
+        value: '',
       ));
     });
   }

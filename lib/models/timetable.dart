@@ -14,6 +14,7 @@ class Timetable {
   List<Section> sections = [];
   List<Instructor> instructors = [];
   List<Room> rooms = [];
+  List<Subject> subjects = [];
 
   // configurations
   int populationSize = 100;
@@ -24,6 +25,7 @@ class Timetable {
   Individual fittestIndividual = Individual();
   List<int> generationHistory = [];
   List<Individual> population = [];
+  List<String> tags = [];
 
   Timetable();
 }
@@ -50,6 +52,7 @@ class Section {
   String name = "";
   List<Subject> subjects = [];
   List<Timeslot> timeslots = [];
+  String shift = "day";
 }
 
 @embedded
@@ -69,6 +72,7 @@ enum SubjectType {
 
 @embedded
 class Timeslot {
+  String timeCode = "T";
   DateTime startTime = DateTime.parse("2024-01-01");
   DateTime endTime = DateTime.parse("2024-01-01");
 }
