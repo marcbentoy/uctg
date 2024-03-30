@@ -289,6 +289,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           return DataRow(cells: [
             DataCell(Text(e.name)),
             DataCell(Text(subjectTags)),
+            DataCell(Text(e.units.toString())),
             DataCell(Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
           ]);
         }).toList();

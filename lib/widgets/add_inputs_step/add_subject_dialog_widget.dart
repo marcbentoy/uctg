@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
+import 'package:uctg/main.dart';
+import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/input_utils.dart';
 import 'package:uctg/widgets/add_inputs_step/selection_widget.dart';
@@ -102,8 +104,7 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
                         : selectedTags
                             .map(
                               (e) => Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
+                                padding: const EdgeInsets.all(4),
                                 child: Chip(
                                   label: Text(
                                     e,
@@ -156,7 +157,22 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
             ),
 
             // controls
-            dialogRowControls(context, () {}),
+            dialogRowControls(context, () {
+              Subject subjectToAdd = Subject();
+              subjectToAdd.name = nameController.text;
+              subjectToAdd.tags = selectedTags;
+              subjectToAdd.units = int.parse(unitsController.text);
+              subjectToAdd.type = selectedType == "lecture"
+                  ? SubjectType.lecture
+                  : SubjectType.lab;
+
+              var newSubjects = List<Subject>.from(currentTimetable.subjects);
+              newSubjects.add(subjectToAdd);
+
+              currentTimetable.subjects = newSubjects;
+
+              isarService.saveTimetable(currentTimetable);
+            }),
           ],
         ),
       ),
