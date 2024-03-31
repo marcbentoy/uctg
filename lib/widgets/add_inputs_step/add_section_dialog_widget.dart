@@ -52,7 +52,10 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
-                hour: startTime.hour + Duration(hours: j).inHours,
+                hour: startTime.hour + Duration(hours: hour).inHours,
+              );
+              t.endTime = t.startTime.copyWith(
+                hour: Duration(hours: t.startTime.hour + 1).inHours,
               );
               t.timeCode = "T$i$hour";
               timeslots.add(t);
@@ -60,11 +63,14 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
           // afternoon timeslots
           case 1:
-            for (int hour = 6; hour < 16; hour++) {
+            for (int hour = 6; hour < 10; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
-                hour: startTime.hour + Duration(hours: j).inHours,
+                hour: startTime.hour + Duration(hours: hour).inHours,
+              );
+              t.endTime = t.startTime.copyWith(
+                hour: Duration(hours: t.startTime.hour + 1).inHours,
               );
               t.timeCode = "T$i$hour";
               timeslots.add(t);
@@ -72,11 +78,15 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
           // evening timeslots
           case 2:
-            for (int hour = 16; hour < 21; hour++) {
+            for (int hour = 9; hour < 14; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
-                hour: startTime.hour + Duration(hours: j).inHours,
+                hour: startTime.hour + Duration(hours: hour).inHours,
+                minute: startTime.minute + Duration(minutes: 30).inMinutes,
+              );
+              t.endTime = t.startTime.copyWith(
+                hour: Duration(hours: t.startTime.hour + 1).inHours,
               );
               t.timeCode = "T$i$hour";
               timeslots.add(t);

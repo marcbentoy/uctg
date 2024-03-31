@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timetable_view/timetable_view.dart';
@@ -55,9 +53,33 @@ class ResultStepState extends State<ResultStep> {
   }
 
   void updateEvents() {
-    // for (var s in currentTimetable.fittestIndividual.schedules) {
-    //   s.
-    // }
+    events.clear();
+
+    int id = 0;
+    for (var s in currentTimetable.fittestIndividual.schedules) {
+      switch (selectedView) {
+        case "section":
+          events.add(
+            TableEvent(
+              title: s.subject.name,
+              eventId: id,
+              laneIndex: s.timeslot.startTime.day - 1,
+              startTime: TableEventTime(
+                hour: s.timeslot.startTime.hour,
+                minute: 0,
+              ),
+              endTime: TableEventTime(
+                hour: s.timeslot.endTime.hour,
+                minute: 0,
+              ),
+            ),
+          );
+        case "instructor":
+        case "room":
+      }
+
+      id++;
+    }
   }
 
   String selectedView = "section";
@@ -138,7 +160,7 @@ class ResultStepState extends State<ResultStep> {
                     "View as: ",
                     style: GoogleFonts.inter(),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
                   SelectionWidget(
@@ -151,7 +173,7 @@ class ResultStepState extends State<ResultStep> {
                     },
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   // selection value
@@ -160,7 +182,7 @@ class ResultStepState extends State<ResultStep> {
                     style: GoogleFonts.inter(),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: 4,
                   ),
 
@@ -222,7 +244,7 @@ class ResultStepState extends State<ResultStep> {
                             : selectedRoom.name),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: 24,
                   ),
                   // export icon
@@ -231,14 +253,14 @@ class ResultStepState extends State<ResultStep> {
                     onPressed: () {
                       // TODO : export timetable as csv
                     },
-                    icon: Icon(Icons.upload_file_rounded),
+                    icon: const Icon(Icons.upload_file_rounded),
                   ),
                 ],
               ),
             ],
           ),
         ]),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         ConstrainedBox(
