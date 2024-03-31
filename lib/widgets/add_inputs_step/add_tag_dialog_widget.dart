@@ -44,13 +44,13 @@ Widget addTagDataDialogWidget(
           ),
 
           // controls
-          dialogRowControls(context, () async {
-            innerSetState(() async {
+          dialogRowControls(context, () {
+            innerSetState(() {
               var newTags = List<String>.from(currentTimetable.tags);
               newTags.add(tagController.text);
 
               currentTimetable.tags = newTags;
-              await isarService.saveTimetable(currentTimetable);
+              isarService.saveTimetable(currentTimetable);
             });
           }),
         ],
