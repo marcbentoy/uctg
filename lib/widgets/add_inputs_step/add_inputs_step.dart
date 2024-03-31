@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -232,17 +233,14 @@ class _AddInputsStepState extends State<AddInputsStep> {
               Container(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: dataCols[currentSelectedInput],
-                        rows: getRowsData(),
-                        dataTextStyle: GoogleFonts.inter(),
-                        headingTextStyle: GoogleFonts.inter(
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: dataCols[currentSelectedInput],
+                      rows: getRowsData(),
+                      dataTextStyle: GoogleFonts.inter(),
+                      headingTextStyle: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -292,7 +290,13 @@ class _AddInputsStepState extends State<AddInputsStep> {
 
           return DataRow(cells: [
             DataCell(Text(e.name)),
-            DataCell(Text(timePreferences)),
+            DataCell(SizedBox(
+              width: 256,
+              child: Text(
+                timePreferences,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )),
             DataCell(Text(expertise)),
           ]);
         }).toList();

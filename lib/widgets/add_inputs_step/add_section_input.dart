@@ -156,7 +156,7 @@ class _AddSectionDataDialogState extends State<AddSectionDataDialog> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          showTimePreferencesDialog(context);
+                          // showTimePreferencesDialog(context);
                         },
                         child: Text(
                           "Select Timeslots",

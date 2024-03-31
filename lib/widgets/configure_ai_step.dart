@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uctg/main.dart';
 
 class ConfigureAiStep extends StatefulWidget {
   const ConfigureAiStep({super.key});
@@ -9,10 +11,16 @@ class ConfigureAiStep extends StatefulWidget {
 }
 
 class _ConfigureAiStepState extends State<ConfigureAiStep> {
+  double mutationRate = 0.01;
+  TextEditingController populationSizeController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    mutationRate = currentTimetable.mutationRate;
+    populationSizeController.text = currentTimetable.populationSize.toString();
+
     return Center(
-      child: Container(
+      child: SizedBox(
         width: 456,
         height: 400,
         child: Column(
@@ -20,7 +28,7 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
           children: [
             // dialog header
             Text(
-              "App Configuration",
+              "AI Generator Configuration",
               style: GoogleFonts.inter(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -37,9 +45,8 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
-                  // mainAxisSize: MainAxisSize.max,
                   children: [
-                    // threhold value configuration
+                    // mutation rate
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -47,7 +54,7 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                         Expanded(
                           flex: 3,
                           child: Text(
-                            "Blur threshold",
+                            "Mutation Rate",
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.black,
@@ -60,13 +67,19 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                           flex: 4,
                           child: Slider(
                             onChanged: (value) {
-                              // setState(() {
-                              //   newBlurThreshold = value;
-                              // });
+                              setState(() {
+                                mutationRate = value;
+                                currentTimetable.mutationRate = mutationRate;
+                              });
                             },
-                            value: 12,
-                            min: 0,
-                            max: 25,
+                            onChangeEnd: (value) {
+                              setState(() {
+                                isarService.saveTimetable(currentTimetable);
+                              });
+                            },
+                            value: mutationRate,
+                            min: 0.01,
+                            max: 0.3,
                           ),
                         ),
 
@@ -74,8 +87,7 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                         Expanded(
                           flex: 1,
                           child: Text(
-                            // newBlurThreshold.toStringAsFixed(2),
-                            "12",
+                            mutationRate.toStringAsFixed(2),
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.black,
@@ -85,80 +97,34 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                       ],
                     ),
 
-                    // image placement option
+                    // mutation rate
                     Row(
+                      mainAxisSize: MainAxisSize.max,
                       children: [
+                        // configuration name
                         Expanded(
                           flex: 3,
                           child: Text(
-                            "Image placement",
+                            "Population Size",
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.black,
                             ),
                           ),
                         ),
-                      ],
-                    ),
 
-                    // play confetti option
-                    Row(
-                      children: [
-                        // label
+                        // configuration modifier
                         Expanded(
-                          flex: 3,
-                          child: Text(
-                            "Play confetti",
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        // value
-                        Expanded(
-                          flex: 5,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Checkbox(
-                              value: true,
-                              onChanged: (value) {
-                                // setState(() {
-                                //   newPlayConfettiAnimation = value!;
-                                // });
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // play sound option
-                    Row(
-                      children: [
-                        // label
-                        Expanded(
-                          flex: 3,
-                          child: Text(
-                            "Play sound",
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        // value
-                        Expanded(
-                          flex: 5,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Checkbox(
-                              value: true,
-                              onChanged: (value) {
-                                // setState(() {
-                                //   newPlaySound = value!;
-                                // });
-                              },
+                          flex: 4,
+                          child: TextField(
+                            controller: populationSizeController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: "size ex. 100",
                             ),
                           ),
                         ),

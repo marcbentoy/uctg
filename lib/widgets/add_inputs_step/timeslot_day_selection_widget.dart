@@ -3,11 +3,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
 
 class TimeslotDaySelectionWidget extends StatefulWidget {
+  final List<bool> currentSelectedTimeslots;
   final String weekday;
+  final int index;
+  final void Function(int, List<bool>) onChangedCallback;
 
   const TimeslotDaySelectionWidget({
     super.key,
     required this.weekday,
+    required this.onChangedCallback,
+    required this.currentSelectedTimeslots,
+    required this.index,
   });
 
   @override
@@ -17,10 +23,12 @@ class TimeslotDaySelectionWidget extends StatefulWidget {
 
 class _TimeslotDaySelectionWidgetState
     extends State<TimeslotDaySelectionWidget> {
-  List<bool> selectedTimeslots = [false, false, false];
+  List<bool> selectedTimeslots = [];
 
   @override
   Widget build(BuildContext context) {
+    selectedTimeslots = widget.currentSelectedTimeslots;
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(2.0),
@@ -56,6 +64,10 @@ class _TimeslotDaySelectionWidgetState
                             setState(() {
                               selectedTimeslots[0] = !selectedTimeslots[0];
                             });
+                            widget.onChangedCallback(
+                              widget.index,
+                              selectedTimeslots,
+                            );
                           },
                         ),
                         Text(
@@ -73,8 +85,30 @@ class _TimeslotDaySelectionWidgetState
                 ),
               ),
             ),
-            const SizedBox(
+            SizedBox(
+              height: 2,
+            ),
+            Container(
+              width: double.infinity,
               height: 20,
+              decoration: BoxDecoration(
+                color: kDarkGrayColor.withAlpha(200),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Center(
+                child: Text(
+                  "noon break",
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    color: Color(0xffe2e2e2),
+                    // fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 2,
             ),
             Expanded(
               child: Container(
@@ -97,6 +131,10 @@ class _TimeslotDaySelectionWidgetState
                             setState(() {
                               selectedTimeslots[1] = !selectedTimeslots[1];
                             });
+                            widget.onChangedCallback(
+                              widget.index,
+                              selectedTimeslots,
+                            );
                           },
                         ),
                         Text(
@@ -114,8 +152,30 @@ class _TimeslotDaySelectionWidgetState
                 ),
               ),
             ),
-            const SizedBox(
-              height: 10,
+            SizedBox(
+              height: 2,
+            ),
+            Container(
+              width: double.infinity,
+              height: 20,
+              decoration: BoxDecoration(
+                color: kDarkGrayColor.withAlpha(200),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Center(
+                child: Text(
+                  "afternoon break",
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    color: Color(0xffe2e2e2),
+                    // fontStyle: FontStyle.italic,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 2,
             ),
             Expanded(
               child: Container(
@@ -138,6 +198,11 @@ class _TimeslotDaySelectionWidgetState
                             setState(() {
                               selectedTimeslots[2] = !selectedTimeslots[2];
                             });
+
+                            widget.onChangedCallback(
+                              widget.index,
+                              selectedTimeslots,
+                            );
                           },
                         ),
                         Text(

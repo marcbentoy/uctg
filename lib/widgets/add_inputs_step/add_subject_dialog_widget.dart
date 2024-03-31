@@ -96,24 +96,31 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
                     height: 4,
                   ),
 
-                  Wrap(
-                    children: selectedTags.isEmpty
-                        ? [
-                            EmptyChipPlaceholder(),
-                          ]
-                        : selectedTags
-                            .map(
-                              (e) => Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: Chip(
-                                  label: Text(
-                                    e,
-                                    style: GoogleFonts.inter(),
-                                  ),
+                  SizedBox(
+                    height: 200,
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        children: selectedTags.isEmpty
+                            ? [
+                                EmptyChipPlaceholder(
+                                  title: "No tags selected",
                                 ),
-                              ),
-                            )
-                            .toList(),
+                              ]
+                            : selectedTags
+                                .map(
+                                  (e) => Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: Chip(
+                                      label: Text(
+                                        e,
+                                        style: GoogleFonts.inter(),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                      ),
+                    ),
                   ),
 
                   SizedBox(
@@ -181,8 +188,10 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
 }
 
 class EmptyChipPlaceholder extends StatelessWidget {
+  final String title;
   const EmptyChipPlaceholder({
     super.key,
+    required this.title,
   });
 
   @override
@@ -197,7 +206,7 @@ class EmptyChipPlaceholder extends StatelessWidget {
         ),
       ),
       child: Text(
-        "No tags selected yet",
+        title,
         style: GoogleFonts.inter(),
       ),
     );
