@@ -4,6 +4,7 @@ import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/timetable_sidebar_item_widget.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(int) onItemSelected;
@@ -49,13 +50,26 @@ class _CustomSidebarState extends State<CustomSidebar> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Center(
-                child: Text(
-                  "University Class\nTimetable Generator",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.bold,
-                    color: kDarkGrayColor,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      "assets/icons/uctg_logo.svg",
+                      height: 36,
+                      width: 36,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      "University Class\nTimetable Generator",
+                      textAlign: TextAlign.start,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: kDarkGrayColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -54,7 +54,11 @@ class ResultStepState extends State<ResultStep> {
     ];
   }
 
-  void updateEvents() {}
+  void updateEvents() {
+    // for (var s in currentTimetable.fittestIndividual.schedules) {
+    //   s.
+    // }
+  }
 
   String selectedView = "section";
   Section selectedSection = Section()..name = "no section";
@@ -65,25 +69,43 @@ class ResultStepState extends State<ResultStep> {
   void initState() {
     super.initState();
 
+    setSelectedValues();
+  }
+
+  void setSelectedValues() {
     if (currentTimetable.sections.isNotEmpty) {
       setState(() {
         selectedSection = currentTimetable.sections.first;
+      });
+    } else {
+      setState(() {
+        selectedSection = Section()..name = "no section";
       });
     }
     if (currentTimetable.instructors.isNotEmpty) {
       setState(() {
         selectedInstructor = currentTimetable.instructors.first;
       });
+    } else {
+      setState(() {
+        selectedInstructor = Instructor()..name = "no instructor";
+      });
     }
     if (currentTimetable.rooms.isNotEmpty) {
       setState(() {
         selectedRoom = currentTimetable.rooms.first;
+      });
+    } else {
+      setState(() {
+        selectedRoom = Room()..name = "no room";
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    setSelectedValues();
+
     void onSaveSectionSelectionCallback(Section newSection) {
       setState(() {
         selectedSection = newSection;
@@ -221,8 +243,8 @@ class ResultStepState extends State<ResultStep> {
         ),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height - 100,
-            maxWidth: MediaQuery.of(context).size.width - 100,
+            maxHeight: MediaQuery.of(context).size.height - 200,
+            maxWidth: MediaQuery.of(context).size.width - 50,
           ),
           child: TimetableView(
             laneEventsList: _buildLaneEvents(),

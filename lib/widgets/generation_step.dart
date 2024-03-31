@@ -102,8 +102,11 @@ class _GenerationStepState extends State<GenerationStep> {
             ),
 
             Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: hConstraints
                   .map((e) => Row(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Checkbox(value: e.$1, onChanged: (value) {}),
                           SizedBox(
@@ -133,6 +136,7 @@ class _GenerationStepState extends State<GenerationStep> {
             ),
 
             Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: sConstraints
                   .map((e) => Row(
                         mainAxisSize: MainAxisSize.min,
@@ -153,6 +157,12 @@ class _GenerationStepState extends State<GenerationStep> {
 
             SizedBox(
               height: 24,
+            ),
+
+            isGenerating ? LinearProgressIndicator() : SizedBox.shrink(),
+
+            SizedBox(
+              height: 4,
             ),
 
             // generation controls
