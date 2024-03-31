@@ -3,8 +3,10 @@ import 'package:uctg/main.dart';
 import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/input_utils.dart';
 
-Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
+Widget addTagDataDialogWidget(
+    BuildContext context, innerSetState, String? tag) {
   TextEditingController tagController = TextEditingController();
+  tagController.text = tag ?? "";
 
   return Dialog(
     child: Container(
@@ -42,13 +44,13 @@ Widget addTagDataDialogWidget(BuildContext context, innerSetState) {
           ),
 
           // controls
-          dialogRowControls(context, () {
-            innerSetState(() {
+          dialogRowControls(context, () async {
+            innerSetState(() async {
               var newTags = List<String>.from(currentTimetable.tags);
               newTags.add(tagController.text);
 
               currentTimetable.tags = newTags;
-              isarService.saveTimetable(currentTimetable);
+              await isarService.saveTimetable(currentTimetable);
             });
           }),
         ],

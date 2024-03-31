@@ -1,3 +1,5 @@
+import 'package:path/path.dart';
+import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/utils/util.dart';
 
@@ -31,15 +33,18 @@ void initialize(Timetable timetable) {
   print("END - Initialization - -");
 }
 
-Future<void> generate(Timetable timetable) async {
+Future<void> generate() async {
   // check if timetable has been initialized
-  if (!timetable.isInitialized) {
+  if (currentTimetable == Timetable() || currentTimetable.name == "") {
+    currentTimetable = timetables.first;
+  }
+  if (!currentTimetable.isInitialized) {
     print("Timetable not yet initialized..");
-    initialize(timetable);
+    initialize(currentTimetable);
   }
 
   // evaluate
-  evaluate(timetable);
+  evaluate(currentTimetable);
 
   // select
 
@@ -49,12 +54,14 @@ Future<void> generate(Timetable timetable) async {
 
   // update population
 
-  timetable.generationCount++;
-  displayPopulation(timetable.population);
-  print(timetable.fittestIndividual.score.toString());
+  currentTimetable.generationCount++;
+  displayPopulation(currentTimetable.population);
+  print(currentTimetable.fittestIndividual.score.toString());
+
+  isarService.saveTimetable(currentTimetable);
 }
 
-void evaluate(Timetable timetable) {
+Future<void> evaluate(Timetable timetable) async {
   for (Individual individual in timetable.population) {
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {

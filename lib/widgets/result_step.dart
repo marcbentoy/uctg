@@ -79,7 +79,43 @@ class ResultStepState extends State<ResultStep> {
             );
           }
         case "instructor":
+          if (s.instructor.name == selectedInstructor.name) {
+            events.add(
+              TableEvent(
+                title:
+                    "${s.subject.name}\n${s.instructor.name}\n${s.section.name}\n${s.room.name}",
+                eventId: id,
+                laneIndex: s.timeslot.startTime.day,
+                startTime: TableEventTime(
+                  hour: s.timeslot.startTime.hour,
+                  minute: 0,
+                ),
+                endTime: TableEventTime(
+                  hour: s.timeslot.endTime.hour,
+                  minute: 0,
+                ),
+              ),
+            );
+          }
         case "room":
+          if (s.room.name == selectedRoom.name) {
+            events.add(
+              TableEvent(
+                title:
+                    "${s.subject.name}\n${s.instructor.name}\n${s.section.name}\n${s.room.name}",
+                eventId: id,
+                laneIndex: s.timeslot.startTime.day,
+                startTime: TableEventTime(
+                  hour: s.timeslot.startTime.hour,
+                  minute: 0,
+                ),
+                endTime: TableEventTime(
+                  hour: s.timeslot.endTime.hour,
+                  minute: 0,
+                ),
+              ),
+            );
+          }
       }
 
       id++;

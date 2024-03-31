@@ -123,6 +123,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
     ],
     // tags
     [
+      const DataColumn(label: Text("")),
       const DataColumn(label: Text("Tag")),
     ],
   ];
@@ -228,6 +229,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                       return addTagDataDialogWidget(
                                         context,
                                         innerSetState,
+                                        "",
                                       );
                                     });
                                   });
@@ -348,7 +350,43 @@ class _AddInputsStepState extends State<AddInputsStep> {
       // tags
       case 4:
         return currentTimetable.tags
-            .map((e) => DataRow(cells: [DataCell(Text(e))]))
+            .map((e) => DataRow(cells: [
+                  DataCell(Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return StatefulBuilder(
+                                      builder: (context, innerSetState) {
+                                    return addTagDataDialogWidget(
+                                      context,
+                                      innerSetState,
+                                      e,
+                                    );
+                                  });
+                                });
+                          },
+                          icon: Icon(Icons.edit_rounded)),
+                      IconButton(
+                          onPressed: () {
+                            var newTags =
+                                List<String>.from(currentTimetable.tags);
+                            newTags.remove(e);
+
+                            currentTimetable.tags = newTags;
+                            isarService.saveTimetable(currentTimetable);
+
+                            setState(() {
+                              currentTimetable;
+                            });
+                          },
+                          icon: Icon(Icons.delete_rounded)),
+                    ],
+                  )),
+                  DataCell(Text(e))
+                ]))
             .toList();
     }
     return [];

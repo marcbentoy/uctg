@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
 
 class ConfigureAiStep extends StatefulWidget {
@@ -15,8 +16,15 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
   TextEditingController populationSizeController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    setState(() {
+      mutationRate = currentTimetable.mutationRate;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    mutationRate = currentTimetable.mutationRate;
     populationSizeController.text = currentTimetable.populationSize.toString();
 
     return Center(
@@ -67,12 +75,6 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                             onChanged: (value) {
                               setState(() {
                                 mutationRate = value;
-                                currentTimetable.mutationRate = mutationRate;
-                              });
-                            },
-                            onChangeEnd: (value) {
-                              setState(() {
-                                isarService.saveTimetable(currentTimetable);
                               });
                             },
                             value: mutationRate,
@@ -133,48 +135,40 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
               ),
             ),
 
-            // dialog controls
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   mainAxisSize: MainAxisSize.max,
-            //   children: [
-            //     // cancel button
-            //     CustomButton(
-            //       textColor: kRedColor,
-            //       text: "Cancel",
-            //       clickCallback: () {
-            //         Navigator.of(context).pop();
-            //       },
-            //     ),
-
-            //     // negative space
-            //     const SizedBox(
-            //       width: 8,
-            //     ),
-
-            //     // save configuration button
-            //     CustomButton(
-            //       textColor: kGreenColor,
-            //       text: "Save",
-            //       clickCallback: () {
-            //         updateBlurThreshold(newBlurThreshold);
-            //         updateImagePlacement(
-            //             newImagePlacement == ImagePlacement.copy ? true : false);
-            //         updatePlayConfettiAnimation(newPlayConfettiAnimation);
-            //         updatePlaySound(newPlaySound);
-
-            //         setState(() {
-            //           blurThreshold = newBlurThreshold;
-            //           playConfettiAnimation = newPlayConfettiAnimation;
-            //           playSound = newPlaySound;
-            //           imagePlacement = newImagePlacement;
-            //         });
-
-            //         Navigator.of(context).pop();
-            //       },
-            //     ),
-            //   ],
-            // )
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      mutationRate = currentTimetable.mutationRate;
+                    });
+                  },
+                  child: Text(
+                    "Discard",
+                    style: GoogleFonts.inter(),
+                  ),
+                ),
+                SizedBox(
+                  width: 8,
+                ),
+                FilledButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(kLightGrayColor),
+                    ),
+                    onPressed: () {
+                      currentTimetable.mutationRate = mutationRate;
+                      currentTimetable.populationSize =
+                          int.parse(populationSizeController.text);
+                      isarService.saveTimetable(currentTimetable);
+                    },
+                    child: Text(
+                      "Save",
+                      style: GoogleFonts.inter(),
+                    ))
+              ],
+            ),
           ],
         ),
       ),

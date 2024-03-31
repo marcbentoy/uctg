@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -172,17 +174,12 @@ class _GenerationStepState extends State<GenerationStep> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FilledButton(
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
                       isGenerating = !isGenerating;
                     });
 
-                    generate(currentTimetable).then((value) {
-                      isarService.saveTimetable(currentTimetable);
-                      setState(() {
-                        isGenerating = !isGenerating;
-                      });
-                    });
+                    await generate();
                   },
                   style: ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(
