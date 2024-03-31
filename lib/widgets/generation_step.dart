@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/app.dart';
 import 'package:uctg/constants/colors.dart';
+import 'package:uctg/generator/generator.dart';
 import 'package:uctg/main.dart';
 
 class GenerationStep extends StatefulWidget {
@@ -174,6 +175,13 @@ class _GenerationStepState extends State<GenerationStep> {
                   onPressed: () {
                     setState(() {
                       isGenerating = !isGenerating;
+                    });
+
+                    generate(currentTimetable).then((value) {
+                      isarService.saveTimetable(currentTimetable);
+                      setState(() {
+                        isGenerating = !isGenerating;
+                      });
                     });
                   },
                   style: ButtonStyle(

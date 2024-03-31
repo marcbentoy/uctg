@@ -18,36 +18,37 @@ class ResultStep extends StatefulWidget {
 
 class ResultStepState extends State<ResultStep> {
   List<TableEvent> events = [];
+  List<LaneEvents> laneEvents = [];
 
-  List<LaneEvents> _buildLaneEvents() {
-    return [
+  void _buildLaneEvents() {
+    laneEvents = [
       LaneEvents(
         lane: Lane(name: 'Monday', laneIndex: 1),
-        events: [],
+        events: events.where((element) => element.laneIndex == 1).toList(),
       ),
       LaneEvents(
         lane: Lane(name: 'Tuesday', laneIndex: 2),
-        events: [],
+        events: events.where((element) => element.laneIndex == 2).toList(),
       ),
       LaneEvents(
         lane: Lane(name: "Wednesday", laneIndex: 3),
-        events: [],
+        events: events.where((element) => element.laneIndex == 3).toList(),
       ),
       LaneEvents(
         lane: Lane(name: "Thursday", laneIndex: 4),
-        events: [],
+        events: events.where((element) => element.laneIndex == 4).toList(),
       ),
       LaneEvents(
         lane: Lane(name: "Friday", laneIndex: 5),
-        events: [],
+        events: events.where((element) => element.laneIndex == 5).toList(),
       ),
       LaneEvents(
         lane: Lane(name: "Saturday", laneIndex: 6),
-        events: [],
+        events: events.where((element) => element.laneIndex == 6).toList(),
       ),
       LaneEvents(
         lane: Lane(name: "Sunday", laneIndex: 7),
-        events: [],
+        events: events.where((element) => element.laneIndex == 7).toList(),
       ),
     ];
   }
@@ -59,21 +60,24 @@ class ResultStepState extends State<ResultStep> {
     for (var s in currentTimetable.fittestIndividual.schedules) {
       switch (selectedView) {
         case "section":
-          events.add(
-            TableEvent(
-              title: s.subject.name,
-              eventId: id,
-              laneIndex: s.timeslot.startTime.day - 1,
-              startTime: TableEventTime(
-                hour: s.timeslot.startTime.hour,
-                minute: 0,
+          if (s.section.name == selectedSection.name) {
+            events.add(
+              TableEvent(
+                title:
+                    "${s.subject.name}\n${s.instructor.name}\n${s.section.name}\n${s.room.name}",
+                eventId: id,
+                laneIndex: s.timeslot.startTime.day,
+                startTime: TableEventTime(
+                  hour: s.timeslot.startTime.hour,
+                  minute: 0,
+                ),
+                endTime: TableEventTime(
+                  hour: s.timeslot.endTime.hour,
+                  minute: 0,
+                ),
               ),
-              endTime: TableEventTime(
-                hour: s.timeslot.endTime.hour,
-                minute: 0,
-              ),
-            ),
-          );
+            );
+          }
         case "instructor":
         case "room":
       }
@@ -127,22 +131,31 @@ class ResultStepState extends State<ResultStep> {
   @override
   Widget build(BuildContext context) {
     setSelectedValues();
+    setState(() {
+      _buildLaneEvents();
+    });
 
     void onSaveSectionSelectionCallback(Section newSection) {
       setState(() {
         selectedSection = newSection;
+        updateEvents();
+        _buildLaneEvents();
       });
     }
 
     void onSaveInstructorSelectionCallback(Instructor newInstructor) {
       setState(() {
         selectedInstructor = newInstructor;
+        updateEvents();
+        _buildLaneEvents();
       });
     }
 
     void onSaveRoomSelectionCallback(Room newRoom) {
       setState(() {
         selectedRoom = newRoom;
+        updateEvents();
+        _buildLaneEvents();
       });
     }
 
@@ -169,6 +182,7 @@ class ResultStepState extends State<ResultStep> {
                     selectionCallback: (value) {
                       setState(() {
                         selectedView = value;
+                        updateEvents();
                       });
                     },
                   ),
@@ -247,6 +261,23 @@ class ResultStepState extends State<ResultStep> {
                   const SizedBox(
                     width: 24,
                   ),
+                  IconButton(
+                    tooltip: "refresh timetable",
+                    onPressed: () {
+                      setState(() {
+                        updateEvents();
+                        _buildLaneEvents();
+                      });
+
+                      for (var e in events) {
+                        debugPrint(e.title);
+                      }
+                    },
+                    icon: const Icon(Icons.refresh),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
                   // export icon
                   IconButton(
                     tooltip: "export timetable",
@@ -269,7 +300,10 @@ class ResultStepState extends State<ResultStep> {
             maxWidth: MediaQuery.of(context).size.width - 50,
           ),
           child: TimetableView(
-            laneEventsList: _buildLaneEvents(),
+            timetableStyle: TimetableStyle(
+              timeItemHeight: 100,
+            ),
+            laneEventsList: laneEvents,
             onEmptySlotTap: (index, start, end) {},
             onEventTap: (event) {},
           ),
