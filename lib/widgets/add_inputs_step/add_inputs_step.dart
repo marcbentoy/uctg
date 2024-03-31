@@ -10,6 +10,7 @@ import 'package:uctg/widgets/add_inputs_step/add_room_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_section_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_subject_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_tag_dialog_widget.dart';
+import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
 
 class AddInputsStep extends StatefulWidget {
   const AddInputsStep({
@@ -131,123 +132,141 @@ class _AddInputsStepState extends State<AddInputsStep> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // input data selection
-        SizedBox(
-          width: 200,
-          height: 500,
-          child: ListView.builder(
-            itemCount: inputItems.length,
-            itemBuilder: (ctx, index) {
-              return InputItem(
-                icon: inputItems[index][1],
-                itemName: inputItems[index][0],
-                index: index,
-                currentIndex: currentSelectedInput,
-                clickCallback: inputItemCallback,
-              );
-            },
+        // title
+        Text(
+          "Generator Inputs",
+          style: GoogleFonts.inter(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
 
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        SizedBox(
+          height: 16,
+        ),
+
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // input data selection
+            SizedBox(
+              width: 200,
+              height: 500,
+              child: ListView.builder(
+                itemCount: inputItems.length,
+                itemBuilder: (ctx, index) {
+                  return InputItem(
+                    icon: inputItems[index][1],
+                    itemName: inputItems[index][0],
+                    index: index,
+                    currentIndex: currentSelectedInput,
+                    clickCallback: inputItemCallback,
+                  );
+                },
+              ),
+            ),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // add row data
-                  FilledButton(
-                    onPressed: () {
-                      switch (currentSelectedInput) {
-                        case 0:
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(
+                  Row(
+                    children: [
+                      // add row data
+                      FilledButton(
+                        onPressed: () {
+                          switch (currentSelectedInput) {
+                            case 0:
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, innerSetState) {
+                                      return AddSectionDialogWidget(
+                                        innerSetState: innerSetState,
+                                      );
+                                    });
+                                  });
+                            case 1:
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, innerSetState) {
+                                      return AddInstructorDialogWidget(
+                                          innerSetState: innerSetState);
+                                    });
+                                  });
+                            case 2:
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return StatefulBuilder(
                                     builder: (context, innerSetState) {
-                                  return AddSectionDialogWidget(
-                                    innerSetState: innerSetState,
+                                      return AddRoomDialogWidget(
+                                          innerSetState: innerSetState);
+                                    },
                                   );
-                                });
-                              });
-                        case 1:
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(
-                                    builder: (context, innerSetState) {
-                                  return AddInstructorDialogWidget(
-                                      innerSetState: innerSetState);
-                                });
-                              });
-                        case 2:
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(
-                                builder: (context, innerSetState) {
-                                  return AddRoomDialogWidget(
-                                      innerSetState: innerSetState);
                                 },
                               );
-                            },
-                          );
-                        case 3:
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(
-                                    builder: (context, innerSetState) {
-                                  return AddSubjectDialogWidget(
-                                      innerSetState: innerSetState);
-                                });
-                              });
-                        case 4:
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                return StatefulBuilder(
-                                    builder: (context, innerSetState) {
-                                  return addTagDataDialogWidget(
-                                    context,
-                                    innerSetState,
-                                  );
-                                });
-                              });
-                      }
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                        kLightGrayColor,
+                            case 3:
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, innerSetState) {
+                                      return AddSubjectDialogWidget(
+                                          innerSetState: innerSetState);
+                                    });
+                                  });
+                            case 4:
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, innerSetState) {
+                                      return addTagDataDialogWidget(
+                                        context,
+                                        innerSetState,
+                                      );
+                                    });
+                                  });
+                          }
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                            kLightGrayColor,
+                          ),
+                        ),
+                        child: const Text("Add Data"),
+                      ),
+                    ],
+                  ),
+
+                  // input data table editor
+                  Container(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columns: dataCols[currentSelectedInput],
+                          rows: getRowsData(),
+                          dataTextStyle: GoogleFonts.inter(),
+                          headingTextStyle: GoogleFonts.inter(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text("Add Data"),
                   ),
                 ],
               ),
-
-              // input data table editor
-              Container(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columns: dataCols[currentSelectedInput],
-                      rows: getRowsData(),
-                      dataTextStyle: GoogleFonts.inter(),
-                      headingTextStyle: GoogleFonts.inter(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );
@@ -272,7 +291,13 @@ class _AddInputsStepState extends State<AddInputsStep> {
             DataCell(Text(e.name)),
             DataCell(Text(subjects)),
             DataCell(Text(e.shift)),
-            DataCell(Text(timeslotsCodes)),
+            DataCell(SizedBox(
+              width: 256,
+              child: Text(
+                timeslotsCodes,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )),
           ]);
         }).toList();
       // instructors

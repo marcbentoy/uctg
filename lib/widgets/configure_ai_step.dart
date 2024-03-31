@@ -26,13 +26,11 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // dialog header
             Text(
               "AI Generator Configuration",
               style: GoogleFonts.inter(
-                fontSize: 16,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
               ),
             ),
 

@@ -1,5 +1,15 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:timetable_view/timetable_view.dart';
+import 'package:uctg/constants/colors.dart';
+import 'package:uctg/main.dart';
+import 'package:uctg/models/timetable.dart';
+import 'package:uctg/widgets/add_inputs_step/selection_widget.dart';
+import 'package:uctg/widgets/instructors_selection_widget.dart';
+import 'package:uctg/widgets/rooms_selection_widget.dart';
+import 'package:uctg/widgets/sections_selection_widget.dart';
 
 class ResultStep extends StatefulWidget {
   const ResultStep({super.key});
@@ -9,116 +19,211 @@ class ResultStep extends StatefulWidget {
 }
 
 class ResultStepState extends State<ResultStep> {
-  late TimetableView currentTimetable;
+  List<TableEvent> events = [];
 
   List<LaneEvents> _buildLaneEvents() {
     return [
       LaneEvents(
         lane: Lane(name: 'Monday', laneIndex: 1),
-        events: [
-          TableEvent(
-            title: 'An event 1',
-            eventId: 11,
-            startTime: TableEventTime(hour: 8, minute: 0),
-            endTime: TableEventTime(hour: 10, minute: 0),
-            laneIndex: 1,
-          ),
-          TableEvent(
-            eventId: 12,
-            title: 'An event 2',
-            laneIndex: 1,
-            startTime: TableEventTime(hour: 12, minute: 0),
-            endTime: TableEventTime(hour: 13, minute: 20),
-          ),
-        ],
+        events: [],
       ),
       LaneEvents(
         lane: Lane(name: 'Tuesday', laneIndex: 2),
-        events: [
-          TableEvent(
-            title: 'An event 3',
-            laneIndex: 2,
-            eventId: 21,
-            startTime: TableEventTime(hour: 10, minute: 10),
-            endTime: TableEventTime(hour: 11, minute: 45),
-          ),
-        ],
+        events: [],
+      ),
+      LaneEvents(
+        lane: Lane(name: "Wednesday", laneIndex: 3),
+        events: [],
+      ),
+      LaneEvents(
+        lane: Lane(name: "Thursday", laneIndex: 4),
+        events: [],
+      ),
+      LaneEvents(
+        lane: Lane(name: "Friday", laneIndex: 5),
+        events: [],
+      ),
+      LaneEvents(
+        lane: Lane(name: "Saturday", laneIndex: 6),
+        events: [],
+      ),
+      LaneEvents(
+        lane: Lane(name: "Sunday", laneIndex: 7),
+        events: [],
       ),
     ];
   }
 
-  // List<DropdownMenuItem> sectionDropdownItems = generator.sections.map((e) {
-  //   return DropdownMenuItem(
-  //     child: Text(e.name),
-  //     value: e.name,
-  //   );
-  // }).toList();
+  void updateEvents() {}
 
-  // List<DropdownMenuItem> instructorDropdownItems = generator.sections.map((e) {
-  //   return DropdownMenuItem(
-  //     child: Text(e.name),
-  //     value: e.name,
-  //   );
-  // }).toList();
+  String selectedView = "section";
+  Section selectedSection = Section()..name = "no section";
+  Instructor selectedInstructor = Instructor()..name = "no instructor";
+  Room selectedRoom = Room()..name = "no room";
 
-  String selectedView = "Sections";
-  String selectedSection = "";
-  String selectedInstructor = "Sections";
+  @override
+  void initState() {
+    super.initState();
+
+    if (currentTimetable.sections.isNotEmpty) {
+      setState(() {
+        selectedSection = currentTimetable.sections.first;
+      });
+    }
+    if (currentTimetable.instructors.isNotEmpty) {
+      setState(() {
+        selectedInstructor = currentTimetable.instructors.first;
+      });
+    }
+    if (currentTimetable.rooms.isNotEmpty) {
+      setState(() {
+        selectedRoom = currentTimetable.rooms.first;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    void onSaveSectionSelectionCallback(Section newSection) {
+      setState(() {
+        selectedSection = newSection;
+      });
+    }
+
+    void onSaveInstructorSelectionCallback(Instructor newInstructor) {
+      setState(() {
+        selectedInstructor = newInstructor;
+      });
+    }
+
+    void onSaveRoomSelectionCallback(Room newRoom) {
+      setState(() {
+        selectedRoom = newRoom;
+      });
+    }
+
     return Column(
       children: [
         Row(children: [
           // view selection
           Column(
             children: [
-              Text("Views"),
-              DropdownButton(
-                items: const [
-                  DropdownMenuItem(
-                    child: Text("Sections"),
-                    value: "Sections",
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  // view selection
+                  Text(
+                    "View as: ",
+                    style: GoogleFonts.inter(),
                   ),
-                  DropdownMenuItem(
-                    child: Text("Instructors"),
-                    value: "Instructors",
+                  SizedBox(
+                    width: 4,
+                  ),
+                  SelectionWidget(
+                    options: ["section", "instructor", "room"],
+                    selected: selectedView,
+                    selectionCallback: (value) {
+                      setState(() {
+                        selectedView = value;
+                      });
+                    },
+                  ),
+
+                  SizedBox(
+                    width: 16,
+                  ),
+                  // selection value
+                  Text(
+                    "$selectedView: ",
+                    style: GoogleFonts.inter(),
+                  ),
+
+                  SizedBox(
+                    width: 4,
+                  ),
+
+                  FilledButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(kDarkGrayColor),
+                    ),
+                    onPressed: () {
+                      switch (selectedView) {
+                        case "section":
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return StatefulBuilder(
+                                    builder: (context, innerSetState) {
+                                  return SectionsSelectionDialogWidget(
+                                    currentSelectedSection: selectedSection,
+                                    innerSetState: innerSetState,
+                                    onSelectionSave:
+                                        onSaveSectionSelectionCallback,
+                                  );
+                                });
+                              });
+                        case "instructor":
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return StatefulBuilder(
+                                    builder: (context, innerSetState) {
+                                  return InstructorsSelectionDialogWidget(
+                                    currentSelectedInstructor:
+                                        selectedInstructor,
+                                    innerSetState: innerSetState,
+                                    onSelectionSave:
+                                        onSaveInstructorSelectionCallback,
+                                  );
+                                });
+                              });
+                        case "room":
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return StatefulBuilder(
+                                    builder: (context, innerSetState) {
+                                  return RoomsSelectionDialogWidget(
+                                    currentSelectedRoom: selectedRoom,
+                                    innerSetState: innerSetState,
+                                    onSelectionSave:
+                                        onSaveRoomSelectionCallback,
+                                  );
+                                });
+                              });
+                      }
+                    },
+                    child: Text(selectedView == "section"
+                        ? selectedSection.name
+                        : selectedView == "instructor"
+                            ? selectedInstructor.name
+                            : selectedRoom.name),
+                  ),
+
+                  SizedBox(
+                    width: 24,
+                  ),
+                  // export icon
+                  IconButton(
+                    tooltip: "export timetable",
+                    onPressed: () {
+                      // TODO : export timetable as csv
+                    },
+                    icon: Icon(Icons.upload_file_rounded),
                   ),
                 ],
-                onChanged: (selectedItem) {
-                  setState(() {
-                    selectedView = selectedItem!;
-                  });
-                },
-                value: selectedView,
               ),
             ],
           ),
-
-          // view value selection
-          // Column(
-          //   children: [
-          //     Text(selectedView.toLowerCase() == "sections"
-          //         ? "Sections"
-          //         : "Instructors"),
-          //     DropdownButton(
-          //       items: (selectedView.toString() == "sections"
-          //           ? sectionDropdownItems
-          //           : instructorDropdownItems),
-          //       onChanged: (selectedItem) {
-          //         setState(() {
-          //           selectedSection = selectedItem!;
-          //         });
-          //       },
-          //       value: selectedView.toLowerCase() == "sections"
-          //           ? selectedSection
-          //           : selectedInstructor,
-          //     ),
-          //   ],
-          // ),
         ]),
-        Container(
-          height: 400,
+        SizedBox(
+          height: 8,
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height - 100,
+            maxWidth: MediaQuery.of(context).size.width - 100,
+          ),
           child: TimetableView(
             laneEventsList: _buildLaneEvents(),
             onEmptySlotTap: (index, start, end) {},
