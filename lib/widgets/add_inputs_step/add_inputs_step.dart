@@ -78,6 +78,16 @@ class _AddInputsStepState extends State<AddInputsStep> {
   // bool _isDragging = false;
   List<String?> csvFiles = [];
 
+  void onSaveSubjectCallback() {}
+
+  void onSaveTagCallback(String tag) async {
+    var newTags = List<String>.from(currentTimetable.tags);
+    newTags.add(tag);
+
+    currentTimetable.tags = newTags;
+    isarService.saveTimetable(currentTimetable);
+  }
+
   List inputItems = [
     ["Sections", Icons.category_rounded],
     ["Instructors", Icons.assignment_ind_rounded],
@@ -217,7 +227,9 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                     return StatefulBuilder(
                                         builder: (context, innerSetState) {
                                       return AddSubjectDialogWidget(
-                                          innerSetState: innerSetState);
+                                        innerSetState: innerSetState,
+                                        onSaveCallback: onSaveSubjectCallback,
+                                      );
                                     });
                                   });
                             case 4:
@@ -230,6 +242,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                         context,
                                         innerSetState,
                                         "",
+                                        onSaveTagCallback,
                                       );
                                     });
                                   });
@@ -364,6 +377,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                       context,
                                       innerSetState,
                                       e,
+                                      onSaveTagCallback,
                                     );
                                   });
                                 });

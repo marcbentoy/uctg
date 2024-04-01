@@ -33,7 +33,7 @@ void initialize(Timetable timetable) {
   print("END - Initialization - -");
 }
 
-Future<void> generate() async {
+void generate() async {
   // check if timetable has been initialized
   if (currentTimetable == Timetable() || currentTimetable.name == "") {
     currentTimetable = timetables.first;
@@ -58,7 +58,9 @@ Future<void> generate() async {
   displayPopulation(currentTimetable.population);
   print(currentTimetable.fittestIndividual.score.toString());
 
-  isarService.saveTimetable(currentTimetable);
+  await isarService.saveTimetable(currentTimetable);
+
+  await Future.delayed(const Duration(milliseconds: 10));
 }
 
 Future<void> evaluate(Timetable timetable) async {

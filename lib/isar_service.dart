@@ -11,12 +11,14 @@ class IsarService {
 
   Future<void> saveTimetable(Timetable timetable) async {
     final isar = await db;
-    isar.writeTxnSync(() => isar.timetables.putSync(timetable));
+    isar.writeTxn(() async {
+      return isar.timetables.put(timetable);
+    });
   }
 
   Future<List<Timetable>> getAllTimetables() async {
     final isar = await db;
-    return await isar.timetables.where().findAll();
+    return isar.timetables.where().findAll();
   }
 
   Stream<List<Timetable>> listenToTimetables() async* {
@@ -26,7 +28,7 @@ class IsarService {
 
   Future<void> cleanDb() async {
     final isar = await db;
-    await isar.writeTxn(() => isar.clear());
+    isar.writeTxn(() => isar.clear());
   }
 
   Future<Isar> openDB() async {
@@ -43,8 +45,8 @@ class IsarService {
 
   Future<void> deleteTimetable(int id) async {
     final isar = await db;
-    await isar.writeTxn(() async {
-      await isar.timetables.delete(id);
+    isar.writeTxn(() async {
+      isar.timetables.delete(id);
     });
   }
 }

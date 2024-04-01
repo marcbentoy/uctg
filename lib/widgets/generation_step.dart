@@ -1,7 +1,4 @@
-import 'dart:isolate';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/app.dart';
 import 'package:uctg/constants/colors.dart';
@@ -174,12 +171,13 @@ class _GenerationStepState extends State<GenerationStep> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FilledButton(
-                  onPressed: () async {
+                  onPressed: () {
                     setState(() {
                       isGenerating = !isGenerating;
+                      if (isGenerating) {
+                        generate();
+                      }
                     });
-
-                    await generate();
                   },
                   style: ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(

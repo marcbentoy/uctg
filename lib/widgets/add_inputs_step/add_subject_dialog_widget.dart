@@ -11,7 +11,13 @@ import 'package:uctg/widgets/add_inputs_step/tags_selection_widget.dart';
 
 class AddSubjectDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
-  const AddSubjectDialogWidget({super.key, required this.innerSetState});
+  final void Function() onSaveCallback;
+
+  const AddSubjectDialogWidget({
+    super.key,
+    required this.innerSetState,
+    required this.onSaveCallback,
+  });
 
   @override
   State<AddSubjectDialogWidget> createState() => _AddSubjectDialogWidgetState();
