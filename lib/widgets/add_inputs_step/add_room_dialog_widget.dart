@@ -7,10 +7,12 @@ import 'package:uctg/widgets/add_inputs_step/selection_widget.dart';
 
 class AddRoomDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final Room? currentRoom;
 
   const AddRoomDialogWidget({
     super.key,
     required this.innerSetState,
+    this.currentRoom,
   });
 
   @override
@@ -20,6 +22,19 @@ class AddRoomDialogWidget extends StatefulWidget {
 class _AddRoomDialogWidgetState extends State<AddRoomDialogWidget> {
   TextEditingController nameController = TextEditingController();
   String selectedRoomType = "lecture";
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.currentRoom != null) {
+      setState(() {
+        nameController.text = widget.currentRoom!.name;
+        selectedRoomType =
+            widget.currentRoom!.type == SubjectType.lab ? "lab" : "lecture";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +92,18 @@ class _AddRoomDialogWidgetState extends State<AddRoomDialogWidget> {
                       : SubjectType.lab;
 
                   var newRooms = List<Room>.from(currentTimetable.rooms);
-                  newRooms.add(roomToAdd);
 
+                  // if room is not null, edit
+                  if (widget.currentRoom != null) {
+                    newRooms[newRooms.indexWhere(
+                            (element) => element == widget.currentRoom)] =
+                        roomToAdd;
+                    currentTimetable.rooms = newRooms;
+                    isarService.saveTimetable(currentTimetable);
+                    return;
+                  }
+
+                  newRooms.add(roomToAdd);
                   currentTimetable.rooms = newRooms;
                   isarService.saveTimetable(currentTimetable);
                 });

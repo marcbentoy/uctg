@@ -57,12 +57,10 @@ class _SubjectsSelectionState extends State<SubjectsSelectionWidget> {
                       child: GestureDetector(
                         onTap: () {
                           if (!isSelected) {
-                            debugPrint("not selected tag is clicked $e");
                             widget.innerSetState(() {
                               selectedSubjects.add(e);
                             });
                           } else {
-                            debugPrint("selected tag is clicked $e");
                             widget.innerSetState(() {
                               selectedSubjects.remove(e);
                             });

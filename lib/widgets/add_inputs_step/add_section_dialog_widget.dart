@@ -11,9 +11,12 @@ import 'package:uctg/widgets/add_inputs_step/timeslot_week_selection_widget.dart
 
 class AddSectionDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final Section? currentSection;
+
   const AddSectionDialogWidget({
     super.key,
     required this.innerSetState,
+    this.currentSection,
   });
 
   @override
@@ -35,6 +38,60 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
     [false, false, false],
     [false, false, false],
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.currentSection != null) {
+      setState(() {
+        nameController.text = widget.currentSection!.name;
+        selectedSubjects = widget.currentSection!.subjects;
+        timeslots = widget.currentSection!.timeslots;
+        selectedShift = widget.currentSection!.shift;
+
+        setBoolTimeslots();
+      });
+    }
+  }
+
+  void setBoolTimeslots() {
+    for (int i = 0; i < 7; i++) {
+      for (int j = 0; j < 3; j++) {
+        switch (j) {
+          case 0:
+            for (int hour = 0; hour < 5; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+          case 1:
+            for (int hour = 6; hour < 10; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+          case 2:
+            for (int hour = 11; hour < 14; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+        }
+      }
+    }
+  }
 
   void setTimeslots() {
     DateTime startTime = DateTime.parse("2024-01-01 07");
@@ -274,10 +331,18 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
                   var newSections =
                       List<Section>.from(currentTimetable.sections);
+
+                  // if section is not null, edit
+                  if (widget.currentSection != null) {
+                    newSections[newSections.indexWhere(
+                            (element) => element == widget.currentSection)] =
+                        sectionToAdd;
+                    currentTimetable.sections = newSections;
+                    isarService.saveTimetable(currentTimetable);
+                    return;
+                  }
                   newSections.add(sectionToAdd);
-
                   currentTimetable.sections = newSections;
-
                   isarService.saveTimetable(currentTimetable);
                 });
               },

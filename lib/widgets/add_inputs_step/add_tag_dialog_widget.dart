@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uctg/main.dart';
 import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/input_utils.dart';
 
@@ -6,7 +7,6 @@ Widget addTagDataDialogWidget(
   BuildContext context,
   innerSetState,
   String? tag,
-  void Function(String) onSaveCallback,
 ) {
   TextEditingController tagController = TextEditingController();
   tagController.text = tag ?? "";
@@ -48,7 +48,21 @@ Widget addTagDataDialogWidget(
 
           // controls
           dialogRowControls(context, () {
-            onSaveCallback(tagController.text);
+            var newTags = List<String>.from(currentTimetable.tags);
+
+            // if tag is present, edit instead of add
+            if (tag != null) {
+              newTags[newTags.indexWhere((element) => element == tag)] =
+                  tagController.text;
+
+              currentTimetable.tags = newTags;
+              isarService.saveTimetable(currentTimetable);
+              return;
+            }
+
+            newTags.add(tagController.text);
+            currentTimetable.tags = newTags;
+            isarService.saveTimetable(currentTimetable);
           }),
         ],
       ),

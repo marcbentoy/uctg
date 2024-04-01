@@ -11,12 +11,12 @@ import 'package:uctg/widgets/add_inputs_step/tags_selection_widget.dart';
 
 class AddSubjectDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
-  final void Function() onSaveCallback;
+  final Subject? currentSubject;
 
   const AddSubjectDialogWidget({
     super.key,
     required this.innerSetState,
-    required this.onSaveCallback,
+    this.currentSubject,
   });
 
   @override
@@ -28,6 +28,21 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
   String selectedType = "lecture";
   TextEditingController nameController = TextEditingController();
   TextEditingController unitsController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.currentSubject != null) {
+      setState(() {
+        selectedTags = widget.currentSubject!.tags;
+        selectedType =
+            widget.currentSubject!.type == SubjectType.lab ? "lab" : "lecture";
+        nameController.text = widget.currentSubject!.name;
+        unitsController.text = widget.currentSubject!.units.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,12 +187,25 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
             // controls
             dialogRowControls(context, () {
               Subject subjectToAdd = Subject();
+
               subjectToAdd.name = nameController.text;
               subjectToAdd.tags = selectedTags;
               subjectToAdd.units = int.parse(unitsController.text);
               subjectToAdd.type = selectedType == "lecture"
                   ? SubjectType.lecture
                   : SubjectType.lab;
+
+              // if subject is not null, edit data
+              if (widget.currentSubject != null) {
+                var newSubjects = List<Subject>.from(currentTimetable.subjects);
+                newSubjects[newSubjects.indexWhere(
+                        (element) => element == widget.currentSubject)] =
+                    subjectToAdd;
+
+                currentTimetable.subjects = newSubjects;
+                isarService.saveTimetable(currentTimetable);
+                return;
+              }
 
               var newSubjects = List<Subject>.from(currentTimetable.subjects);
               newSubjects.add(subjectToAdd);

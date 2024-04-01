@@ -1,4 +1,3 @@
-import 'package:path/path.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/utils/util.dart';
@@ -58,12 +57,12 @@ void generate() async {
   displayPopulation(currentTimetable.population);
   print(currentTimetable.fittestIndividual.score.toString());
 
-  await isarService.saveTimetable(currentTimetable);
+  isarService.saveTimetable(currentTimetable);
 
   await Future.delayed(const Duration(milliseconds: 10));
 }
 
-Future<void> evaluate(Timetable timetable) async {
+void evaluate(Timetable timetable) async {
   for (Individual individual in timetable.population) {
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {

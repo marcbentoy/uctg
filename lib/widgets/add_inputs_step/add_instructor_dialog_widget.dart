@@ -11,9 +11,12 @@ import 'package:uctg/widgets/add_inputs_step/timeslot_week_selection_widget.dart
 
 class AddInstructorDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final Instructor? currentInstructor;
+
   const AddInstructorDialogWidget({
     super.key,
     required this.innerSetState,
+    this.currentInstructor,
   });
 
   @override
@@ -35,6 +38,60 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
     [false, false, false],
     [false, false, false],
   ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.currentInstructor != null) {
+      setState(() {
+        nameController.text = widget.currentInstructor!.name;
+        selectedTags = widget.currentInstructor!.expertise;
+        timeslots = widget.currentInstructor!.timePreferences;
+
+        setBoolTimeslots();
+      });
+    }
+  }
+
+  void setBoolTimeslots() {
+    for (int i = 0; i < 7; i++) {
+      for (int j = 0; j < 3; j++) {
+        switch (j) {
+          case 0:
+            for (int hour = 0; hour < 5; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+          case 1:
+            for (int hour = 6; hour < 10; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+          case 2:
+            for (int hour = 11; hour < 14; hour++) {
+              if (timeslots
+                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .isNotEmpty) {
+                selectedBoolTimeslots[i][j] = true;
+                break;
+              }
+              selectedBoolTimeslots[i][j] = false;
+            }
+        }
+      }
+    }
+  }
 
   void setTimeslots() {
     final DateTime startTime = DateTime.parse("2024-01-01 07");
@@ -259,10 +316,19 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
 
                   var newInstructors =
                       List<Instructor>.from(currentTimetable.instructors);
+
+                  // if instructor is not null, edit
+                  if (widget.currentInstructor != null) {
+                    newInstructors[newInstructors.indexWhere(
+                            (element) => element == widget.currentInstructor)] =
+                        instructorToAdd;
+                    currentTimetable.instructors = newInstructors;
+                    isarService.saveTimetable(currentTimetable);
+                    return;
+                  }
+
                   newInstructors.add(instructorToAdd);
-
                   currentTimetable.instructors = newInstructors;
-
                   isarService.saveTimetable(currentTimetable);
                 });
               },

@@ -8,6 +8,7 @@ import 'package:uctg/widgets/add_inputs_step/add_room_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_section_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_subject_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_tag_dialog_widget.dart';
+import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
 
 class AddInputsStep extends StatefulWidget {
   const AddInputsStep({
@@ -78,16 +79,6 @@ class _AddInputsStepState extends State<AddInputsStep> {
   // bool _isDragging = false;
   List<String?> csvFiles = [];
 
-  void onSaveSubjectCallback() {}
-
-  void onSaveTagCallback(String tag) async {
-    var newTags = List<String>.from(currentTimetable.tags);
-    newTags.add(tag);
-
-    currentTimetable.tags = newTags;
-    isarService.saveTimetable(currentTimetable);
-  }
-
   List inputItems = [
     ["Sections", Icons.category_rounded],
     ["Instructors", Icons.assignment_ind_rounded],
@@ -108,6 +99,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
   List<List<DataColumn>> dataCols = [
     // sections
     [
+      const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Name")),
       const DataColumn(label: Text("Subjects")),
       const DataColumn(label: Text("Shift")),
@@ -115,17 +107,20 @@ class _AddInputsStepState extends State<AddInputsStep> {
     ],
     // instructors
     [
+      const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Name")),
       const DataColumn(label: Text("Time Preferences")),
       const DataColumn(label: Text("Expertise")),
     ],
     // rooms
     [
+      const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Name")),
       const DataColumn(label: Text("Room Type")),
     ],
     // subjects
     [
+      const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Name")),
       const DataColumn(label: Text("Tags")),
       const DataColumn(label: Text("Units")),
@@ -133,7 +128,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
     ],
     // tags
     [
-      const DataColumn(label: Text("")),
+      const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Tag")),
     ],
   ];
@@ -228,7 +223,6 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                         builder: (context, innerSetState) {
                                       return AddSubjectDialogWidget(
                                         innerSetState: innerSetState,
-                                        onSaveCallback: onSaveSubjectCallback,
                                       );
                                     });
                                   });
@@ -241,8 +235,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                       return addTagDataDialogWidget(
                                         context,
                                         innerSetState,
-                                        "",
-                                        onSaveTagCallback,
+                                        null,
                                       );
                                     });
                                   });
@@ -259,18 +252,16 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   ),
 
                   // input data table editor
-                  Container(
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
                     child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: dataCols[currentSelectedInput],
-                          rows: getRowsData(),
-                          dataTextStyle: GoogleFonts.inter(),
-                          headingTextStyle: GoogleFonts.inter(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: dataCols[currentSelectedInput],
+                        rows: getRowsData(),
+                        dataTextStyle: GoogleFonts.inter(),
+                        headingTextStyle: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -300,6 +291,56 @@ class _AddInputsStepState extends State<AddInputsStep> {
           }
 
           return DataRow(cells: [
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        // TODO : edit section dialog
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(
+                                  builder: (context, innerSetState) {
+                                return AddSectionDialogWidget(
+                                  innerSetState: innerSetState,
+                                  currentSection: e,
+                                );
+                              });
+                            });
+                      },
+                      icon: Icon(Icons.edit_rounded)),
+                  IconButton(
+                      onPressed: () {
+                        // TODO : delete section confirmation dialog
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteItemConfirmationWidget(
+                              deletionMsg:
+                                  "Proceed deletion of section item ${e.name}?",
+                              confirmDelete: () {
+                                var newSections = List<Section>.from(
+                                    currentTimetable.sections);
+                                newSections.remove(e);
+
+                                currentTimetable.sections = newSections;
+                                isarService
+                                    .saveTimetable(currentTimetable)
+                                    .then((value) {
+                                  setState(() {
+                                    currentTimetable;
+                                  });
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete_rounded)),
+                ],
+              ),
+            ),
             DataCell(Text(e.name)),
             DataCell(Text(subjects)),
             DataCell(Text(e.shift)),
@@ -326,6 +367,54 @@ class _AddInputsStepState extends State<AddInputsStep> {
           }
 
           return DataRow(cells: [
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(
+                                  builder: (context, innerSetState) {
+                                return AddInstructorDialogWidget(
+                                  innerSetState: innerSetState,
+                                  currentInstructor: e,
+                                );
+                              });
+                            });
+                      },
+                      icon: Icon(Icons.edit_rounded)),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteItemConfirmationWidget(
+                              deletionMsg:
+                                  "Proceed deletion of intructor item ${e.name}?",
+                              confirmDelete: () {
+                                var newInstructors = List<Instructor>.from(
+                                    currentTimetable.instructors);
+                                newInstructors.remove(e);
+
+                                currentTimetable.instructors = newInstructors;
+                                isarService
+                                    .saveTimetable(currentTimetable)
+                                    .then((value) {
+                                  setState(() {
+                                    currentTimetable;
+                                  });
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete_rounded)),
+                ],
+              ),
+            ),
             DataCell(Text(e.name)),
             DataCell(SizedBox(
               width: 256,
@@ -341,6 +430,54 @@ class _AddInputsStepState extends State<AddInputsStep> {
       case 2:
         return currentTimetable.rooms
             .map((e) => DataRow(cells: [
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                        builder: (context, innerSetState) {
+                                      return AddRoomDialogWidget(
+                                        innerSetState: innerSetState,
+                                        currentRoom: e,
+                                      );
+                                    });
+                                  });
+                            },
+                            icon: Icon(Icons.edit_rounded)),
+                        IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return DeleteItemConfirmationWidget(
+                                    deletionMsg:
+                                        "Proceed deletion of room item ${e.name}?",
+                                    confirmDelete: () {
+                                      var newRooms = List<Room>.from(
+                                          currentTimetable.rooms);
+                                      newRooms.remove(e);
+
+                                      currentTimetable.rooms = newRooms;
+                                      isarService
+                                          .saveTimetable(currentTimetable)
+                                          .then((value) {
+                                        setState(() {
+                                          currentTimetable;
+                                        });
+                                      });
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.delete_rounded)),
+                      ],
+                    ),
+                  ),
                   DataCell(Text(e.name)),
                   DataCell(
                       Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
@@ -354,6 +491,54 @@ class _AddInputsStepState extends State<AddInputsStep> {
             subjectTags += "$t, ";
           }
           return DataRow(cells: [
+            DataCell(
+              Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return StatefulBuilder(
+                                  builder: (context, innerSetState) {
+                                return AddSubjectDialogWidget(
+                                  innerSetState: innerSetState,
+                                  currentSubject: e,
+                                );
+                              });
+                            });
+                      },
+                      icon: Icon(Icons.edit_rounded)),
+                  IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteItemConfirmationWidget(
+                              deletionMsg:
+                                  "Proceed deletion of subject item ${e.name}?",
+                              confirmDelete: () {
+                                var newSubjects = List<Subject>.from(
+                                    currentTimetable.subjects);
+                                newSubjects.remove(e);
+
+                                currentTimetable.subjects = newSubjects;
+                                isarService
+                                    .saveTimetable(currentTimetable)
+                                    .then((value) {
+                                  setState(() {
+                                    currentTimetable;
+                                  });
+                                });
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete_rounded)),
+                ],
+              ),
+            ),
             DataCell(Text(e.name)),
             DataCell(Text(subjectTags)),
             DataCell(Text(e.units.toString())),
@@ -377,7 +562,6 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                       context,
                                       innerSetState,
                                       e,
-                                      onSaveTagCallback,
                                     );
                                   });
                                 });
@@ -385,212 +569,116 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           icon: Icon(Icons.edit_rounded)),
                       IconButton(
                           onPressed: () {
-                            var newTags =
-                                List<String>.from(currentTimetable.tags);
-                            newTags.remove(e);
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return DeleteItemConfirmationWidget(
+                                  deletionMsg:
+                                      "Proceed deletion of tag item $e?",
+                                  confirmDelete: () {
+                                    var newTags = List<String>.from(
+                                        currentTimetable.tags);
+                                    newTags.remove(e);
 
-                            currentTimetable.tags = newTags;
-                            isarService.saveTimetable(currentTimetable);
-
-                            setState(() {
-                              currentTimetable;
-                            });
+                                    currentTimetable.tags = newTags;
+                                    isarService
+                                        .saveTimetable(currentTimetable)
+                                        .then((value) {
+                                      setState(() {
+                                        currentTimetable;
+                                      });
+                                    });
+                                  },
+                                );
+                              },
+                            );
                           },
                           icon: Icon(Icons.delete_rounded)),
                     ],
                   )),
-                  DataCell(Text(e))
+                  DataCell(Text(e)),
                 ]))
             .toList();
     }
     return [];
   }
+}
 
-//   void addSubjectDataDialog() {
-//     showDialog(
-//         context: context,
-//         builder: (ctx) {
-//           return Dialog(
-//             child: Container(
-//               padding: EdgeInsets.all(16),
-//               height: 800,
-//               width: 500,
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//               ),
-//               child: Column(
-//                 children: [
-//                   // title
-//                   DialogTitleWidget(title: "Add a subject"),
+class DeleteItemConfirmationWidget extends StatelessWidget {
+  final String deletionMsg;
+  final void Function() confirmDelete;
 
-//                   SizedBox(
-//                     height: 16,
-//                   ),
+  const DeleteItemConfirmationWidget({
+    super.key,
+    required this.deletionMsg,
+    required this.confirmDelete,
+  });
 
-//                   Expanded(
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         // subject name
-//                         // tags
-//                         // units
-//                         // type
-//                         DropdownButton(
-//                           items: [
-//                             DropdownMenuItem(
-//                               child: Text("Lecture"),
-//                               value: "lecture",
-//                             ),
-//                             DropdownMenuItem(
-//                               child: Text("Lab"),
-//                               value: "lab",
-//                             ),
-//                           ],
-//                           value: "lecture",
-//                           onChanged: (value) {},
-//                         ),
-//                       ],
-//                     ),
-//                   ),
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: 300,
+        height: 256,
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            // title
+            DialogTitleWidget(title: "Delete confirmation"),
 
-//                   SizedBox(
-//                     height: 16,
-//                   ),
+            // deletion content
+            Expanded(
+              child: Center(
+                child: Text(
+                  deletionMsg,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: Color(0xff2e2e2e),
+                  ),
+                ),
+              ),
+            ),
 
-//                   // controls
-//                   dialogRowControls(context, () {}),
-//                 ],
-//               ),
-//             ),
-//           );
-//         });
-//   }
-
-//   void addRoomDataDialog() {
-//     List<String> roomOpts = ["lecture", "lab"];
-//     String selectedRoomType = "lecture";
-//     TextEditingController roomNameController = TextEditingController();
-
-//     showDialog(
-//       context: context,
-//       builder: (ctx) {
-//         return StatefulBuilder(
-//           builder: (context, innerSetState) {
-//             return Dialog(
-//               child: Container(
-//                 padding: EdgeInsets.all(16),
-//                 decoration: BoxDecoration(
-//                   color: Colors.white,
-//                   borderRadius: BorderRadius.circular(16),
-//                 ),
-//                 width: 400,
-//                 height: 324,
-//                 child: Column(
-//                   children: [
-//                     DialogTitleWidget(title: "Add room data"),
-//                     SizedBox(
-//                       height: 16,
-//                     ),
-//                     Expanded(
-//                       child: Column(
-//                         mainAxisAlignment: MainAxisAlignment.center,
-//                         children: [
-//                           TextField(
-//                             controller: roomNameController,
-//                             decoration: InputDecoration(
-//                               border: OutlineInputBorder(),
-//                               hintText: "Room name",
-//                             ),
-//                           ),
-//                           SizedBox(
-//                             height: 8,
-//                           ),
-//                           SelectionWidget(
-//                               options: roomOpts,
-//                               selected: selectedRoomType,
-//                               selectionCallback: (String value) {
-//                                 innerSetState(() {
-//                                   selectedRoomType = value;
-//                                 });
-//                               }),
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(
-//                       height: 16,
-//                     ),
-//                     dialogRowControls(
-//                       context,
-//                       () {
-//                         setState(() {
-//                           // dataRows[2].add(
-//                           //   DataRow(cells: [
-//                           //     DataCell(Text(roomNameController.text)),
-//                           //     DataCell(Text(selectedRoomType)),
-//                           //   ]),
-//                           // );
-//                         });
-//                       },
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-
-//   void addInstructorDataDialog() {
-//     showDialog(
-//         context: context,
-//         builder: (ctx) {
-//           return Dialog(
-//             child: Container(
-//               padding: EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//               ),
-//               width: 500,
-//               height: 600,
-//               child: Column(
-//                 children: [
-//                   DialogTitleWidget(title: "Add instructor data"),
-//                   SizedBox(
-//                     height: 16,
-//                   ),
-//                   Expanded(
-//                     child: Column(
-//                       children: [
-//                         TextField(
-//                           decoration: InputDecoration(
-//                             border: OutlineInputBorder(),
-//                             hintText: "Name",
-//                           ),
-//                         ),
-//                         TextButton(
-//                           onPressed: () {
-//                             showTimePreferencesDialog();
-//                           },
-//                           child: Text("Time preferences"),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(
-//                     height: 16,
-//                   ),
-//                   dialogRowControls(
-//                     context,
-//                     () {},
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           );
-//         });
-//   }
+            // dialog controls
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      "Cancel",
+                      style: GoogleFonts.inter(
+                        color: kDarkGrayColor,
+                      ),
+                    )),
+                SizedBox(
+                  width: 12,
+                ),
+                FilledButton(
+                  onPressed: () {
+                    confirmDelete();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Proceed",
+                    style: GoogleFonts.inter(),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(kLightGrayColor),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
