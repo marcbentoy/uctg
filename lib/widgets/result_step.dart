@@ -213,7 +213,7 @@ class ResultStepState extends State<ResultStep> {
                     width: 4,
                   ),
                   SelectionWidget(
-                    options: ["section", "instructor", "room"],
+                    options: const ["section", "instructor", "room"],
                     selected: selectedView,
                     selectionCallback: (value) {
                       setState(() {
@@ -336,7 +336,7 @@ class ResultStepState extends State<ResultStep> {
             maxWidth: MediaQuery.of(context).size.width - 50,
           ),
           child: TimetableView(
-            timetableStyle: TimetableStyle(
+            timetableStyle: const TimetableStyle(
               timeItemHeight: 100,
             ),
             laneEventsList: laneEvents,

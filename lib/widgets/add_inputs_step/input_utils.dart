@@ -17,7 +17,7 @@ Widget dialogRowControls(BuildContext context, Function saveClickFunction) {
           ),
         ),
       ),
-      SizedBox(
+      const SizedBox(
         width: 8,
       ),
       FilledButton(

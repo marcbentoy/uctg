@@ -140,7 +140,8 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
                 hour: startTime.hour + Duration(hours: hour).inHours,
-                minute: startTime.minute + Duration(minutes: 30).inMinutes,
+                minute:
+                    startTime.minute + const Duration(minutes: 30).inMinutes,
               );
               t.endTime = t.startTime.copyWith(
                 hour: Duration(hours: t.startTime.hour + 1).inHours,
@@ -175,151 +176,152 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         width: 400,
-        height: 800,
+        height: 500,
         child: Column(
           children: [
-            DialogTitleWidget(title: "Add section data"),
-            SizedBox(
+            // title
+            const DialogTitleWidget(title: "Add section data"),
+
+            const SizedBox(
               height: 16,
             ),
+
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Section name",
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Section name",
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(builder: (context, innerSetState) {
-                      return SubjectsSelectionWidget(
-                        currentSelectedSubjects: selectedSubjects,
-                        innerSetState: innerSetState,
-                        onSaveCallback: onSaveCallback,
-                      );
-                    });
-                  },
-                );
-              },
-              child: Text("Select subjects"),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: selectedSubjects.isEmpty
-                      ? [
-                          EmptyChipPlaceholder(
-                            title: "No subjects selected",
-                          ),
-                        ]
-                      : selectedSubjects
-                          .map(
-                            (e) => Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Chip(
-                                label: Text(
-                                  e.name,
-                                  style: GoogleFonts.inter(),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            SelectionWidget(
-              options: ["day", "night"],
-              selected: selectedShift,
-              selectionCallback: (value) {
-                widget.innerSetState(() {
-                  selectedShift = value;
-                });
-              },
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(
-                        builder: (context, nestedInnerSetState) {
-                      return TimeslotWeekSelectionWidget(
-                        currentSelectedTimeslots: selectedBoolTimeslots,
-                        onChangedCallback: onChangeTimeslotCallback,
-                        innerSetState: nestedInnerSetState,
-                      );
-                    });
-                  },
-                );
-              },
-              child: Text("Select timeslots"),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: timeslots.isEmpty
-                      ? [
-                          EmptyChipPlaceholder(
-                            title: "No timeslots selected",
-                          ),
-                        ]
-                      : timeslots
-                          .map((e) => Padding(
-                                padding: EdgeInsets.all(4),
-                                child: Chip(
-                                  label: Text(
-                                    e.timeCode,
-                                    style: GoogleFonts.inter(),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                                builder: (context, innerSetState) {
+                              return SubjectsSelectionWidget(
+                                currentSelectedSubjects: selectedSubjects,
+                                innerSetState: innerSetState,
+                                onSaveCallback: onSaveCallback,
+                              );
+                            });
+                          },
+                        );
+                      },
+                      child: const Text("Select subjects"),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: selectedSubjects.isEmpty
+                              ? [
+                                  const EmptyChipPlaceholder(
+                                    title: "No subjects selected",
                                   ),
-                                ),
-                              ))
-                          .toList(),
+                                ]
+                              : selectedSubjects
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Chip(
+                                        label: Text(
+                                          e.name,
+                                          style: GoogleFonts.inter(),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    SelectionWidget(
+                      options: const ["day", "night"],
+                      selected: selectedShift,
+                      selectionCallback: (value) {
+                        widget.innerSetState(() {
+                          selectedShift = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                                builder: (context, nestedInnerSetState) {
+                              return TimeslotWeekSelectionWidget(
+                                currentSelectedTimeslots: selectedBoolTimeslots,
+                                onChangedCallback: onChangeTimeslotCallback,
+                                innerSetState: nestedInnerSetState,
+                              );
+                            });
+                          },
+                        );
+                      },
+                      child: const Text("Select timeslots"),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: timeslots.isEmpty
+                              ? [
+                                  const EmptyChipPlaceholder(
+                                    title: "No timeslots selected",
+                                  ),
+                                ]
+                              : timeslots
+                                  .map((e) => Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Chip(
+                                          label: Text(
+                                            e.timeCode,
+                                            style: GoogleFonts.inter(),
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            SizedBox(
+
+            const SizedBox(
               height: 16,
             ),
-            SizedBox(
-              height: 16,
-            ),
+
             dialogRowControls(
               context,
               () {

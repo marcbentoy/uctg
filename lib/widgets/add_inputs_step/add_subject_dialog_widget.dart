@@ -59,9 +59,9 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
 
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
-        height: 800,
-        width: 500,
+        padding: const EdgeInsets.all(16),
+        width: 400,
+        height: 500,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -70,117 +70,124 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // title
-            DialogTitleWidget(title: "Add a subject"),
+            const DialogTitleWidget(title: "Add a subject"),
 
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // subject name
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Name",
-                    ),
-                  ),
-
-                  SizedBox(
-                    height: 16,
-                  ),
-
-                  // tags
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return StatefulBuilder(
-                              builder: (context, innerSetState) {
-                            return TagsSelectionWidget(
-                              currentSelectedTags: selectedTags,
-                              innerSetState: innerSetState,
-                              onSaveCallback: onSaveCallback,
-                            );
-                          });
-                        },
-                      );
-                    },
-                    child: Text("Select tags"),
-                  ),
-                  SizedBox(
-                    height: 4,
-                  ),
-
-                  SizedBox(
-                    height: 200,
-                    child: SingleChildScrollView(
-                      child: Wrap(
-                        children: selectedTags.isEmpty
-                            ? [
-                                EmptyChipPlaceholder(
-                                  title: "No tags selected",
-                                ),
-                              ]
-                            : selectedTags
-                                .map(
-                                  (e) => Padding(
-                                    padding: const EdgeInsets.all(4),
-                                    child: Chip(
-                                      label: Text(
-                                        e,
-                                        style: GoogleFonts.inter(),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // subject name
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Name",
                       ),
                     ),
-                  ),
 
-                  SizedBox(
-                    height: 16,
-                  ),
-
-                  // units
-                  TextField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    controller: unitsController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "units",
+                    const SizedBox(
+                      height: 16,
                     ),
-                  ),
 
-                  SizedBox(
-                    height: 16,
-                  ),
+                    // tags
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                                builder: (context, innerSetState) {
+                              return TagsSelectionWidget(
+                                currentSelectedTags: selectedTags,
+                                innerSetState: innerSetState,
+                                onSaveCallback: onSaveCallback,
+                              );
+                            });
+                          },
+                        );
+                      },
+                      child: const Text("Select tags"),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
 
-                  // type
-                  Text(
-                    "Subject Type",
-                    style: GoogleFonts.inter(),
-                  ),
-                  SelectionWidget(
-                      options: ["lecture", "lab"],
-                      selected: selectedType,
-                      selectionCallback: (value) {
-                        widget.innerSetState(() {
-                          selectedType = value;
-                        });
-                      }),
-                ],
+                    SizedBox(
+                      height: 120,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: selectedTags.isEmpty
+                              ? [
+                                  const EmptyChipPlaceholder(
+                                    title: "No tags selected",
+                                  ),
+                                ]
+                              : selectedTags
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Chip(
+                                        label: Text(
+                                          e,
+                                          style: GoogleFonts.inter(),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+
+                    // units
+                    TextField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      controller: unitsController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "units",
+                      ),
+                    ),
+
+                    const SizedBox(
+                      height: 16,
+                    ),
+
+                    // type
+                    Text(
+                      "Subject Type",
+                      style: GoogleFonts.inter(),
+                    ),
+
+                    const SizedBox(
+                      height: 4,
+                    ),
+
+                    SelectionWidget(
+                        options: const ["lecture", "lab"],
+                        selected: selectedType,
+                        selectionCallback: (value) {
+                          widget.innerSetState(() {
+                            selectedType = value;
+                          });
+                        }),
+                  ],
+                ),
               ),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 

@@ -13,8 +13,8 @@ void main() async {
   // Must add this line.
   await windowManager.ensureInitialized();
 
-  WindowOptions windowOptions = WindowOptions(
-    size: Size(1200, 1000),
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(1000, 800),
     center: true,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -22,7 +22,7 @@ void main() async {
     await windowManager.focus();
   });
 
-  windowManager.setMinimumSize(Size(1200, 1000));
+  windowManager.setMinimumSize(const Size(1000, 800));
 
   currentTimetable = Timetable()..name = "";
   runApp(const UctgApp());

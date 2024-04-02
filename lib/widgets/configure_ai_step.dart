@@ -122,7 +122,7 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly
                             ],
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               hintText: "size ex. 100",
                             ),
@@ -149,7 +149,7 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                     style: GoogleFonts.inter(),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 FilledButton(

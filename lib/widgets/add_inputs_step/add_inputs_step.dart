@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step/add_instructor_dialog_widget.dart';
@@ -8,7 +7,10 @@ import 'package:uctg/widgets/add_inputs_step/add_room_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_section_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_subject_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_tag_dialog_widget.dart';
-import 'package:uctg/widgets/add_inputs_step/dialog_title_widget.dart';
+
+import 'add_generator_input_button_widget.dart';
+import 'delete_item_confirmation_widget.dart';
+import 'generator_input_item.dart';
 
 class AddInputsStep extends StatefulWidget {
   const AddInputsStep({
@@ -19,66 +21,7 @@ class AddInputsStep extends StatefulWidget {
   State<AddInputsStep> createState() => _AddInputsStepState();
 }
 
-class InputItem extends StatelessWidget {
-  final IconData icon;
-  final String itemName;
-  final int index;
-  final int currentIndex;
-  final void Function(int) clickCallback;
-
-  const InputItem({
-    super.key,
-    required this.icon,
-    required this.itemName,
-    required this.index,
-    required this.currentIndex,
-    required this.clickCallback,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: GestureDetector(
-        onTap: () {
-          clickCallback(index);
-        },
-        child: Container(
-          height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: index == currentIndex ? kLightGrayColor : Colors.white,
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: index == currentIndex ? Colors.white : Colors.black38,
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                itemName,
-                style: GoogleFonts.inter(
-                  color:
-                      index == currentIndex ? Colors.white : Color(0xff2e2e2e),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _AddInputsStepState extends State<AddInputsStep> {
-  // bool _isDragging = false;
-  List<String?> csvFiles = [];
-
   List inputItems = [
     ["Sections", Icons.category_rounded],
     ["Instructors", Icons.assignment_ind_rounded],
@@ -90,7 +33,6 @@ class _AddInputsStepState extends State<AddInputsStep> {
   int currentSelectedInput = 0;
 
   void inputItemCallback(int index) {
-    debugPrint("item clicked $index");
     setState(() {
       currentSelectedInput = index;
     });
@@ -147,7 +89,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           ),
         ),
 
-        SizedBox(
+        const SizedBox(
           height: 16,
         ),
 
@@ -161,7 +103,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
               child: ListView.builder(
                 itemCount: inputItems.length,
                 itemBuilder: (ctx, index) {
-                  return InputItem(
+                  return GeneratorInputItem(
                     icon: inputItems[index][1],
                     itemName: inputItems[index][0],
                     index: index,
@@ -179,75 +121,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                   Row(
                     children: [
                       // add row data
-                      FilledButton(
-                        onPressed: () {
-                          switch (currentSelectedInput) {
-                            case 0:
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                        builder: (context, innerSetState) {
-                                      return AddSectionDialogWidget(
-                                        innerSetState: innerSetState,
-                                      );
-                                    });
-                                  });
-                            case 1:
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                        builder: (context, innerSetState) {
-                                      return AddInstructorDialogWidget(
-                                          innerSetState: innerSetState);
-                                    });
-                                  });
-                            case 2:
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return StatefulBuilder(
-                                    builder: (context, innerSetState) {
-                                      return AddRoomDialogWidget(
-                                          innerSetState: innerSetState);
-                                    },
-                                  );
-                                },
-                              );
-                            case 3:
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                        builder: (context, innerSetState) {
-                                      return AddSubjectDialogWidget(
-                                        innerSetState: innerSetState,
-                                      );
-                                    });
-                                  });
-                            case 4:
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                        builder: (context, innerSetState) {
-                                      return addTagDataDialogWidget(
-                                        context,
-                                        innerSetState,
-                                        null,
-                                      );
-                                    });
-                                  });
-                          }
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                            kLightGrayColor,
-                          ),
-                        ),
-                        child: const Text("Add Data"),
-                      ),
+                      AddGeneratorInputButtonWidget(
+                          currentSelectedInput: currentSelectedInput),
                     ],
                   ),
 
@@ -290,68 +165,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
             timeslotsCodes += "${s.timeCode}, ";
           }
 
-          return DataRow(cells: [
-            DataCell(
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        // TODO : edit section dialog
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(
-                                  builder: (context, innerSetState) {
-                                return AddSectionDialogWidget(
-                                  innerSetState: innerSetState,
-                                  currentSection: e,
-                                );
-                              });
-                            });
-                      },
-                      icon: Icon(Icons.edit_rounded)),
-                  IconButton(
-                      onPressed: () {
-                        // TODO : delete section confirmation dialog
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeleteItemConfirmationWidget(
-                              deletionMsg:
-                                  "Proceed deletion of section item ${e.name}?",
-                              confirmDelete: () {
-                                var newSections = List<Section>.from(
-                                    currentTimetable.sections);
-                                newSections.remove(e);
-
-                                currentTimetable.sections = newSections;
-                                isarService
-                                    .saveTimetable(currentTimetable)
-                                    .then((value) {
-                                  setState(() {
-                                    currentTimetable;
-                                  });
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete_rounded)),
-                ],
-              ),
-            ),
-            DataCell(Text(e.name)),
-            DataCell(Text(subjects)),
-            DataCell(Text(e.shift)),
-            DataCell(SizedBox(
-              width: 256,
-              child: Text(
-                timeslotsCodes,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )),
-          ]);
+          return getSectionDataRow(e, subjects, timeslotsCodes);
         }).toList();
       // instructors
       case 1:
@@ -366,123 +180,11 @@ class _AddInputsStepState extends State<AddInputsStep> {
             expertise += "$ex, ";
           }
 
-          return DataRow(cells: [
-            DataCell(
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(
-                                  builder: (context, innerSetState) {
-                                return AddInstructorDialogWidget(
-                                  innerSetState: innerSetState,
-                                  currentInstructor: e,
-                                );
-                              });
-                            });
-                      },
-                      icon: Icon(Icons.edit_rounded)),
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeleteItemConfirmationWidget(
-                              deletionMsg:
-                                  "Proceed deletion of intructor item ${e.name}?",
-                              confirmDelete: () {
-                                var newInstructors = List<Instructor>.from(
-                                    currentTimetable.instructors);
-                                newInstructors.remove(e);
-
-                                currentTimetable.instructors = newInstructors;
-                                isarService
-                                    .saveTimetable(currentTimetable)
-                                    .then((value) {
-                                  setState(() {
-                                    currentTimetable;
-                                  });
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete_rounded)),
-                ],
-              ),
-            ),
-            DataCell(Text(e.name)),
-            DataCell(SizedBox(
-              width: 256,
-              child: Text(
-                timePreferences,
-                overflow: TextOverflow.ellipsis,
-              ),
-            )),
-            DataCell(Text(expertise)),
-          ]);
+          return getInstructorDataRow(e, timePreferences, expertise);
         }).toList();
       // rooms
       case 2:
-        return currentTimetable.rooms
-            .map((e) => DataRow(cells: [
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return StatefulBuilder(
-                                        builder: (context, innerSetState) {
-                                      return AddRoomDialogWidget(
-                                        innerSetState: innerSetState,
-                                        currentRoom: e,
-                                      );
-                                    });
-                                  });
-                            },
-                            icon: Icon(Icons.edit_rounded)),
-                        IconButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return DeleteItemConfirmationWidget(
-                                    deletionMsg:
-                                        "Proceed deletion of room item ${e.name}?",
-                                    confirmDelete: () {
-                                      var newRooms = List<Room>.from(
-                                          currentTimetable.rooms);
-                                      newRooms.remove(e);
-
-                                      currentTimetable.rooms = newRooms;
-                                      isarService
-                                          .saveTimetable(currentTimetable)
-                                          .then((value) {
-                                        setState(() {
-                                          currentTimetable;
-                                        });
-                                      });
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            icon: Icon(Icons.delete_rounded)),
-                      ],
-                    ),
-                  ),
-                  DataCell(Text(e.name)),
-                  DataCell(
-                      Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
-                ]))
-            .toList();
+        return currentTimetable.rooms.map((e) => getRoomDataRow(e)).toList();
       // subjects
       case 3:
         return currentTimetable.subjects.map((e) {
@@ -490,195 +192,301 @@ class _AddInputsStepState extends State<AddInputsStep> {
           for (var t in e.tags) {
             subjectTags += "$t, ";
           }
-          return DataRow(cells: [
-            DataCell(
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return StatefulBuilder(
-                                  builder: (context, innerSetState) {
-                                return AddSubjectDialogWidget(
-                                  innerSetState: innerSetState,
-                                  currentSubject: e,
-                                );
-                              });
-                            });
-                      },
-                      icon: Icon(Icons.edit_rounded)),
-                  IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeleteItemConfirmationWidget(
-                              deletionMsg:
-                                  "Proceed deletion of subject item ${e.name}?",
-                              confirmDelete: () {
-                                var newSubjects = List<Subject>.from(
-                                    currentTimetable.subjects);
-                                newSubjects.remove(e);
-
-                                currentTimetable.subjects = newSubjects;
-                                isarService
-                                    .saveTimetable(currentTimetable)
-                                    .then((value) {
-                                  setState(() {
-                                    currentTimetable;
-                                  });
-                                });
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete_rounded)),
-                ],
-              ),
-            ),
-            DataCell(Text(e.name)),
-            DataCell(Text(subjectTags)),
-            DataCell(Text(e.units.toString())),
-            DataCell(Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
-          ]);
+          return getSubjectDataRow(e, subjectTags);
         }).toList();
       // tags
       case 4:
-        return currentTimetable.tags
-            .map((e) => DataRow(cells: [
-                  DataCell(Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return StatefulBuilder(
-                                      builder: (context, innerSetState) {
-                                    return addTagDataDialogWidget(
-                                      context,
-                                      innerSetState,
-                                      e,
-                                    );
-                                  });
-                                });
-                          },
-                          icon: Icon(Icons.edit_rounded)),
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return DeleteItemConfirmationWidget(
-                                  deletionMsg:
-                                      "Proceed deletion of tag item $e?",
-                                  confirmDelete: () {
-                                    var newTags = List<String>.from(
-                                        currentTimetable.tags);
-                                    newTags.remove(e);
-
-                                    currentTimetable.tags = newTags;
-                                    isarService
-                                        .saveTimetable(currentTimetable)
-                                        .then((value) {
-                                      setState(() {
-                                        currentTimetable;
-                                      });
-                                    });
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          icon: Icon(Icons.delete_rounded)),
-                    ],
-                  )),
-                  DataCell(Text(e)),
-                ]))
-            .toList();
+        return currentTimetable.tags.map((e) => getTagDataRow(e)).toList();
     }
     return [];
   }
-}
 
-class DeleteItemConfirmationWidget extends StatelessWidget {
-  final String deletionMsg;
-  final void Function() confirmDelete;
-
-  const DeleteItemConfirmationWidget({
-    super.key,
-    required this.deletionMsg,
-    required this.confirmDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        width: 300,
-        height: 256,
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            // title
-            DialogTitleWidget(title: "Delete confirmation"),
-
-            // deletion content
-            Expanded(
-              child: Center(
-                child: Text(
-                  deletionMsg,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Color(0xff2e2e2e),
-                  ),
-                ),
-              ),
-            ),
-
-            // dialog controls
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      "Cancel",
-                      style: GoogleFonts.inter(
-                        color: kDarkGrayColor,
-                      ),
-                    )),
-                SizedBox(
-                  width: 12,
-                ),
-                FilledButton(
+  DataRow getSectionDataRow(Section e, String subjects, String timeslotsCodes) {
+    return DataRow(
+      cells: [
+        DataCell(
+          Row(
+            children: [
+              IconButton(
                   onPressed: () {
-                    confirmDelete();
-                    Navigator.of(context).pop();
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return StatefulBuilder(
+                              builder: (context, innerSetState) {
+                            return AddSectionDialogWidget(
+                              innerSetState: innerSetState,
+                              currentSection: e,
+                            );
+                          });
+                        });
                   },
-                  child: Text(
-                    "Proceed",
-                    style: GoogleFonts.inter(),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(kLightGrayColor),
-                  ),
-                ),
-              ],
-            ),
+                  icon: const Icon(Icons.edit_rounded)),
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return DeleteItemConfirmationWidget(
+                          deletionMsg:
+                              "Proceed deletion of section item ${e.name}?",
+                          confirmDelete: () {
+                            var newSections =
+                                List<Section>.from(currentTimetable.sections);
+                            newSections.remove(e);
+
+                            currentTimetable.sections = newSections;
+                            isarService
+                                .saveTimetable(currentTimetable)
+                                .then((value) {
+                              setState(() {
+                                currentTimetable;
+                              });
+                            });
+                          },
+                        );
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.delete_rounded)),
+            ],
+          ),
+        ),
+        DataCell(Text(e.name)),
+        DataCell(Text(subjects)),
+        DataCell(Text(e.shift)),
+        DataCell(SizedBox(
+          width: 256,
+          child: Text(
+            timeslotsCodes,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )),
+      ],
+    );
+  }
+
+  DataRow getInstructorDataRow(
+      Instructor e, String timePreferences, String expertise) {
+    return DataRow(cells: [
+      DataCell(
+        Row(
+          children: [
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(
+                            builder: (context, innerSetState) {
+                          return AddInstructorDialogWidget(
+                            innerSetState: innerSetState,
+                            currentInstructor: e,
+                          );
+                        });
+                      });
+                },
+                icon: const Icon(Icons.edit_rounded)),
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return DeleteItemConfirmationWidget(
+                        deletionMsg:
+                            "Proceed deletion of intructor item ${e.name}?",
+                        confirmDelete: () {
+                          var newInstructors = List<Instructor>.from(
+                              currentTimetable.instructors);
+                          newInstructors.remove(e);
+
+                          currentTimetable.instructors = newInstructors;
+                          isarService
+                              .saveTimetable(currentTimetable)
+                              .then((value) {
+                            setState(() {
+                              currentTimetable;
+                            });
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.delete_rounded)),
           ],
         ),
       ),
-    );
+      DataCell(Text(e.name)),
+      DataCell(SizedBox(
+        width: 256,
+        child: Text(
+          timePreferences,
+          overflow: TextOverflow.ellipsis,
+        ),
+      )),
+      DataCell(Text(expertise)),
+    ]);
+  }
+
+  DataRow getRoomDataRow(Room e) {
+    return DataRow(cells: [
+      DataCell(
+        Row(
+          children: [
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(
+                            builder: (context, innerSetState) {
+                          return AddRoomDialogWidget(
+                            innerSetState: innerSetState,
+                            currentRoom: e,
+                          );
+                        });
+                      });
+                },
+                icon: const Icon(Icons.edit_rounded)),
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return DeleteItemConfirmationWidget(
+                        deletionMsg: "Proceed deletion of room item ${e.name}?",
+                        confirmDelete: () {
+                          var newRooms =
+                              List<Room>.from(currentTimetable.rooms);
+                          newRooms.remove(e);
+
+                          currentTimetable.rooms = newRooms;
+                          isarService
+                              .saveTimetable(currentTimetable)
+                              .then((value) {
+                            setState(() {
+                              currentTimetable;
+                            });
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.delete_rounded)),
+          ],
+        ),
+      ),
+      DataCell(Text(e.name)),
+      DataCell(Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
+    ]);
+  }
+
+  DataRow getTagDataRow(String e) {
+    return DataRow(cells: [
+      DataCell(Row(
+        children: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return StatefulBuilder(builder: (context, innerSetState) {
+                        return addTagDataDialogWidget(
+                          context,
+                          innerSetState,
+                          e,
+                        );
+                      });
+                    });
+              },
+              icon: const Icon(Icons.edit_rounded)),
+          IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return DeleteItemConfirmationWidget(
+                      deletionMsg: "Proceed deletion of tag item $e?",
+                      confirmDelete: () {
+                        var newTags = List<String>.from(currentTimetable.tags);
+                        newTags.remove(e);
+
+                        currentTimetable.tags = newTags;
+                        isarService
+                            .saveTimetable(currentTimetable)
+                            .then((value) {
+                          setState(() {
+                            currentTimetable;
+                          });
+                        });
+                      },
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.delete_rounded)),
+        ],
+      )),
+      DataCell(Text(e)),
+    ]);
+  }
+
+  DataRow getSubjectDataRow(Subject e, String subjectTags) {
+    return DataRow(cells: [
+      DataCell(
+        Row(
+          children: [
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(
+                            builder: (context, innerSetState) {
+                          return AddSubjectDialogWidget(
+                            innerSetState: innerSetState,
+                            currentSubject: e,
+                          );
+                        });
+                      });
+                },
+                icon: const Icon(Icons.edit_rounded)),
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return DeleteItemConfirmationWidget(
+                        deletionMsg:
+                            "Proceed deletion of subject item ${e.name}?",
+                        confirmDelete: () {
+                          var newSubjects =
+                              List<Subject>.from(currentTimetable.subjects);
+                          newSubjects.remove(e);
+
+                          currentTimetable.subjects = newSubjects;
+                          isarService
+                              .saveTimetable(currentTimetable)
+                              .then((value) {
+                            setState(() {
+                              currentTimetable;
+                            });
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.delete_rounded)),
+          ],
+        ),
+      ),
+      DataCell(Text(e.name)),
+      DataCell(Text(subjectTags)),
+      DataCell(Text(e.units.toString())),
+      DataCell(Text(e.type == SubjectType.lecture ? "lecture" : "lab")),
+    ]);
   }
 }

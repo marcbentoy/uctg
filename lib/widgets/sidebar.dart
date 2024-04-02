@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomSidebar extends StatefulWidget {
   final Function(int) onItemSelected;
-  final Function(int) newTimetableClickCallback;
+  final Function() newTimetableClickCallback;
   final Function(int) deleteTimetableCallback;
   final int currentSelectedTimetableIndex;
 
@@ -58,7 +58,7 @@ class _CustomSidebarState extends State<CustomSidebar> {
                       height: 36,
                       width: 36,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Text(
@@ -99,13 +99,9 @@ class _CustomSidebarState extends State<CustomSidebar> {
             child: GestureDetector(
               onTap: () {
                 Timetable t = Timetable();
+                t.name = "Unnamed Timetable";
                 isarService.saveTimetable(t);
-
-                setState(() {
-                  timetables;
-                });
-
-                widget.newTimetableClickCallback(timetables.length - 1);
+                widget.newTimetableClickCallback();
               },
               child: Container(
                 height: 48,

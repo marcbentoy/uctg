@@ -6,7 +6,7 @@ import 'package:uctg/generator/generator.dart';
 import 'package:uctg/main.dart';
 
 class GenerationStep extends StatefulWidget {
-  GenerationStep({super.key});
+  const GenerationStep({super.key});
 
   @override
   State<GenerationStep> createState() => _GenerationStepState();
@@ -47,7 +47,7 @@ class _GenerationStepState extends State<GenerationStep> {
   List<(bool, String)> sConstraints = [
     (
       false,
-      "1. A schedule's timeslot coincides with the instructor's preffered timeslot"
+      "1. A schedule's timeslot coincides with the instructor's preferred timeslot"
     ),
   ];
 
@@ -66,7 +66,7 @@ class _GenerationStepState extends State<GenerationStep> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 
@@ -76,19 +76,19 @@ class _GenerationStepState extends State<GenerationStep> {
                   "Generation: ${currentTimetable.generationCount}",
                   style: GoogleFonts.inter(),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 4,
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             Text(
               "Best Individual: ${currentTimetable.fittestIndividual.score}",
               style: GoogleFonts.inter(),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 
@@ -97,7 +97,7 @@ class _GenerationStepState extends State<GenerationStep> {
               "Hard Constraints",
               style: GoogleFonts.inter(),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
 
@@ -122,7 +122,7 @@ class _GenerationStepState extends State<GenerationStep> {
                   .toList(),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 
@@ -131,7 +131,7 @@ class _GenerationStepState extends State<GenerationStep> {
               "Soft Constraints",
               style: GoogleFonts.inter(),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
 
@@ -155,13 +155,15 @@ class _GenerationStepState extends State<GenerationStep> {
                   .toList(),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: 24,
             ),
 
-            isGenerating ? LinearProgressIndicator() : SizedBox.shrink(),
+            isGenerating
+                ? const LinearProgressIndicator()
+                : const SizedBox.shrink(),
 
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
 
@@ -186,11 +188,12 @@ class _GenerationStepState extends State<GenerationStep> {
                     isGenerating ? "Stop Generating" : "Generate",
                     style: GoogleFonts.inter(
                       fontWeight: FontWeight.bold,
-                      color: isGenerating ? Colors.white : Color(0xff1D453E),
+                      color:
+                          isGenerating ? Colors.white : const Color(0xff1D453E),
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 16,
                 ),
               ],

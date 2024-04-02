@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
@@ -140,7 +139,8 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
                 hour: startTime.hour + Duration(hours: hour).inHours,
-                minute: startTime.minute + Duration(minutes: 30).inMinutes,
+                minute:
+                    startTime.minute + const Duration(minutes: 30).inMinutes,
               );
               t.endTime = t.startTime.copyWith(
                 hour: Duration(hours: t.startTime.hour + 1).inHours,
@@ -175,134 +175,134 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
 
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         width: 400,
-        height: 800,
+        height: 500,
         child: Column(
           children: [
-            DialogTitleWidget(title: "Add instructor data"),
-            SizedBox(
+            const DialogTitleWidget(title: "Add instructor data"),
+            const SizedBox(
               height: 16,
             ),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Instructor name",
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Instructor name",
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(
-                        builder: (context, nestedInnerSetState) {
-                      return TimeslotWeekSelectionWidget(
-                        currentSelectedTimeslots: selectedBoolTimeslots,
-                        onChangedCallback: onChangeTimeslotCallback,
-                        innerSetState: nestedInnerSetState,
-                      );
-                    });
-                  },
-                );
-              },
-              child: Text("Select timeslots"),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: timeslots.isEmpty
-                      ? [
-                          EmptyChipPlaceholder(
-                            title: "No timeslots selected",
-                          ),
-                        ]
-                      : timeslots
-                          .map((e) => Padding(
-                                padding: EdgeInsets.all(4),
-                                child: Chip(
-                                  label: Text(
-                                    e.timeCode,
-                                    style: GoogleFonts.inter(),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                                builder: (context, nestedInnerSetState) {
+                              return TimeslotWeekSelectionWidget(
+                                currentSelectedTimeslots: selectedBoolTimeslots,
+                                onChangedCallback: onChangeTimeslotCallback,
+                                innerSetState: nestedInnerSetState,
+                              );
+                            });
+                          },
+                        );
+                      },
+                      child: const Text("Select timeslots"),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: timeslots.isEmpty
+                              ? [
+                                  const EmptyChipPlaceholder(
+                                    title: "No timeslots selected",
                                   ),
-                                ),
-                              ))
-                          .toList(),
+                                ]
+                              : timeslots
+                                  .map((e) => Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Chip(
+                                          label: Text(
+                                            e.timeCode,
+                                            style: GoogleFonts.inter(),
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return StatefulBuilder(
+                                builder: (context, innerSetState) {
+                              return TagsSelectionWidget(
+                                currentSelectedTags: selectedTags,
+                                innerSetState: innerSetState,
+                                onSaveCallback: onSaveCallback,
+                              );
+                            });
+                          },
+                        );
+                      },
+                      child: const Text("Select expertise"),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    SizedBox(
+                      height: 200,
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          children: selectedTags.isEmpty
+                              ? [
+                                  const EmptyChipPlaceholder(
+                                    title: "No expertise selected",
+                                  ),
+                                ]
+                              : selectedTags
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.all(4),
+                                      child: Chip(
+                                        label: Text(
+                                          e,
+                                          style: GoogleFonts.inter(),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            SizedBox(
-              height: 16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(builder: (context, innerSetState) {
-                      return TagsSelectionWidget(
-                        currentSelectedTags: selectedTags,
-                        innerSetState: innerSetState,
-                        onSaveCallback: onSaveCallback,
-                      );
-                    });
-                  },
-                );
-              },
-              child: Text("Select expertise"),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                child: Wrap(
-                  children: selectedTags.isEmpty
-                      ? [
-                          EmptyChipPlaceholder(
-                            title: "No expertise selected",
-                          ),
-                        ]
-                      : selectedTags
-                          .map(
-                            (e) => Padding(
-                              padding: const EdgeInsets.all(4),
-                              child: Chip(
-                                label: Text(
-                                  e,
-                                  style: GoogleFonts.inter(),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                ),
-              ),
-            ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             dialogRowControls(
@@ -312,7 +312,7 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
                   Instructor instructorToAdd = Instructor();
                   instructorToAdd.name = nameController.text;
                   instructorToAdd.expertise = selectedTags;
-                  instructorToAdd.timePreferences = timeslots; // TODO : update
+                  instructorToAdd.timePreferences = timeslots;
 
                   var newInstructors =
                       List<Instructor>.from(currentTimetable.instructors);

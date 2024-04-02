@@ -34,7 +34,7 @@ class _MultiSelectWidgetState extends State<MultiSelectWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: DialogTitleWidget(
+      title: const DialogTitleWidget(
         title: "Select subjects",
       ),
       content: SingleChildScrollView(

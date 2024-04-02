@@ -42,8 +42,9 @@ class _SelectionWidgetState extends State<SelectionWidget> {
               child: Text(
                 e,
                 style: GoogleFonts.inter(
-                  color:
-                      e == widget.selected ? Colors.white : Color(0xff2e2e2e),
+                  color: e == widget.selected
+                      ? Colors.white
+                      : const Color(0xff2e2e2e),
                 ),
               ),
             );

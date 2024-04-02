@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
+import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
 import 'package:uctg/widgets/generation_step.dart';
@@ -28,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
           'Add Inputs',
           style: GoogleFonts.inter(),
         ),
-        content: timetables.isEmpty ? SizedBox.shrink() : AddInputsStep(),
+        content: timetables.isEmpty
+            ? const SizedBox.shrink()
+            : const AddInputsStep(),
         isActive: true,
       ),
 
@@ -38,17 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
           'Configure Generator',
           style: GoogleFonts.inter(),
         ),
-        content: ConfigureAiStep(),
+        content: const ConfigureAiStep(),
         isActive: true,
       ),
-
-      // set termination condition step
-      // removed for now
-      // Step(
-      //   title: Text('Termination Condition'),
-      //   content: TerminationConditionStep(),
-      //   isActive: true,
-      // ),
 
       // generation step
       Step(
@@ -56,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Generation',
           style: GoogleFonts.inter(),
         ),
-        content: GenerationStep(),
+        content: const GenerationStep(),
         isActive: true,
       ),
 
@@ -66,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Results',
           style: GoogleFonts.inter(),
         ),
-        content: ResultStep(),
+        content: const ResultStep(),
         isActive: true,
       ),
     ];
@@ -75,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     isarService.listenToTimetables().listen((event) {
       setState(() {
         timetables = event;
@@ -95,33 +92,36 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     void onItemSelectedCallback(int value) {
       setState(() {
+        timetables;
+        currentTimetable = timetables[value];
         currentSelectedTimetableIndex = value;
-        currentTimetable = timetables[currentSelectedTimetableIndex];
-        getSteps();
       });
     }
 
-    void onNewTimetableClick(int value) {
+    void onNewTimetableClick() {
+      debugPrint("Timetables length: ${timetables.length}");
       setState(() {
-        currentSelectedTimetableIndex = value;
-      });
-      if (timetables.isNotEmpty) {
-        debugPrint("Printing tags");
-        if (timetables[currentSelectedTimetableIndex].tags.isNotEmpty) {
-          debugPrint(timetables[currentSelectedTimetableIndex].tags.first);
+        if (timetables.isEmpty) {
+          currentTimetable = Timetable()..name = "No timetable";
+          return;
         }
-      }
+        timetables;
+        currentSelectedTimetableIndex = timetables.length - 1;
+        currentTimetable = timetables[currentSelectedTimetableIndex];
+      });
+      debugPrint("Timetables length: ${timetables.length}");
     }
 
-    void onDeleteTimetableCallback(int value) {
-      isarService.deleteTimetable(value);
-      setState(() {
-        currentSelectedTimetableIndex = 0;
+    void onDeleteTimetableCallback(int id) async {
+      isarService.deleteTimetable(id).then((value) {
+        setState(() {
+          if (timetables.isEmpty) {
+            currentSelectedTimetableIndex = -1;
+            return;
+          }
+          timetables;
+        });
       });
-      debugPrint("Deletion process done.");
-      for (var t in timetables) {
-        debugPrint(t.name);
-      }
     }
 
     return Scaffold(
@@ -160,10 +160,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       (timetables.isEmpty ||
                               currentSelectedTimetableIndex == -1)
                           ? "No timetables"
-                          : timetables[currentSelectedTimetableIndex].name,
+                          : currentTimetable.name,
                       style: GoogleFonts.inter(
                         fontWeight: FontWeight.bold,
-                        color: Color(0xff2e2e2e),
+                        color: const Color(0xff2e2e2e),
                       ),
                     ),
                   ],
@@ -198,6 +198,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               controlsBuilder: (context, details) {
                                 return const SizedBox.shrink();
                               },
+                              stepIconBuilder: (stepIndex, stepState) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: kLightGrayColor,
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: Text(
+                                    stepIndex.toString(),
+                                    style:
+                                        GoogleFonts.inter(color: Colors.white),
+                                  ),
+                                );
+                              },
+                              connectorColor:
+                                  MaterialStatePropertyAll(kLightGrayColor),
                               onStepTapped: (step) {
                                 setState(() {
                                   _currentStep = step;

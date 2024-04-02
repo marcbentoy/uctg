@@ -35,15 +35,15 @@ class _SubjectsSelectionState extends State<SubjectsSelectionWidget> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         width: 300,
         height: 400,
         child: Column(
           children: [
             // title
-            DialogTitleWidget(title: "Select tags"),
+            const DialogTitleWidget(title: "Select tags"),
 
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
 

@@ -40,7 +40,7 @@ class _AddRoomDialogWidgetState extends State<AddRoomDialogWidget> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -49,36 +49,38 @@ class _AddRoomDialogWidgetState extends State<AddRoomDialogWidget> {
         height: 324,
         child: Column(
           children: [
-            DialogTitleWidget(title: "Add room data"),
-            SizedBox(
+            const DialogTitleWidget(title: "Add room data"),
+            const SizedBox(
               height: 16,
             ),
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Room name",
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Room name",
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  SelectionWidget(
-                      options: ["lecture", "lab"],
-                      selected: selectedRoomType,
-                      selectionCallback: (String value) {
-                        widget.innerSetState(() {
-                          selectedRoomType = value;
-                        });
-                      }),
-                ],
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    SelectionWidget(
+                        options: const ["lecture", "lab"],
+                        selected: selectedRoomType,
+                        selectionCallback: (String value) {
+                          widget.innerSetState(() {
+                            selectedRoomType = value;
+                          });
+                        }),
+                  ],
+                ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             dialogRowControls(

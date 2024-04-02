@@ -40,14 +40,14 @@ class _SectionsSelectionDialogWidgetState
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         width: 500,
         height: 600,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DialogTitleWidget(title: "Select a section"),
-            SizedBox(
+            const DialogTitleWidget(title: "Select a section"),
+            const SizedBox(
               height: 16,
             ),
             Expanded(
@@ -61,7 +61,7 @@ class _SectionsSelectionDialogWidgetState
                         });
                       },
                       child: Padding(
-                        padding: EdgeInsets.all(2),
+                        padding: const EdgeInsets.all(2),
                         child: Chip(
                           backgroundColor: e == selectedSection
                               ? kDarkGrayColor
@@ -81,7 +81,7 @@ class _SectionsSelectionDialogWidgetState
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 16,
             ),
             dialogRowControls(context, () {

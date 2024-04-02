@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
 import 'package:uctg/utils/util.dart';
 
 void initialize(Timetable timetable) {
-  print("START - Initialization - -");
+  debugPrint("START - Initialization - -");
 
   // empty out timetable population
   timetable.population = [];
@@ -29,7 +30,7 @@ void initialize(Timetable timetable) {
 
   timetable.isInitialized = true;
 
-  print("END - Initialization - -");
+  debugPrint("END - Initialization - -");
 }
 
 void generate() async {
@@ -38,7 +39,7 @@ void generate() async {
     currentTimetable = timetables.first;
   }
   if (!currentTimetable.isInitialized) {
-    print("Timetable not yet initialized..");
+    debugPrint("Timetable not yet initialized..");
     initialize(currentTimetable);
   }
 
@@ -55,7 +56,7 @@ void generate() async {
 
   currentTimetable.generationCount++;
   displayPopulation(currentTimetable.population);
-  print(currentTimetable.fittestIndividual.score.toString());
+  debugPrint(currentTimetable.fittestIndividual.score.toString());
 
   isarService.saveTimetable(currentTimetable);
 

@@ -15,7 +15,7 @@ class DialogTitleWidget extends StatelessWidget {
       style: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: Color(0xff2e2e2e),
+        color: const Color(0xff2e2e2e),
       ),
     );
   }

@@ -85,7 +85,7 @@ class _TimeslotDaySelectionWidgetState
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Container(
@@ -100,14 +100,14 @@ class _TimeslotDaySelectionWidgetState
                   "noon break",
                   style: GoogleFonts.inter(
                     fontSize: 10,
-                    color: Color(0xffe2e2e2),
+                    color: const Color(0xffe2e2e2),
                     // fontStyle: FontStyle.italic,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Expanded(
@@ -152,7 +152,7 @@ class _TimeslotDaySelectionWidgetState
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Container(
@@ -167,14 +167,14 @@ class _TimeslotDaySelectionWidgetState
                   "afternoon break",
                   style: GoogleFonts.inter(
                     fontSize: 10,
-                    color: Color(0xffe2e2e2),
+                    color: const Color(0xffe2e2e2),
                     // fontStyle: FontStyle.italic,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             Expanded(

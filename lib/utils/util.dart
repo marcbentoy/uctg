@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:uctg/models/timetable.dart';
 
 dynamic getRandom(List<dynamic> list) {
@@ -9,7 +10,8 @@ dynamic getRandom(List<dynamic> list) {
 
 void displayTimetableData(Timetable timetable) {
   if (timetable.isInitialized) {
-    print("Fittest individual score: ${timetable.fittestIndividual.score}");
+    debugPrint(
+        "Fittest individual score: ${timetable.fittestIndividual.score}");
   }
 
   displayPopulation(timetable.population);
@@ -17,9 +19,9 @@ void displayTimetableData(Timetable timetable) {
 
 void displayPopulation(List<Individual> population) {
   for (Individual i in population) {
-    print("Individual score: ${i.score}");
+    debugPrint("Individual score: ${i.score}");
     for (Schedule s in i.schedules) {
-      print(
+      debugPrint(
           "${s.subject.name} ${s.section.name} ${s.instructor.name} [${s.timeslot.startTime} - ${s.timeslot.endTime}]");
     }
   }

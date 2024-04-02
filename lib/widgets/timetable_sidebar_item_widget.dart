@@ -125,7 +125,7 @@ class _TimetableSidebarItemWidgetState
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     width: 320,
                     height: 256,
                     child: Column(
@@ -136,12 +136,12 @@ class _TimetableSidebarItemWidgetState
                           "Confirm deletion?",
                           style: GoogleFonts.inter(
                             fontSize: 16,
-                            color: Color(0xff2e2e2e),
+                            color: const Color(0xff2e2e2e),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
 
-                        SizedBox(
+                        const SizedBox(
                           height: 16,
                         ),
 
@@ -151,7 +151,7 @@ class _TimetableSidebarItemWidgetState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               TextButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   widget.deleteTimetableCallback(
                                       widget.timetable.id);
                                   Navigator.of(context).pop();
@@ -161,7 +161,7 @@ class _TimetableSidebarItemWidgetState
                                   style: GoogleFonts.inter(),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 8,
                               ),
                               FilledButton(
@@ -237,7 +237,7 @@ class _TimetableSidebarItemWidgetState
                     style: GoogleFonts.inter(),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 8,
                 ),
                 FilledButton(
