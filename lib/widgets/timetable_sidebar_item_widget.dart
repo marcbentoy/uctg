@@ -27,7 +27,6 @@ class TimetableSidebarItemWidget extends StatefulWidget {
 
 class _TimetableSidebarItemWidgetState
     extends State<TimetableSidebarItemWidget> {
-  // bool _isEditing = false;
   TextEditingController nameController = TextEditingController();
 
   @override

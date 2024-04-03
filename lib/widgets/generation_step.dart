@@ -6,7 +6,9 @@ import 'package:uctg/generator/generator.dart';
 import 'package:uctg/main.dart';
 
 class GenerationStep extends StatefulWidget {
-  const GenerationStep({super.key});
+  const GenerationStep({
+    super.key,
+  });
 
   @override
   State<GenerationStep> createState() => _GenerationStepState();

@@ -82,6 +82,14 @@ class _AddInputsStepState extends State<AddInputsStep> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    setState(() {
+      getRowsData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

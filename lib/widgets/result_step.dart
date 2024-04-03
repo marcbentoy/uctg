@@ -287,11 +287,14 @@ class ResultStepState extends State<ResultStep> {
                               });
                       }
                     },
-                    child: Text(selectedView == "section"
-                        ? selectedSection.name
-                        : selectedView == "instructor"
-                            ? selectedInstructor.name
-                            : selectedRoom.name),
+                    child: Text(
+                      selectedView == "section"
+                          ? selectedSection.name
+                          : selectedView == "instructor"
+                              ? selectedInstructor.name
+                              : selectedRoom.name,
+                      style: GoogleFonts.inter(),
+                    ),
                   ),
 
                   const SizedBox(

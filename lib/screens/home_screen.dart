@@ -22,6 +22,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentSelectedTimetableIndex = 0;
 
+  void updateCurrentTimetable() {
+    setState(() {
+      currentTimetable = timetables[currentSelectedTimetableIndex];
+    });
+  }
+
+  void updateSteps() {
+    setState(() {
+      getSteps();
+    });
+  }
+
   void getSteps() {
     _steps = [
       // add input step
@@ -30,9 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Add Inputs',
           style: GoogleFonts.inter(),
         ),
-        content: timetables.isEmpty
-            ? const SizedBox.shrink()
-            : const AddInputsStep(),
+        content: timetables.isEmpty ? const SizedBox.shrink() : AddInputsStep(),
         isActive: true,
       ),
 
@@ -42,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Configure Generator',
           style: GoogleFonts.inter(),
         ),
-        content: const ConfigureAiStep(),
+        content: ConfigureAiStep(),
         isActive: true,
       ),
 
@@ -52,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Generation',
           style: GoogleFonts.inter(),
         ),
-        content: const GenerationStep(),
+        content: GenerationStep(),
         isActive: true,
       ),
 
@@ -62,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Results',
           style: GoogleFonts.inter(),
         ),
-        content: const ResultStep(),
+        content: ResultStep(),
         isActive: true,
       ),
     ];
@@ -75,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
     isarService.listenToTimetables().listen((event) {
       setState(() {
         timetables = event;
-        getSteps();
       });
     });
 
@@ -84,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
         currentTimetable = timetables[0];
       });
     }
+
+    updateSteps();
   }
 
   bool _showSidebar = true;
@@ -92,24 +103,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     void onItemSelectedCallback(int value) {
       setState(() {
-        timetables;
         currentTimetable = timetables[value];
         currentSelectedTimetableIndex = value;
       });
+      updateCurrentTimetable();
+      updateSteps();
     }
 
     void onNewTimetableClick() {
-      debugPrint("Timetables length: ${timetables.length}");
       setState(() {
         if (timetables.isEmpty) {
           currentTimetable = Timetable()..name = "No timetable";
           return;
         }
-        timetables;
         currentSelectedTimetableIndex = timetables.length - 1;
         currentTimetable = timetables[currentSelectedTimetableIndex];
       });
-      debugPrint("Timetables length: ${timetables.length}");
     }
 
     void onDeleteTimetableCallback(int id) async {
@@ -205,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(100),
                                   ),
                                   child: Text(
-                                    stepIndex.toString(),
+                                    (stepIndex + 1).toString(),
                                     style:
                                         GoogleFonts.inter(color: Colors.white),
                                   ),
@@ -216,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onStepTapped: (step) {
                                 setState(() {
                                   _currentStep = step;
+                                  getSteps();
                                 });
                               },
                             ),
