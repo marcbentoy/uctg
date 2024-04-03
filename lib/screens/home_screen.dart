@@ -82,9 +82,13 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    isarService.listenToTimetables().listen((event) {
+    isarService.listenToTimetables().listen((newTimetables) {
+      debugPrint("New data ${newTimetables.length}");
       setState(() {
-        timetables = event;
+        timetables = newTimetables;
+        currentSelectedTimetableIndex = timetables.length - 1;
+        onItemSelectedCallback(currentSelectedTimetableIndex);
+        debugPrint("gets inside the set state of init state override");
       });
     });
 
@@ -99,25 +103,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _showSidebar = true;
 
+  void onItemSelectedCallback(int value) {
+    setState(() {
+      currentTimetable = timetables[value];
+      currentSelectedTimetableIndex = value;
+    });
+    updateCurrentTimetable();
+    updateSteps();
+  }
+
   @override
   Widget build(BuildContext context) {
-    void onItemSelectedCallback(int value) {
-      setState(() {
-        currentTimetable = timetables[value];
-        currentSelectedTimetableIndex = value;
-      });
-      updateCurrentTimetable();
-      updateSteps();
-    }
-
     void onNewTimetableClick() {
       setState(() {
         if (timetables.isEmpty) {
           currentTimetable = Timetable()..name = "No timetable";
           return;
         }
-        currentSelectedTimetableIndex = timetables.length - 1;
-        currentTimetable = timetables[currentSelectedTimetableIndex];
       });
     }
 
