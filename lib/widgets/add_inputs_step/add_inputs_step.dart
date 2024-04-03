@@ -75,6 +75,12 @@ class _AddInputsStepState extends State<AddInputsStep> {
     ],
   ];
 
+  void onAddDataCallback() {
+    setState(() {
+      getRowsData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -122,7 +128,9 @@ class _AddInputsStepState extends State<AddInputsStep> {
                     children: [
                       // add row data
                       AddGeneratorInputButtonWidget(
-                          currentSelectedInput: currentSelectedInput),
+                        currentSelectedInput: currentSelectedInput,
+                        onAddDataCallback: onAddDataCallback,
+                      ),
                     ],
                   ),
 
@@ -217,6 +225,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             return AddSectionDialogWidget(
                               innerSetState: innerSetState,
                               currentSection: e,
+                              onAddDataCallback: onAddDataCallback,
                             );
                           });
                         });
@@ -282,6 +291,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           return AddInstructorDialogWidget(
                             innerSetState: innerSetState,
                             currentInstructor: e,
+                            onAddDataCallback: onAddDataCallback,
                           );
                         });
                       });
@@ -342,6 +352,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                         return StatefulBuilder(
                             builder: (context, innerSetState) {
                           return AddRoomDialogWidget(
+                            onAddDataCallback: onAddDataCallback,
                             innerSetState: innerSetState,
                             currentRoom: e,
                           );
@@ -397,6 +408,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           context,
                           innerSetState,
                           e,
+                          onAddDataCallback,
                         );
                       });
                     });
@@ -447,6 +459,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
                             builder: (context, innerSetState) {
                           return AddSubjectDialogWidget(
                             innerSetState: innerSetState,
+                            onAddDataCallback: onAddDataCallback,
                             currentSubject: e,
                           );
                         });

@@ -7,6 +7,7 @@ Widget addTagDataDialogWidget(
   BuildContext context,
   innerSetState,
   String? tag,
+  onAddDataCallback,
 ) {
   TextEditingController tagController = TextEditingController();
   tagController.text = tag ?? "";
@@ -63,6 +64,8 @@ Widget addTagDataDialogWidget(
             newTags.add(tagController.text);
             currentTimetable.tags = newTags;
             isarService.saveTimetable(currentTimetable);
+
+            onAddDataCallback();
           }),
         ],
       ),

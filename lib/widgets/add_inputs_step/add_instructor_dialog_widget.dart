@@ -10,12 +10,15 @@ import 'package:uctg/widgets/add_inputs_step/timeslot_week_selection_widget.dart
 
 class AddInstructorDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final void Function() onAddDataCallback;
+
   final Instructor? currentInstructor;
 
   const AddInstructorDialogWidget({
     super.key,
     required this.innerSetState,
     this.currentInstructor,
+    required this.onAddDataCallback,
   });
 
   @override
@@ -330,6 +333,8 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
                   newInstructors.add(instructorToAdd);
                   currentTimetable.instructors = newInstructors;
                   isarService.saveTimetable(currentTimetable);
+
+                  widget.onAddDataCallback();
                 });
               },
             ),

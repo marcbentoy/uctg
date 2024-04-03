@@ -7,12 +7,15 @@ import 'package:uctg/widgets/add_inputs_step/selection_widget.dart';
 
 class AddRoomDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final void Function() onAddDataCallback;
+
   final Room? currentRoom;
 
   const AddRoomDialogWidget({
     super.key,
     required this.innerSetState,
     this.currentRoom,
+    required this.onAddDataCallback,
   });
 
   @override
@@ -108,6 +111,8 @@ class _AddRoomDialogWidgetState extends State<AddRoomDialogWidget> {
                   newRooms.add(roomToAdd);
                   currentTimetable.rooms = newRooms;
                   isarService.saveTimetable(currentTimetable);
+
+                  widget.onAddDataCallback();
                 });
               },
             ),

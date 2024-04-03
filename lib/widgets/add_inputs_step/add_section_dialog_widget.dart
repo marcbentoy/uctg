@@ -11,12 +11,15 @@ import 'package:uctg/widgets/add_inputs_step/timeslot_week_selection_widget.dart
 
 class AddSectionDialogWidget extends StatefulWidget {
   final void Function(void Function()) innerSetState;
+  final void Function() onAddDataCallback;
+
   final Section? currentSection;
 
   const AddSectionDialogWidget({
     super.key,
     required this.innerSetState,
     this.currentSection,
+    required this.onAddDataCallback,
   });
 
   @override
@@ -341,11 +344,14 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
                         sectionToAdd;
                     currentTimetable.sections = newSections;
                     isarService.saveTimetable(currentTimetable);
+                    widget.onAddDataCallback();
                     return;
                   }
                   newSections.add(sectionToAdd);
                   currentTimetable.sections = newSections;
                   isarService.saveTimetable(currentTimetable);
+
+                  widget.onAddDataCallback();
                 });
               },
             ),
