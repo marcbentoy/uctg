@@ -10,6 +10,8 @@ class Timetable {
 
   bool isInitialized = false;
 
+  Duration timeElapsed = Duration();
+
   // inputs
   List<Section> sections = [];
   List<Instructor> instructors = [];

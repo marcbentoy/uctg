@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
-import 'package:uctg/models/timetable.dart';
 import 'package:uctg/widgets/add_inputs_step/add_inputs_step.dart';
 import 'package:uctg/widgets/configure_ai_step.dart';
 import 'package:uctg/widgets/generation_step.dart';
@@ -83,13 +82,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     isarService.listenToTimetables().listen((newTimetables) {
-      debugPrint("New data ${newTimetables.length}");
-      setState(() {
-        timetables = newTimetables;
-        currentSelectedTimetableIndex = timetables.length - 1;
-        onItemSelectedCallback(currentSelectedTimetableIndex);
-        debugPrint("gets inside the set state of init state override");
-      });
+      if (newTimetables.length != timetables.length) {
+        setState(() {
+          timetables = newTimetables;
+          currentSelectedTimetableIndex = timetables.length - 1;
+          debugPrint("gets inside the set state of init state override");
+        });
+      }
     });
 
     if (timetables.isNotEmpty) {
@@ -115,12 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     void onNewTimetableClick() {
-      setState(() {
-        if (timetables.isEmpty) {
-          currentTimetable = Timetable()..name = "No timetable";
-          return;
-        }
-      });
+      // setState(() {
+      //   if (timetables.isEmpty) {
+      //     currentTimetable = Timetable()..name = "No timetable";
+      //     return;
+      //   }
+      // });
     }
 
     void onDeleteTimetableCallback(int id) async {

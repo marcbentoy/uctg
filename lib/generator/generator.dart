@@ -1,6 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
+import 'package:uctg/utils.dart';
 import 'package:uctg/utils/util.dart';
 
 void initialize(Timetable timetable) {
@@ -33,37 +35,8 @@ void initialize(Timetable timetable) {
   debugPrint("END - Initialization - -");
 }
 
-void generate() async {
-  // check if timetable has been initialized
-  if (currentTimetable == Timetable() || currentTimetable.name == "") {
-    currentTimetable = timetables.first;
-  }
-  if (!currentTimetable.isInitialized) {
-    debugPrint("Timetable not yet initialized..");
-    initialize(currentTimetable);
-  }
-
-  // evaluate
-  evaluate(currentTimetable);
-
-  // select
-
-  // crossover
-
-  // mutate
-
-  // update population
-
-  currentTimetable.generationCount++;
-  displayPopulation(currentTimetable.population);
-  debugPrint(currentTimetable.fittestIndividual.score.toString());
-
-  isarService.saveTimetable(currentTimetable);
-
-  await Future.delayed(const Duration(milliseconds: 10));
-}
-
 void evaluate(Timetable timetable) async {
+  debugPrint("evaluating");
   for (Individual individual in timetable.population) {
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {
@@ -98,11 +71,11 @@ void evaluate(Timetable timetable) async {
         }
 
         int timeDaySectionConflictsScore =
-            ((1 / (timeDaySectionConflicts + 1)) * 100).toInt();
+            ((1 / (timeDaySectionConflicts + 1)) * 20).toInt();
         int timeDayInstructorConflictsScore =
-            ((1 / (timeDayInstructorConflicts + 1)) * 100).toInt();
+            ((1 / (timeDayInstructorConflicts + 1)) * 20).toInt();
         int timeDayRoomConflictsScore =
-            ((1 / (timeDayRoomConflicts + 1)) * 100).toInt();
+            ((1 / (timeDayRoomConflicts + 1)) * 20).toInt();
 
         individual.score += timeDaySectionConflictsScore +
             timeDayInstructorConflictsScore +
@@ -136,22 +109,39 @@ void evaluate(Timetable timetable) async {
       newScore += (roomSubjectTypeScore + subjectInstructorTagsScore);
 
       // update individual's score
-      individual.score = newScore;
+      individual.score += newScore;
     }
 
+    // debugPrint("checking fittest individual");
     // update fittest individual
     if (individual.score > timetable.fittestIndividual.score) {
       timetable.fittestIndividual = individual;
     }
+    // debugPrint("individual score: ${individual.score}");
   }
 }
 
 Individual select(List<Individual> population) {
-  return Individual();
+  return chooseRandomly(population);
 }
 
 Individual crossover(Individual parentA, Individual parentB) {
-  return Individual();
+  Random random = Random();
+  Individual offspring = Individual();
+
+  int totalUnits = parentA.schedules.length;
+
+  int midpoint = random.nextInt(totalUnits);
+
+  for (int u = 0; u < totalUnits; u++) {
+    if (u > midpoint) {
+      offspring.schedules.add(parentA.schedules[u]);
+    } else {
+      offspring.schedules.add(parentB.schedules[u]);
+    }
+  }
+
+  return offspring;
 }
 
 void mutate(Individual individual) {}

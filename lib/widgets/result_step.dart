@@ -166,7 +166,6 @@ class ResultStepState extends State<ResultStep> {
 
   @override
   Widget build(BuildContext context) {
-    setSelectedValues();
     setState(() {
       _buildLaneEvents();
     });
@@ -340,6 +339,7 @@ class ResultStepState extends State<ResultStep> {
           ),
           child: TimetableView(
             timetableStyle: const TimetableStyle(
+              laneWidth: 164,
               timeItemHeight: 100,
             ),
             laneEventsList: laneEvents,
