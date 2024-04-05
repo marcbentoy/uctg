@@ -10,8 +10,6 @@ class Timetable {
 
   bool isInitialized = false;
 
-  Duration timeElapsed = Duration();
-
   // inputs
   List<Section> sections = [];
   List<Instructor> instructors = [];
@@ -25,7 +23,7 @@ class Timetable {
 
   // records
   Individual fittestIndividual = Individual();
-  List<int> generationHistory = [];
+  List<GenerationHistory> generationHistory = [];
   List<Individual> population = [];
   List<String> tags = [];
 
@@ -81,9 +79,21 @@ class Timeslot {
 
 @embedded
 class Individual {
-  int score = 0;
+  int score = 1;
   List<Schedule> schedules = [];
   List<String> tags = [];
+
+  List<bool> hardConstraints = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
+
+  bool softConstraints = false;
 }
 
 @embedded
@@ -93,4 +103,10 @@ class Schedule {
   Subject subject = Subject();
   Timeslot timeslot = Timeslot();
   Room room = Room();
+}
+
+@embedded
+class GenerationHistory {
+  int generation = 0;
+  List<int> individualScores = [];
 }

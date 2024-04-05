@@ -99,7 +99,6 @@ class _CustomSidebarState extends State<CustomSidebar> {
             child: GestureDetector(
               onTap: () {
                 Timetable t = Timetable();
-                t.name = "Unnamed Timetable";
                 isarService.saveTimetable(t);
                 widget.newTimetableClickCallback();
               },

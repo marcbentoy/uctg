@@ -85,8 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
       if (newTimetables.length != timetables.length) {
         setState(() {
           timetables = newTimetables;
-          currentSelectedTimetableIndex = timetables.length - 1;
           debugPrint("gets inside the set state of init state override");
+          if (newTimetables.isNotEmpty) {
+            currentSelectedTimetableIndex = timetables.length - 1;
+            onItemSelectedCallback(timetables.length - 1);
+            updateSteps();
+          }
         });
       }
     });
@@ -114,12 +118,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     void onNewTimetableClick() {
-      // setState(() {
-      //   if (timetables.isEmpty) {
-      //     currentTimetable = Timetable()..name = "No timetable";
-      //     return;
-      //   }
-      // });
+      setState(() {
+        if (timetables.isEmpty) {
+          return;
+        }
+      });
     }
 
     void onDeleteTimetableCallback(int id) async {
@@ -176,6 +179,34 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: const Color(0xff2e2e2e),
                       ),
                     ),
+
+                    // kDebugMode
+                    //     ? FilledButton(
+                    //         onPressed: () {
+                    //           Timetable timetable = Timetable();
+                    //           timetable.name = "Dummy";
+
+                    //           List<String> tags = [
+                    //             "math",
+                    //             "science",
+                    //           ];
+
+                    //           Timeslot t1 = Timeslot();
+                    //           t1.timeCode = "T00";
+                    //           t1.startTime = DateTime.parse("2024-04-04 07");
+                    //           t1.endTime = DateTime.parse("2024-04-04 08");
+
+                    //           List<Timeslot> timeslots = [];
+
+                    //           Instructor i1 = Instructor();
+                    //           i1.name = "bayogo";
+                    //           i1.expertise = [tags[0]];
+
+                    //           timetable.instructors = [i1];
+                    //         },
+                    //         child: Text("Generate dummy data"),
+                    //       )
+                    //     : SizedBox.shrink(),
                   ],
                 ),
 

@@ -35,9 +35,13 @@ void initialize(Timetable timetable) {
   debugPrint("END - Initialization - -");
 }
 
-void evaluate(Timetable timetable) async {
+void evaluate(Timetable timetable) {
   debugPrint("evaluating");
+  GenerationHistory history = GenerationHistory();
+  history.generation = timetable.generationCount;
   for (Individual individual in timetable.population) {
+    individual.score = 0;
+
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {
         Schedule prev = individual.schedules[i];
@@ -71,18 +75,16 @@ void evaluate(Timetable timetable) async {
         }
 
         int timeDaySectionConflictsScore =
-            ((1 / (timeDaySectionConflicts + 1)) * 20).toInt();
+            ((1 / (timeDaySectionConflicts + 1)) * 30).toInt();
         int timeDayInstructorConflictsScore =
             ((1 / (timeDayInstructorConflicts + 1)) * 20).toInt();
         int timeDayRoomConflictsScore =
-            ((1 / (timeDayRoomConflicts + 1)) * 20).toInt();
+            ((1 / (timeDayRoomConflicts + 1)) * 10).toInt();
 
         individual.score += timeDaySectionConflictsScore +
             timeDayInstructorConflictsScore +
             timeDayRoomConflictsScore;
       }
-
-      int newScore = 0;
 
       // Hard Constraint 2
       // A schedule should be taught in the appropriate room type
@@ -106,10 +108,10 @@ void evaluate(Timetable timetable) async {
         }
       }
 
-      newScore += (roomSubjectTypeScore + subjectInstructorTagsScore);
-
       // update individual's score
-      individual.score += newScore;
+      individual.score += (roomSubjectTypeScore + subjectInstructorTagsScore);
+
+      // debugPrint("Individual score: ${individual.score}");
     }
 
     // debugPrint("checking fittest individual");
@@ -117,8 +119,14 @@ void evaluate(Timetable timetable) async {
     if (individual.score > timetable.fittestIndividual.score) {
       timetable.fittestIndividual = individual;
     }
+
     // debugPrint("individual score: ${individual.score}");
+    history.individualScores.add(individual.score);
   }
+
+  var newHistory = List<GenerationHistory>.from(timetable.generationHistory);
+  newHistory.add(history);
+  timetable.generationHistory = newHistory;
 }
 
 Individual select(List<Individual> population) {
@@ -144,4 +152,22 @@ Individual crossover(Individual parentA, Individual parentB) {
   return offspring;
 }
 
-void mutate(Individual individual) {}
+void mutate(Timetable timetable, Individual individual) {
+  Random random = Random();
+
+  for (int i = 0; i < individual.schedules.length; i++) {
+    if (random.nextDouble() < timetable.mutationRate) {
+      individual.schedules[i].instructor =
+          chooseRandomly(timetable.instructors);
+    }
+
+    if (random.nextDouble() < timetable.mutationRate) {
+      individual.schedules[i].room = chooseRandomly(timetable.rooms);
+    }
+
+    if (random.nextDouble() < timetable.mutationRate) {
+      individual.schedules[i].timeslot =
+          chooseRandomly(individual.schedules[i].section.timeslots);
+    }
+  }
+}

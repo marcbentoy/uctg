@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:uctg/app.dart';
 import 'package:uctg/constants/colors.dart';
 import 'package:uctg/generator/generator.dart';
@@ -41,9 +45,15 @@ class _GenerationStepState extends State<GenerationStep> {
   @override
   void initState() {
     super.initState();
+
+    dirtyTimetable = currentTimetable;
   }
 
   void generate() async {
+    setState(() {
+      dirtyTimetable = currentTimetable;
+    });
+
     if (shouldTerminate()) {
       isGenerating = !isGenerating;
     }
@@ -59,6 +69,9 @@ class _GenerationStepState extends State<GenerationStep> {
         debugPrint("Timetable not yet initialized..");
         initialize(dirtyTimetable);
       }
+
+      // debugPrint(
+      //     "dirty timetable initialized?: ${dirtyTimetable.isInitialized}");
 
       // evaluate
       evaluate(dirtyTimetable);
@@ -83,7 +96,7 @@ class _GenerationStepState extends State<GenerationStep> {
         Individual offspring = crossover(parentA, parentB);
 
         // mutate
-        mutate(offspring);
+        mutate(dirtyTimetable, offspring);
 
         newPopulation.add(offspring);
       }
@@ -108,7 +121,9 @@ class _GenerationStepState extends State<GenerationStep> {
     }
 
     // debugPrint("saving current timetable");
-    currentTimetable = dirtyTimetable;
+    setState(() {
+      currentTimetable = dirtyTimetable;
+    });
     isarService.saveTimetable(currentTimetable);
   }
 
@@ -246,7 +261,35 @@ class _GenerationStepState extends State<GenerationStep> {
                             "Export data",
                             style: GoogleFonts.sourceCodePro(),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            List<List<dynamic>> rows = [];
+                            rows.add(["timetable name", currentTimetable.name]);
+                            rows.add([
+                              "generation",
+                              currentTimetable.generationCount
+                            ]);
+
+                            rows.add([
+                              "best score",
+                              currentTimetable.fittestIndividual.score
+                            ]);
+
+                            for (var v in currentTimetable.generationHistory) {
+                              rows.add(v.individualScores);
+                            }
+
+                            String csv =
+                                const ListToCsvConverter().convert(rows);
+                            String dir =
+                                (await getApplicationDocumentsDirectory()).path;
+                            String filePath =
+                                "$dir/${currentTimetable.name}.csv";
+
+                            File file = File(filePath);
+                            await file.writeAsString(csv);
+
+                            debugPrint("File exported successfully!");
+                          },
                         ),
                       ),
                     ],

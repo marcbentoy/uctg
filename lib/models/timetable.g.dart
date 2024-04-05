@@ -31,7 +31,8 @@ const TimetableSchema = CollectionSchema(
     r'generationHistory': PropertySchema(
       id: 2,
       name: r'generationHistory',
-      type: IsarType.longList,
+      type: IsarType.objectList,
+      target: r'GenerationHistory',
     ),
     r'instructors': PropertySchema(
       id: 3,
@@ -103,7 +104,8 @@ const TimetableSchema = CollectionSchema(
     r'Instructor': InstructorSchema,
     r'Room': RoomSchema,
     r'Individual': IndividualSchema,
-    r'Schedule': ScheduleSchema
+    r'Schedule': ScheduleSchema,
+    r'GenerationHistory': GenerationHistorySchema
   },
   getId: _timetableGetId,
   getLinks: _timetableGetLinks,
@@ -120,7 +122,15 @@ int _timetableEstimateSize(
   bytesCount += 3 +
       IndividualSchema.estimateSize(
           object.fittestIndividual, allOffsets[Individual]!, allOffsets);
-  bytesCount += 3 + object.generationHistory.length * 8;
+  bytesCount += 3 + object.generationHistory.length * 3;
+  {
+    final offsets = allOffsets[GenerationHistory]!;
+    for (var i = 0; i < object.generationHistory.length; i++) {
+      final value = object.generationHistory[i];
+      bytesCount +=
+          GenerationHistorySchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
   bytesCount += 3 + object.instructors.length * 3;
   {
     final offsets = allOffsets[Instructor]!;
@@ -185,7 +195,12 @@ void _timetableSerialize(
     object.fittestIndividual,
   );
   writer.writeLong(offsets[1], object.generationCount);
-  writer.writeLongList(offsets[2], object.generationHistory);
+  writer.writeObjectList<GenerationHistory>(
+    offsets[2],
+    allOffsets,
+    GenerationHistorySchema.serialize,
+    object.generationHistory,
+  );
   writer.writeObjectList<Instructor>(
     offsets[3],
     allOffsets,
@@ -237,7 +252,13 @@ Timetable _timetableDeserialize(
       ) ??
       Individual();
   object.generationCount = reader.readLong(offsets[1]);
-  object.generationHistory = reader.readLongList(offsets[2]) ?? [];
+  object.generationHistory = reader.readObjectList<GenerationHistory>(
+        offsets[2],
+        GenerationHistorySchema.deserialize,
+        allOffsets,
+        GenerationHistory(),
+      ) ??
+      [];
   object.id = id;
   object.instructors = reader.readObjectList<Instructor>(
         offsets[3],
@@ -299,7 +320,13 @@ P _timetableDeserializeProp<P>(
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readLongList(offset) ?? []) as P;
+      return (reader.readObjectList<GenerationHistory>(
+            offset,
+            GenerationHistorySchema.deserialize,
+            allOffsets,
+            GenerationHistory(),
+          ) ??
+          []) as P;
     case 3:
       return (reader.readObjectList<Instructor>(
             offset,
@@ -494,62 +521,6 @@ extension TimetableQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'generationCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
-      generationHistoryElementEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'generationHistory',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
-      generationHistoryElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'generationHistory',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
-      generationHistoryElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'generationHistory',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
-      generationHistoryElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'generationHistory',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1628,6 +1599,13 @@ extension TimetableQueryObject
     });
   }
 
+  QueryBuilder<Timetable, Timetable, QAfterFilterCondition>
+      generationHistoryElement(FilterQuery<GenerationHistory> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.object(q, r'generationHistory');
+    });
+  }
+
   QueryBuilder<Timetable, Timetable, QAfterFilterCondition> instructorsElement(
       FilterQuery<Instructor> q) {
     return QueryBuilder.apply(this, (query) {
@@ -1812,12 +1790,6 @@ extension TimetableQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Timetable, Timetable, QDistinct> distinctByGenerationHistory() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'generationHistory');
-    });
-  }
-
   QueryBuilder<Timetable, Timetable, QDistinct> distinctByIsInitialized() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isInitialized');
@@ -1871,7 +1843,7 @@ extension TimetableQueryProperty
     });
   }
 
-  QueryBuilder<Timetable, List<int>, QQueryOperations>
+  QueryBuilder<Timetable, List<GenerationHistory>, QQueryOperations>
       generationHistoryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'generationHistory');
@@ -5430,3 +5402,282 @@ extension ScheduleQueryObject
     });
   }
 }
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+const GenerationHistorySchema = Schema(
+  name: r'GenerationHistory',
+  id: 2819045967218917890,
+  properties: {
+    r'generation': PropertySchema(
+      id: 0,
+      name: r'generation',
+      type: IsarType.long,
+    ),
+    r'individualScores': PropertySchema(
+      id: 1,
+      name: r'individualScores',
+      type: IsarType.longList,
+    )
+  },
+  estimateSize: _generationHistoryEstimateSize,
+  serialize: _generationHistorySerialize,
+  deserialize: _generationHistoryDeserialize,
+  deserializeProp: _generationHistoryDeserializeProp,
+);
+
+int _generationHistoryEstimateSize(
+  GenerationHistory object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.individualScores.length * 8;
+  return bytesCount;
+}
+
+void _generationHistorySerialize(
+  GenerationHistory object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeLong(offsets[0], object.generation);
+  writer.writeLongList(offsets[1], object.individualScores);
+}
+
+GenerationHistory _generationHistoryDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = GenerationHistory();
+  object.generation = reader.readLong(offsets[0]);
+  object.individualScores = reader.readLongList(offsets[1]) ?? [];
+  return object;
+}
+
+P _generationHistoryDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
+      return (reader.readLongList(offset) ?? []) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+extension GenerationHistoryQueryFilter
+    on QueryBuilder<GenerationHistory, GenerationHistory, QFilterCondition> {
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      generationEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'generation',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      generationGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'generation',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      generationLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'generation',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      generationBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'generation',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresElementEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'individualScores',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'individualScores',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'individualScores',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'individualScores',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<GenerationHistory, GenerationHistory, QAfterFilterCondition>
+      individualScoresLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'individualScores',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+}
+
+extension GenerationHistoryQueryObject
+    on QueryBuilder<GenerationHistory, GenerationHistory, QFilterCondition> {}
