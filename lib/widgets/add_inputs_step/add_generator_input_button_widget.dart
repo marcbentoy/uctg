@@ -17,12 +17,14 @@ class AddGeneratorInputButtonWidget extends StatelessWidget {
 
   final int currentSelectedInput;
 
+  // [tags, rooms, subjects, instructors, sections]
   @override
   Widget build(BuildContext context) {
     return FilledButton(
       onPressed: () {
         switch (currentSelectedInput) {
-          case 0:
+          // section
+          case 4:
             showDialog(
                 context: context,
                 builder: (context) {
@@ -33,7 +35,8 @@ class AddGeneratorInputButtonWidget extends StatelessWidget {
                     );
                   });
                 });
-          case 1:
+          // instructor
+          case 3:
             showDialog(
                 context: context,
                 builder: (context) {
@@ -43,7 +46,8 @@ class AddGeneratorInputButtonWidget extends StatelessWidget {
                         innerSetState: innerSetState);
                   });
                 });
-          case 2:
+          // room
+          case 1:
             showDialog(
               context: context,
               builder: (context) {
@@ -57,7 +61,8 @@ class AddGeneratorInputButtonWidget extends StatelessWidget {
                 );
               },
             );
-          case 3:
+          // subject
+          case 2:
             showDialog(
                 context: context,
                 builder: (context) {
@@ -68,7 +73,8 @@ class AddGeneratorInputButtonWidget extends StatelessWidget {
                     );
                   });
                 });
-          case 4:
+          // tag
+          case 0:
             showDialog(
                 context: context,
                 builder: (context) {

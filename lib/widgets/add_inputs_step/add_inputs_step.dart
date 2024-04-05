@@ -23,11 +23,11 @@ class AddInputsStep extends StatefulWidget {
 
 class _AddInputsStepState extends State<AddInputsStep> {
   List inputItems = [
-    ["Sections", Icons.category_rounded],
-    ["Instructors", Icons.assignment_ind_rounded],
+    ["Tags", Icons.bookmarks_rounded],
     ["Rooms", Icons.meeting_room_rounded],
     ["Subjects", Icons.menu_book_rounded],
-    ["Tags", Icons.bookmarks_rounded],
+    ["Instructors", Icons.assignment_ind_rounded],
+    ["Sections", Icons.category_rounded],
   ];
 
   int currentSelectedInput = 0;
@@ -39,21 +39,12 @@ class _AddInputsStepState extends State<AddInputsStep> {
   }
 
   List<List<DataColumn>> dataCols = [
-    // sections
+    // tags
     [
       const DataColumn(label: SizedBox.shrink()),
-      const DataColumn(label: Text("Name")),
-      const DataColumn(label: Text("Subjects")),
-      const DataColumn(label: Text("Shift")),
-      const DataColumn(label: Text("Timeslots")),
+      const DataColumn(label: Text("Tag")),
     ],
-    // instructors
-    [
-      const DataColumn(label: SizedBox.shrink()),
-      const DataColumn(label: Text("Name")),
-      const DataColumn(label: Text("Time Preferences")),
-      const DataColumn(label: Text("Expertise")),
-    ],
+
     // rooms
     [
       const DataColumn(label: SizedBox.shrink()),
@@ -68,10 +59,20 @@ class _AddInputsStepState extends State<AddInputsStep> {
       const DataColumn(label: Text("Units")),
       const DataColumn(label: Text("Type")),
     ],
-    // tags
+    // instructors
     [
       const DataColumn(label: SizedBox.shrink()),
-      const DataColumn(label: Text("Tag")),
+      const DataColumn(label: Text("Name")),
+      const DataColumn(label: Text("Time Preferences")),
+      const DataColumn(label: Text("Expertise")),
+    ],
+    // sections
+    [
+      const DataColumn(label: SizedBox.shrink()),
+      const DataColumn(label: Text("Name")),
+      const DataColumn(label: Text("Subjects")),
+      const DataColumn(label: Text("Shift")),
+      const DataColumn(label: Text("Timeslots")),
     ],
   ];
 
@@ -166,10 +167,14 @@ class _AddInputsStepState extends State<AddInputsStep> {
     );
   }
 
+  // [tags, rooms, subjects, instructors, sections]
+  //
+  //
+
   List<DataRow> getRowsData() {
     switch (currentSelectedInput) {
       // sections
-      case 0:
+      case 4:
         return currentTimetable.sections.map((e) {
           String subjects = "";
           String timeslotsCodes = "";
@@ -184,7 +189,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           return getSectionDataRow(e, subjects, timeslotsCodes);
         }).toList();
       // instructors
-      case 1:
+      case 3:
         return currentTimetable.instructors.map((e) {
           String timePreferences = "";
           String expertise = "";
@@ -199,10 +204,10 @@ class _AddInputsStepState extends State<AddInputsStep> {
           return getInstructorDataRow(e, timePreferences, expertise);
         }).toList();
       // rooms
-      case 2:
+      case 1:
         return currentTimetable.rooms.map((e) => getRoomDataRow(e)).toList();
       // subjects
-      case 3:
+      case 2:
         return currentTimetable.subjects.map((e) {
           String subjectTags = "";
           for (var t in e.tags) {
@@ -211,7 +216,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
           return getSubjectDataRow(e, subjectTags);
         }).toList();
       // tags
-      case 4:
+      case 0:
         return currentTimetable.tags.map((e) => getTagDataRow(e)).toList();
     }
     return [];
