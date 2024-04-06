@@ -261,6 +261,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                                 List<Section>.from(currentTimetable.sections);
                             newSections.remove(e);
 
+                            resetGeneratedData(currentTimetable);
+
                             currentTimetable.sections = newSections;
                             isarService
                                 .saveTimetable(currentTimetable)
@@ -327,6 +329,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                               currentTimetable.instructors);
                           newInstructors.remove(e);
 
+                          resetGeneratedData(currentTimetable);
+
                           currentTimetable.instructors = newInstructors;
                           isarService
                               .saveTimetable(currentTimetable)
@@ -389,6 +393,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                               List<Room>.from(currentTimetable.rooms);
                           newRooms.remove(e);
 
+                          resetGeneratedData(currentTimetable);
+
                           currentTimetable.rooms = newRooms;
                           isarService
                               .saveTimetable(currentTimetable)
@@ -441,6 +447,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                       confirmDelete: () {
                         var newTags = List<String>.from(currentTimetable.tags);
                         newTags.remove(e);
+
+                        resetGeneratedData(currentTimetable);
 
                         currentTimetable.tags = newTags;
                         isarService
@@ -495,6 +503,8 @@ class _AddInputsStepState extends State<AddInputsStep> {
                           var newSubjects =
                               List<Subject>.from(currentTimetable.subjects);
                           newSubjects.remove(e);
+
+                          resetGeneratedData(currentTimetable);
 
                           currentTimetable.subjects = newSubjects;
                           isarService
