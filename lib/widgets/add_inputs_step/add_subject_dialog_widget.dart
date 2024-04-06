@@ -159,7 +159,7 @@ class _AddSubjectDialogWidgetState extends State<AddSubjectDialogWidget> {
                       controller: unitsController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "units",
+                        hintText: "hours",
                       ),
                     ),
 
