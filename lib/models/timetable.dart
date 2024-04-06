@@ -15,6 +15,7 @@ class Timetable {
   List<Instructor> instructors = [];
   List<Room> rooms = [];
   List<Subject> subjects = [];
+  List<String> tags = [];
 
   // configurations
   int populationSize = 100;
@@ -25,7 +26,6 @@ class Timetable {
   Individual fittestIndividual = Individual();
   List<GenerationHistory> generationHistory = [];
   List<Individual> population = [];
-  List<String> tags = [];
 
   Timetable();
 }

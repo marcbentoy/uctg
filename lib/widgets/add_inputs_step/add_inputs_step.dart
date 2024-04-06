@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
+import 'package:uctg/utils.dart';
 import 'package:uctg/widgets/add_inputs_step/add_instructor_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_room_dialog_widget.dart';
 import 'package:uctg/widgets/add_inputs_step/add_section_dialog_widget.dart';
@@ -77,6 +78,9 @@ class _AddInputsStepState extends State<AddInputsStep> {
   ];
 
   void onAddDataCallback() {
+    resetGeneratedData(currentTimetable);
+    isarService.saveTimetable(currentTimetable);
+
     setState(() {
       getRowsData();
     });
