@@ -10,6 +10,7 @@ import 'package:uctg/constants/colors.dart';
 import 'package:uctg/generator/generator.dart';
 import 'package:uctg/main.dart';
 import 'package:uctg/models/timetable.dart';
+import 'package:uctg/utils.dart';
 
 class GenerationStep extends StatefulWidget {
   const GenerationStep({
@@ -257,9 +258,18 @@ class _GenerationStepState extends State<GenerationStep> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          child: Text(
-                            "Export data",
-                            style: GoogleFonts.sourceCodePro(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.description_rounded),
+                              SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                "Export data",
+                                style: GoogleFonts.sourceCodePro(),
+                              ),
+                            ],
                           ),
                           onPressed: () async {
                             List<List<dynamic>> rows = [];
@@ -292,7 +302,46 @@ class _GenerationStepState extends State<GenerationStep> {
                           },
                         ),
                       ),
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        child: TextButton(
+                          style: ButtonStyle(
+                            overlayColor: MaterialStatePropertyAll(
+                                kRedColor.withAlpha(36)),
+                          ),
+                          onPressed: () {
+                            resetGeneratedData(currentTimetable);
+                            setState(() {
+                              currentTimetable;
+                            });
+                            isarService.saveTimetable(currentTimetable);
+                          },
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.restore,
+                                color: kRedColor,
+                              ),
+                              SizedBox(
+                                width: 4,
+                              ),
+                              Text(
+                                "Reset data",
+                                style:
+                                    GoogleFonts.sourceCodePro(color: kRedColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
+                  ),
+                  Text(
+                    "IMPORTANT: Remember to update/rename the timetable to avoid overwritten of previous exported data",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      // fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ],
               ),
