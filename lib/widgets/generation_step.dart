@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -166,6 +167,20 @@ class _GenerationStepState extends State<GenerationStep> {
     ),
   ];
 
+  List<FlSpot> getDataSpots() {
+    List<FlSpot> spots = [];
+
+    for (var i = 0; i < dirtyTimetable.populationSize; i++) {
+      spots.add(FlSpot(
+          i.toDouble(),
+          dirtyTimetable.generationHistory[dirtyTimetable.generationCount - 1]
+              .individualScores[i]
+              .toDouble()));
+    }
+
+    return spots;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -228,12 +243,28 @@ class _GenerationStepState extends State<GenerationStep> {
                           ),
                         ),
                         Expanded(
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: kLightGrayColor,
-                              borderRadius: BorderRadius.circular(8),
+                          child: LineChart(
+                            LineChartData(
+                              maxX: dirtyTimetable.populationSize.toDouble(),
+                              minX: 0,
+                              minY: dirtyTimetable.fittestIndividual.score
+                                      .toDouble() /
+                                  1.3,
+                              maxY: dirtyTimetable.fittestIndividual.score
+                                  .toDouble(),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: getDataSpots(),
+                                ),
+                              ],
+                              titlesData: FlTitlesData(
+                                topTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                rightTitles: AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                              ),
                             ),
                           ),
                         ),
