@@ -170,6 +170,10 @@ class _GenerationStepState extends State<GenerationStep> {
   List<FlSpot> getDataSpots() {
     List<FlSpot> spots = [];
 
+    if (!dirtyTimetable.isInitialized) {
+      return [];
+    }
+
     for (var i = 0; i < dirtyTimetable.populationSize; i++) {
       spots.add(FlSpot(
           i.toDouble(),
