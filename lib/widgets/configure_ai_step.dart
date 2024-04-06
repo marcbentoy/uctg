@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
+import 'package:uctg/utils.dart';
 
 class ConfigureAiStep extends StatefulWidget {
   const ConfigureAiStep({super.key});
@@ -161,6 +162,8 @@ class _ConfigureAiStepState extends State<ConfigureAiStep> {
                       currentTimetable.mutationRate = mutationRate;
                       currentTimetable.populationSize =
                           int.parse(populationSizeController.text);
+
+                      resetGeneratedData(currentTimetable);
                       isarService.saveTimetable(currentTimetable);
                     },
                     child: Text(
