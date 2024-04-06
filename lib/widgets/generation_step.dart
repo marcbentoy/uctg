@@ -337,7 +337,7 @@ class _GenerationStepState extends State<GenerationStep> {
                     ],
                   ),
                   Text(
-                    "IMPORTANT: Remember to update/rename the timetable to avoid overwritten of previous exported data",
+                    "IMPORTANT: Remember to update/rename the timetable to avoid overriding the previous exported data",
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       // fontStyle: FontStyle.italic,
