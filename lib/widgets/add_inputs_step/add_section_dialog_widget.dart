@@ -333,6 +333,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
                   sectionToAdd.name = nameController.text;
                   sectionToAdd.subjects = selectedSubjects;
                   sectionToAdd.timeslots = timeslots;
+                  sectionToAdd.shift = selectedShift;
 
                   var newSections =
                       List<Section>.from(currentTimetable.sections);
@@ -347,6 +348,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
                     widget.onAddDataCallback();
                     return;
                   }
+
                   newSections.add(sectionToAdd);
                   currentTimetable.sections = newSections;
                   isarService.saveTimetable(currentTimetable);
