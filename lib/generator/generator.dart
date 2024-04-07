@@ -130,7 +130,7 @@ Future<void> evaluate(Timetable timetable) async {
           subjectInstructorTagsScore +
           (individual.alignedScheduleInstructorTimeslot * 5));
 
-      await Future.delayed(const Duration(milliseconds: 1));
+      await Future.delayed(const Duration(microseconds: 100));
     }
 
     individual.hardConstraints[0] =

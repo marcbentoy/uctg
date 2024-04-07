@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:csv/csv.dart';
@@ -25,8 +26,10 @@ class GenerationStep extends StatefulWidget {
 class _GenerationStepState extends State<GenerationStep> {
   bool shouldStopBasedOnHC = true;
   TextEditingController generationLimitController = TextEditingController();
-
-  var dirtyTimetable = currentTimetable;
+  late Timer timer;
+  int hours = 0;
+  int mins = 0;
+  int secs = 0;
 
   bool shouldTerminate() {
     int generationlimit = 0;
@@ -38,47 +41,85 @@ class _GenerationStepState extends State<GenerationStep> {
     }
 
     return (shouldStopBasedOnHC &&
-            dirtyTimetable.fittestIndividual.hardConstraints
+            currentTimetable.fittestIndividual.hardConstraints
                     .where((element) => element)
                     .length ==
                 hConstraintsLabels.length) ||
         (generationlimit != 0 &&
-            dirtyTimetable.generationCount >= generationlimit);
+            currentTimetable.generationCount >= generationlimit);
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      int localSecs = secs + 1;
+      int localMins = mins;
+      int localHours = hours;
+
+      if (localSecs > 59) {
+        if (localMins > 59) {
+          localHours++;
+          localMins = 0;
+        } else {
+          localMins++;
+          localSecs = 0;
+        }
+      }
+
+      setState(() {
+        secs = localSecs;
+        mins = localMins;
+        hours = localHours;
+      });
+    });
+  }
+
+  void stopTimer() {
+    setState(() {
+      timer.cancel();
+    });
+  }
+
+  void resetTime() {
+    setState(() {
+      secs = 0;
+      mins = 0;
+      hours = 0;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-
-    dirtyTimetable = currentTimetable;
   }
 
   void generate() async {
+    startTimer();
     setState(() {
-      dirtyTimetable = currentTimetable;
+      currentTimetable;
     });
 
     if (shouldTerminate()) {
       isGenerating = !isGenerating;
+      stopTimer();
     }
 
     while (isGenerating) {
       debugPrint("Running GA");
 
       // check if timetable has been initialized
-      if (dirtyTimetable == Timetable() || dirtyTimetable.name == "") {
-        dirtyTimetable = timetables.first;
+      if (currentTimetable == Timetable() || currentTimetable.name == "") {
+        currentTimetable = timetables.first;
       }
-      if (!dirtyTimetable.isInitialized) {
-        initialize(dirtyTimetable);
+      if (!currentTimetable.isInitialized) {
+        initialize(currentTimetable);
       }
 
       // evaluate
-      await evaluate(dirtyTimetable);
+      await evaluate(currentTimetable);
 
       List<int> matingPoolIndeces = [];
-      for (var i = 0; i < dirtyTimetable.populationSize; i++) {
-        int n = dirtyTimetable.population[i].score;
+      for (var i = 0; i < currentTimetable.populationSize; i++) {
+        int n = currentTimetable.population[i].score;
 
         for (int j = 0; j < n / 2; j++) {
           matingPoolIndeces.add(i);
@@ -86,28 +127,28 @@ class _GenerationStepState extends State<GenerationStep> {
       }
 
       List<Individual> newPopulation = [];
-      // newPopulation.add(dirtyTimetable.fittestIndividual);
-      for (int i = 0; i < dirtyTimetable.populationSize; i++) {
+      // newPopulation.add(currentTimetable.fittestIndividual);
+      for (int i = 0; i < currentTimetable.populationSize; i++) {
         // select
         Individual parentA =
-            dirtyTimetable.population[chooseRandomly(matingPoolIndeces)];
+            currentTimetable.population[chooseRandomly(matingPoolIndeces)];
         Individual parentB =
-            dirtyTimetable.population[chooseRandomly(matingPoolIndeces)];
+            currentTimetable.population[chooseRandomly(matingPoolIndeces)];
 
         // crossover
         Individual offspring = crossover(parentA, parentB);
 
         // mutate
-        mutate(dirtyTimetable, offspring);
+        mutate(currentTimetable, offspring);
 
         newPopulation.add(offspring);
       }
 
       // update population
-      dirtyTimetable.population = newPopulation;
+      currentTimetable.population = newPopulation;
 
       setState(() {
-        dirtyTimetable.generationCount++;
+        currentTimetable.generationCount++;
       });
 
       // check termination condition
@@ -115,18 +156,14 @@ class _GenerationStepState extends State<GenerationStep> {
         isGenerating = !isGenerating;
       }
 
-      debugPrint("Dirty timetable fittest individual: ");
-      for (var s in dirtyTimetable.fittestIndividual.schedules) {
-        debugPrint(
-            "T: ${s.timeslot.timeCode} | I: ${s.instructor.name} | S: ${s.section.name} | R: ${s.room.name}");
-      }
-
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future.delayed(const Duration(microseconds: 100));
     }
 
     setState(() {
-      currentTimetable = dirtyTimetable;
+      currentTimetable = currentTimetable;
     });
+
+    stopTimer();
 
     isarService.saveTimetable(currentTimetable);
   }
@@ -148,14 +185,16 @@ class _GenerationStepState extends State<GenerationStep> {
   List<FlSpot> getDataSpots() {
     List<FlSpot> spots = [];
 
-    if (!dirtyTimetable.isInitialized || dirtyTimetable.generationCount == 0) {
+    if (!currentTimetable.isInitialized ||
+        currentTimetable.generationCount == 0) {
       return [];
     }
 
-    for (var i = 0; i < dirtyTimetable.populationSize; i++) {
+    for (var i = 0; i < currentTimetable.populationSize; i++) {
       spots.add(FlSpot(
           i.toDouble(),
-          dirtyTimetable.generationHistory[dirtyTimetable.generationCount - 1]
+          currentTimetable
+              .generationHistory[currentTimetable.generationCount - 1]
               .individualScores[i]
               .toDouble()));
     }
@@ -172,13 +211,13 @@ class _GenerationStepState extends State<GenerationStep> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Checkbox(
-            value: dirtyTimetable.fittestIndividual.hardConstraints[i],
+            value: currentTimetable.fittestIndividual.hardConstraints[i],
             onChanged: (value) {},
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width - 420,
             child: Text(
-              "${hConstraintsLabels[i]} ${i == 0 ? dirtyTimetable.fittestIndividual.conflictingSectionTimeslotCount.toString() : i == 1 ? dirtyTimetable.fittestIndividual.conflictingInstructorTimeslotCount.toString() : i == 2 ? dirtyTimetable.fittestIndividual.conflictingRoomTimeslotCount.toString() : i == 3 ? dirtyTimetable.fittestIndividual.alignedRoomSubjectType.toString() : dirtyTimetable.fittestIndividual.alignedSubjectInstructorTags.toString()}",
+              "${hConstraintsLabels[i]} ${i == 0 ? currentTimetable.fittestIndividual.conflictingSectionTimeslotCount.toString() : i == 1 ? currentTimetable.fittestIndividual.conflictingInstructorTimeslotCount.toString() : i == 2 ? currentTimetable.fittestIndividual.conflictingRoomTimeslotCount.toString() : i == 3 ? currentTimetable.fittestIndividual.alignedRoomSubjectType.toString() : currentTimetable.fittestIndividual.alignedSubjectInstructorTags.toString()}",
               style: GoogleFonts.inter(),
               softWrap: true,
             ),
@@ -199,13 +238,13 @@ class _GenerationStepState extends State<GenerationStep> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Checkbox(
-            value: dirtyTimetable.fittestIndividual.softConstraints[i],
+            value: currentTimetable.fittestIndividual.softConstraints[i],
             onChanged: (value) {},
           ),
           SizedBox(
             width: MediaQuery.of(context).size.width - 420,
             child: Text(
-              "${sConstraintsLabels[i]} ${dirtyTimetable.fittestIndividual.alignedScheduleInstructorTimeslot}",
+              "${sConstraintsLabels[i]} ${currentTimetable.fittestIndividual.alignedScheduleInstructorTimeslot}",
               style: GoogleFonts.inter(),
               softWrap: true,
             ),
@@ -286,10 +325,10 @@ class _GenerationStepState extends State<GenerationStep> {
                           flex: 3,
                           child: LineChart(
                             LineChartData(
-                              maxX: dirtyTimetable.populationSize.toDouble(),
+                              maxX: currentTimetable.populationSize.toDouble(),
                               minX: 0,
                               minY: 0,
-                              maxY: dirtyTimetable.fittestIndividual.score
+                              maxY: currentTimetable.fittestIndividual.score
                                   .toDouble(),
                               lineBarsData: [
                                 LineChartBarData(
@@ -314,11 +353,11 @@ class _GenerationStepState extends State<GenerationStep> {
                     height: 8,
                   ),
                   Text(
-                    "Time elapsed: ",
+                    "Time elapsed: $hours:$mins:$secs",
                     style: GoogleFonts.sourceCodePro(),
                   ),
                   Text(
-                    "Generation: ${dirtyTimetable.generationCount}",
+                    "Generation: ${currentTimetable.generationCount}",
                     style: GoogleFonts.sourceCodePro(),
                   ),
                   SizedBox(
@@ -381,6 +420,7 @@ class _GenerationStepState extends State<GenerationStep> {
                           ),
                           onPressed: () {
                             resetGeneratedData(currentTimetable);
+                            resetTime();
                             setState(() {
                               currentTimetable;
                             });
