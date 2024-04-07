@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:timetable_view/timetable_view.dart';
 import 'package:uctg/constants/colors.dart';
 import 'package:uctg/main.dart';
@@ -19,6 +23,7 @@ class ResultStep extends StatefulWidget {
 class ResultStepState extends State<ResultStep> {
   List<TableEvent> events = [];
   List<LaneEvents> laneEvents = [];
+  List<List<dynamic>> csvData = [];
 
   void _buildLaneEvents() {
     laneEvents = [
@@ -55,6 +60,7 @@ class ResultStepState extends State<ResultStep> {
 
   void updateEvents() {
     events.clear();
+    csvData.clear();
 
     int id = 0;
     for (var s in currentTimetable.fittestIndividual.schedules) {
@@ -77,6 +83,16 @@ class ResultStepState extends State<ResultStep> {
                 ),
               ),
             );
+
+            csvData.add([
+              s.subject.name,
+              s.instructor.name,
+              s.section.name,
+              s.room.name,
+              s.timeslot.startTime.day,
+              s.timeslot.startTime.hour,
+              s.timeslot.endTime.hour,
+            ]);
           }
         case "instructor":
           if (s.instructor.name == selectedInstructor.name) {
@@ -96,6 +112,16 @@ class ResultStepState extends State<ResultStep> {
                 ),
               ),
             );
+
+            csvData.add([
+              s.subject.name,
+              s.instructor.name,
+              s.section.name,
+              s.room.name,
+              s.timeslot.startTime.day,
+              s.timeslot.startTime.hour,
+              s.timeslot.endTime.hour,
+            ]);
           }
         case "room":
           if (s.room.name == selectedRoom.name) {
@@ -115,6 +141,15 @@ class ResultStepState extends State<ResultStep> {
                 ),
               ),
             );
+            csvData.add([
+              s.subject.name,
+              s.instructor.name,
+              s.section.name,
+              s.room.name,
+              s.timeslot.startTime.day,
+              s.timeslot.startTime.hour,
+              s.timeslot.endTime.hour,
+            ]);
           }
       }
 
@@ -314,11 +349,85 @@ class ResultStepState extends State<ResultStep> {
                   ),
                   // export icon
                   IconButton(
-                    tooltip: "export timetable",
+                    tooltip: "export view as pdf",
                     onPressed: () {
-                      // TODO : export timetable as pdf or csv
+                      // TODO : export view as pdf or pdf
                     },
                     icon: const Icon(Icons.upload_file_rounded),
+                  ),
+                  IconButton(
+                    tooltip: "export view as csv",
+                    onPressed: () async {
+                      List<List<dynamic>> rows = [];
+                      rows.add(["view", selectedView]);
+                      rows.add([
+                        "$selectedView name",
+                        selectedView == "section"
+                            ? selectedSection.name
+                            : selectedView == "instructor"
+                                ? selectedInstructor.name
+                                : selectedRoom.name
+                      ]);
+
+                      rows.add([
+                        "conflicting timeslot and section",
+                        currentTimetable
+                            .fittestIndividual.conflictingSectionTimeslotCount
+                      ]);
+                      rows.add([
+                        "conflicting timeslot and instructor",
+                        currentTimetable.fittestIndividual
+                            .conflictingInstructorTimeslotCount
+                      ]);
+                      rows.add([
+                        "conflicting timeslot and room",
+                        currentTimetable
+                            .fittestIndividual.conflictingRoomTimeslotCount
+                      ]);
+
+                      rows.add([
+                        "aligned room and subject type",
+                        currentTimetable
+                            .fittestIndividual.alignedRoomSubjectType
+                      ]);
+                      rows.add([
+                        "aligned subject and instructor tags",
+                        currentTimetable
+                            .fittestIndividual.alignedSubjectInstructorTags
+                      ]);
+                      rows.add([
+                        "aligned schedule and instructor timeslot",
+                        currentTimetable
+                            .fittestIndividual.alignedScheduleInstructorTimeslot
+                      ]);
+
+                      rows.add([
+                        "subject name",
+                        "instructor name",
+                        "section name",
+                        "room name",
+                        "day",
+                        "start time",
+                        "end time",
+                      ]);
+
+                      // add csv data
+                      for (int i = 0; i < csvData.length; i++) {
+                        rows.add(csvData[i]);
+                      }
+
+                      String csv = const ListToCsvConverter().convert(rows);
+                      String dir =
+                          (await getApplicationDocumentsDirectory()).path;
+                      String filePath =
+                          "$dir/${(selectedView == "section" ? selectedSection.name : selectedView == "instructor" ? selectedInstructor.name : selectedRoom.name)}-$selectedView.csv";
+
+                      File file = File(filePath);
+                      await file.writeAsString(csv);
+
+                      debugPrint("File exported successfully!");
+                    },
+                    icon: const Icon(Icons.grid_on_rounded),
                   ),
                 ],
               ),

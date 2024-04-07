@@ -35,15 +35,11 @@ void initialize(Timetable timetable) {
   debugPrint("END - Initialization - -");
 }
 
-void evaluate(Timetable timetable) {
+Future<void> evaluate(Timetable timetable) async {
   GenerationHistory history = GenerationHistory();
   history.generation = timetable.generationCount;
 
-  int indivindex = 0;
   for (Individual individual in timetable.population) {
-    debugPrint("Indiv $indivindex data: ");
-    indivindex++;
-
     individual.score = 0;
 
     individual.conflictingSectionTimeslotCount = 0;
@@ -53,12 +49,6 @@ void evaluate(Timetable timetable) {
     int timeDaySectionConflicts = 0;
     int timeDayInstructorConflicts = 0;
     int timeDayRoomConflicts = 0;
-
-    debugPrint("Indiv's schedules: ");
-    for (var s in individual.schedules) {
-      debugPrint(
-          "T: ${s.timeslot.timeCode} | I: ${s.instructor.name} | S: ${s.section.name} | R: ${s.room.name}");
-    }
 
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {
@@ -132,13 +122,8 @@ void evaluate(Timetable timetable) {
 
       // update individual's score
       individual.score += (roomSubjectTypeScore + subjectInstructorTagsScore);
-
-      // debugPrint("Individual score: ${individual.score}");
+      await Future.delayed(const Duration(milliseconds: 10));
     }
-
-    // individual.conflictingSectionTimeslotCount = 0;
-    // individual.conflictingInstructorTimeslotCount = 0;
-    // individual.conflictingRoomTimeslotCount = 0;
 
     individual.hardConstraints[0] =
         individual.conflictingSectionTimeslotCount == 0;
@@ -146,6 +131,14 @@ void evaluate(Timetable timetable) {
         individual.conflictingInstructorTimeslotCount == 0;
     individual.hardConstraints[2] =
         individual.conflictingRoomTimeslotCount == 0;
+    individual.hardConstraints[3] =
+        individual.alignedRoomSubjectType == individual.schedules.length;
+    individual.hardConstraints[4] =
+        individual.alignedSubjectInstructorTags == individual.schedules.length;
+
+    // TODO : update soft constraint
+    // individual.hardConstraints[4] =
+    //     individual.alignedSubjectInstructorTags == individual.schedules.length;
 
     // update fittest individual
     if (individual.score > timetable.fittestIndividual.score) {

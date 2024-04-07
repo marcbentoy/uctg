@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uctg/app.dart';
@@ -76,7 +74,7 @@ class _GenerationStepState extends State<GenerationStep> {
       }
 
       // evaluate
-      evaluate(dirtyTimetable);
+      await evaluate(dirtyTimetable);
 
       List<int> matingPoolIndeces = [];
       for (var i = 0; i < dirtyTimetable.populationSize; i++) {
@@ -117,6 +115,12 @@ class _GenerationStepState extends State<GenerationStep> {
         isGenerating = !isGenerating;
       }
 
+      debugPrint("Dirty timetable fittest individual: ");
+      for (var s in dirtyTimetable.fittestIndividual.schedules) {
+        debugPrint(
+            "T: ${s.timeslot.timeCode} | I: ${s.instructor.name} | S: ${s.section.name} | R: ${s.room.name}");
+      }
+
       await Future.delayed(const Duration(milliseconds: 10));
     }
 
@@ -144,7 +148,7 @@ class _GenerationStepState extends State<GenerationStep> {
   List<FlSpot> getDataSpots() {
     List<FlSpot> spots = [];
 
-    if (!dirtyTimetable.isInitialized) {
+    if (!dirtyTimetable.isInitialized || dirtyTimetable.generationCount == 0) {
       return [];
     }
 
@@ -284,12 +288,9 @@ class _GenerationStepState extends State<GenerationStep> {
                             LineChartData(
                               maxX: dirtyTimetable.populationSize.toDouble(),
                               minX: 0,
-                              minY: dirtyTimetable.fittestIndividual.score
-                                      .toDouble() /
-                                  1.5,
+                              minY: 0,
                               maxY: dirtyTimetable.fittestIndividual.score
-                                      .toDouble() *
-                                  1.1,
+                                  .toDouble(),
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: getDataSpots(),
@@ -491,13 +492,11 @@ class _GenerationStepState extends State<GenerationStep> {
               children: [
                 Expanded(
                   child: FilledButton(
-                    onPressed: () {
-                      setState(() {
-                        isGenerating = !isGenerating;
-                        if (isGenerating) {
-                          generate();
-                        }
-                      });
+                    onPressed: () async {
+                      isGenerating = !isGenerating;
+                      if (isGenerating) {
+                        generate();
+                      }
                     },
                     style: ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(
