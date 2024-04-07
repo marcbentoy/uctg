@@ -36,48 +36,68 @@ void initialize(Timetable timetable) {
 }
 
 void evaluate(Timetable timetable) {
-  debugPrint("evaluating");
   GenerationHistory history = GenerationHistory();
   history.generation = timetable.generationCount;
+
+  int indivindex = 0;
   for (Individual individual in timetable.population) {
+    debugPrint("Indiv $indivindex data: ");
+    indivindex++;
+
     individual.score = 0;
+
+    individual.conflictingSectionTimeslotCount = 0;
+    individual.conflictingInstructorTimeslotCount = 0;
+    individual.conflictingRoomTimeslotCount = 0;
+
+    int timeDaySectionConflicts = 0;
+    int timeDayInstructorConflicts = 0;
+    int timeDayRoomConflicts = 0;
+
+    debugPrint("Indiv's schedules: ");
+    for (var s in individual.schedules) {
+      debugPrint(
+          "T: ${s.timeslot.timeCode} | I: ${s.instructor.name} | S: ${s.section.name} | R: ${s.room.name}");
+    }
 
     for (int i = 0; i < individual.schedules.length; i++) {
       for (int j = i + 1; j < individual.schedules.length; j++) {
         Schedule prev = individual.schedules[i];
         Schedule curr = individual.schedules[j];
 
-        int timeDaySectionConflicts = 0;
-        int timeDayInstructorConflicts = 0;
-        int timeDayRoomConflicts = 0;
-
         // Hard Constraint 1
         // schedules with the same timeslot and day,
-        if (prev.timeslot.startTime.day == curr.timeslot.startTime.day &&
-            prev.timeslot.startTime == curr.timeslot.startTime) {
+        if (prev.timeslot.timeCode == curr.timeslot.timeCode) {
+          debugPrint("The same timeslot");
           // Hard Constraint 1.1
           // SHOULD NOT have the same section
-          if (prev.section == curr.section) {
+          if (prev.section.name == curr.section.name) {
+            debugPrint("The same section");
             timeDaySectionConflicts += 1;
+            individual.conflictingSectionTimeslotCount++;
           }
 
           // Hard Constraint 1.2
           // SHOULD NOT have the same instructor
-          if (prev.instructor == curr.instructor) {
+          if (prev.instructor.name == curr.instructor.name) {
+            debugPrint("The same instructor");
             timeDayInstructorConflicts += 1;
+            individual.conflictingInstructorTimeslotCount++;
           }
 
           // Hard Constraint 1.3
           // SHOULD NOT have the same room
-          if (prev.room == curr.room) {
+          if (prev.room.name == curr.room.name) {
+            debugPrint("The same room");
             timeDayRoomConflicts += 1;
+            individual.conflictingRoomTimeslotCount++;
           }
         }
 
         int timeDaySectionConflictsScore =
-            ((1 / (timeDaySectionConflicts + 1)) * 30).toInt();
+            ((1 / (timeDaySectionConflicts + 1)) * 10).toInt();
         int timeDayInstructorConflictsScore =
-            ((1 / (timeDayInstructorConflicts + 1)) * 20).toInt();
+            ((1 / (timeDayInstructorConflicts + 1)) * 10).toInt();
         int timeDayRoomConflictsScore =
             ((1 / (timeDayRoomConflicts + 1)) * 10).toInt();
 
@@ -92,7 +112,8 @@ void evaluate(Timetable timetable) {
       int roomSubjectTypeScore = 0;
       if (individual.schedules[i].subject.type ==
           individual.schedules[i].room.type) {
-        roomSubjectTypeScore = 100;
+        roomSubjectTypeScore = 10;
+        individual.alignedRoomSubjectType++;
       }
 
       // Hard Constraint 3
@@ -103,7 +124,8 @@ void evaluate(Timetable timetable) {
         for (String instructorTag
             in individual.schedules[i].instructor.expertise) {
           if (subjectTag == instructorTag) {
-            subjectInstructorTagsScore += 100;
+            subjectInstructorTagsScore += 10;
+            individual.alignedSubjectInstructorTags++;
           }
         }
       }
@@ -114,9 +136,20 @@ void evaluate(Timetable timetable) {
       // debugPrint("Individual score: ${individual.score}");
     }
 
-    // debugPrint("checking fittest individual");
+    // individual.conflictingSectionTimeslotCount = 0;
+    // individual.conflictingInstructorTimeslotCount = 0;
+    // individual.conflictingRoomTimeslotCount = 0;
+
+    individual.hardConstraints[0] =
+        individual.conflictingSectionTimeslotCount == 0;
+    individual.hardConstraints[1] =
+        individual.conflictingInstructorTimeslotCount == 0;
+    individual.hardConstraints[2] =
+        individual.conflictingRoomTimeslotCount == 0;
+
     // update fittest individual
     if (individual.score > timetable.fittestIndividual.score) {
+      debugPrint("New fittest individual found: ${individual.score}");
       timetable.fittestIndividual = individual;
     }
 

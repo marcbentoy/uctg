@@ -306,10 +306,6 @@ class ResultStepState extends State<ResultStep> {
                         updateEvents();
                         _buildLaneEvents();
                       });
-
-                      for (var e in events) {
-                        debugPrint(e.title);
-                      }
                     },
                     icon: const Icon(Icons.refresh),
                   ),
@@ -320,7 +316,7 @@ class ResultStepState extends State<ResultStep> {
                   IconButton(
                     tooltip: "export timetable",
                     onPressed: () {
-                      // TODO : export timetable as csv
+                      // TODO : export timetable as pdf or csv
                     },
                     icon: const Icon(Icons.upload_file_rounded),
                   ),

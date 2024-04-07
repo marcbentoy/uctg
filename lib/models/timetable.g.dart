@@ -4687,19 +4687,29 @@ const IndividualSchema = Schema(
   name: r'Individual',
   id: -3820777818301949646,
   properties: {
-    r'schedules': PropertySchema(
+    r'hardConstraints': PropertySchema(
       id: 0,
+      name: r'hardConstraints',
+      type: IsarType.boolList,
+    ),
+    r'schedules': PropertySchema(
+      id: 1,
       name: r'schedules',
       type: IsarType.objectList,
       target: r'Schedule',
     ),
     r'score': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'score',
       type: IsarType.long,
     ),
+    r'softConstraints': PropertySchema(
+      id: 3,
+      name: r'softConstraints',
+      type: IsarType.boolList,
+    ),
     r'tags': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'tags',
       type: IsarType.stringList,
     )
@@ -4716,6 +4726,7 @@ int _individualEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.hardConstraints.length;
   bytesCount += 3 + object.schedules.length * 3;
   {
     final offsets = allOffsets[Schedule]!;
@@ -4724,6 +4735,7 @@ int _individualEstimateSize(
       bytesCount += ScheduleSchema.estimateSize(value, offsets, allOffsets);
     }
   }
+  bytesCount += 3 + object.softConstraints.length;
   bytesCount += 3 + object.tags.length * 3;
   {
     for (var i = 0; i < object.tags.length; i++) {
@@ -4740,14 +4752,16 @@ void _individualSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
+  writer.writeBoolList(offsets[0], object.hardConstraints);
   writer.writeObjectList<Schedule>(
-    offsets[0],
+    offsets[1],
     allOffsets,
     ScheduleSchema.serialize,
     object.schedules,
   );
-  writer.writeLong(offsets[1], object.score);
-  writer.writeStringList(offsets[2], object.tags);
+  writer.writeLong(offsets[2], object.score);
+  writer.writeBoolList(offsets[3], object.softConstraints);
+  writer.writeStringList(offsets[4], object.tags);
 }
 
 Individual _individualDeserialize(
@@ -4757,15 +4771,17 @@ Individual _individualDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Individual();
+  object.hardConstraints = reader.readBoolList(offsets[0]) ?? [];
   object.schedules = reader.readObjectList<Schedule>(
-        offsets[0],
+        offsets[1],
         ScheduleSchema.deserialize,
         allOffsets,
         Schedule(),
       ) ??
       [];
-  object.score = reader.readLong(offsets[1]);
-  object.tags = reader.readStringList(offsets[2]) ?? [];
+  object.score = reader.readLong(offsets[2]);
+  object.softConstraints = reader.readBoolList(offsets[3]) ?? [];
+  object.tags = reader.readStringList(offsets[4]) ?? [];
   return object;
 }
 
@@ -4777,6 +4793,8 @@ P _individualDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readBoolList(offset) ?? []) as P;
+    case 1:
       return (reader.readObjectList<Schedule>(
             offset,
             ScheduleSchema.deserialize,
@@ -4784,9 +4802,11 @@ P _individualDeserializeProp<P>(
             Schedule(),
           ) ??
           []) as P;
-    case 1:
-      return (reader.readLong(offset)) as P;
     case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
+      return (reader.readBoolList(offset) ?? []) as P;
+    case 4:
       return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -4795,6 +4815,105 @@ P _individualDeserializeProp<P>(
 
 extension IndividualQueryFilter
     on QueryBuilder<Individual, Individual, QFilterCondition> {
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsElementEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hardConstraints',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      hardConstraintsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'hardConstraints',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Individual, Individual, QAfterFilterCondition>
       schedulesLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
@@ -4934,6 +5053,105 @@ extension IndividualQueryFilter
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsElementEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'softConstraints',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Individual, Individual, QAfterFilterCondition>
+      softConstraintsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'softConstraints',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 

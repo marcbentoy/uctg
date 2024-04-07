@@ -92,8 +92,17 @@ class Individual {
     false,
     false
   ];
+  List<bool> softConstraints = [false];
 
-  bool softConstraints = false;
+  int conflictingSectionTimeslotCount = 0;
+  int conflictingInstructorTimeslotCount = 0;
+  int conflictingRoomTimeslotCount = 0;
+  int alignedRoomSubjectType = 0;
+  int alignedSubjectInstructorTags = 0;
+  int alignedScheduleInstructorTimeslot = 0;
+
+  List<int> hardConstraintValues = [0, 0, 0, 0, 0];
+  List<int> softConstraintValues = [0];
 }
 
 @embedded
