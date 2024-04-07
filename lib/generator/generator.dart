@@ -45,6 +45,9 @@ Future<void> evaluate(Timetable timetable) async {
     individual.conflictingSectionTimeslotCount = 0;
     individual.conflictingInstructorTimeslotCount = 0;
     individual.conflictingRoomTimeslotCount = 0;
+    individual.alignedSubjectInstructorTags = 0;
+    individual.alignedRoomSubjectType = 0;
+    individual.alignedScheduleInstructorTimeslot = 0;
 
     int timeDaySectionConflicts = 0;
     int timeDayInstructorConflicts = 0;
@@ -58,11 +61,9 @@ Future<void> evaluate(Timetable timetable) async {
         // Hard Constraint 1
         // schedules with the same timeslot and day,
         if (prev.timeslot.timeCode == curr.timeslot.timeCode) {
-          debugPrint("The same timeslot");
           // Hard Constraint 1.1
           // SHOULD NOT have the same section
           if (prev.section.name == curr.section.name) {
-            debugPrint("The same section");
             timeDaySectionConflicts += 1;
             individual.conflictingSectionTimeslotCount++;
           }
@@ -70,7 +71,6 @@ Future<void> evaluate(Timetable timetable) async {
           // Hard Constraint 1.2
           // SHOULD NOT have the same instructor
           if (prev.instructor.name == curr.instructor.name) {
-            debugPrint("The same instructor");
             timeDayInstructorConflicts += 1;
             individual.conflictingInstructorTimeslotCount++;
           }
@@ -78,7 +78,6 @@ Future<void> evaluate(Timetable timetable) async {
           // Hard Constraint 1.3
           // SHOULD NOT have the same room
           if (prev.room.name == curr.room.name) {
-            debugPrint("The same room");
             timeDayRoomConflicts += 1;
             individual.conflictingRoomTimeslotCount++;
           }
@@ -120,9 +119,18 @@ Future<void> evaluate(Timetable timetable) async {
         }
       }
 
+      if (individual.schedules[i].instructor.timePreferences
+          .where((e) => e.timeCode == individual.schedules[i].timeslot.timeCode)
+          .isNotEmpty) {
+        individual.alignedScheduleInstructorTimeslot++;
+      }
+
       // update individual's score
-      individual.score += (roomSubjectTypeScore + subjectInstructorTagsScore);
-      await Future.delayed(const Duration(milliseconds: 10));
+      individual.score += (roomSubjectTypeScore +
+          subjectInstructorTagsScore +
+          (individual.alignedScheduleInstructorTimeslot * 5));
+
+      await Future.delayed(const Duration(milliseconds: 1));
     }
 
     individual.hardConstraints[0] =
@@ -136,9 +144,9 @@ Future<void> evaluate(Timetable timetable) async {
     individual.hardConstraints[4] =
         individual.alignedSubjectInstructorTags == individual.schedules.length;
 
-    // TODO : update soft constraint
-    // individual.hardConstraints[4] =
-    //     individual.alignedSubjectInstructorTags == individual.schedules.length;
+    individual.softConstraints[0] =
+        individual.alignedScheduleInstructorTimeslot ==
+            individual.schedules.length;
 
     // update fittest individual
     if (individual.score > timetable.fittestIndividual.score) {
