@@ -169,14 +169,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     // timetable title
-                    Text(
-                      (timetables.isEmpty ||
-                              currentSelectedTimetableIndex == -1)
-                          ? "No timetables"
-                          : currentTimetable.name,
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xff2e2e2e),
+                    Expanded(
+                      child: Text(
+                        (timetables.isEmpty ||
+                                currentSelectedTimetableIndex == -1)
+                            ? "No timetables"
+                            : currentTimetable.name,
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xff2e2e2e),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
 
