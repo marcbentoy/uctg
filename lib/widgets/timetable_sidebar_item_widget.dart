@@ -48,12 +48,16 @@ class _TimetableSidebarItemWidgetState
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.timetable.name,
-                style: GoogleFonts.inter(
-                  color: widget.index == widget.currentSelectedTimetableIndex
-                      ? const Color(0xffffffff)
-                      : const Color(0xff2e2e2e),
+              Expanded(
+                child: Text(
+                  widget.timetable.name,
+                  style: GoogleFonts.inter(
+                    color: widget.index == widget.currentSelectedTimetableIndex
+                        ? const Color(0xffffffff)
+                        : const Color(0xff2e2e2e),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               GestureDetector(
