@@ -141,7 +141,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
           // evening timeslots
           case 2:
-            for (int hour = 8; hour < 13; hour++) {
+            for (int hour = 9; hour < 14; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
