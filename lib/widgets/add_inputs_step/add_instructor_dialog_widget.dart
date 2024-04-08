@@ -63,7 +63,7 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
           case 0:
             for (int hour = 0; hour < 5; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -71,9 +71,9 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
               selectedBoolTimeslots[i][j] = false;
             }
           case 1:
-            for (int hour = 6; hour < 10; hour++) {
+            for (int hour = 6; hour < 9; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -81,9 +81,9 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
               selectedBoolTimeslots[i][j] = false;
             }
           case 2:
-            for (int hour = 11; hour < 14; hour++) {
+            for (int hour = 9; hour < 14; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -96,7 +96,7 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
   }
 
   void setTimeslots() {
-    final DateTime startTime = DateTime.parse("2024-01-01 07");
+    DateTime startTime = DateTime.parse("2024-01-01 07");
 
     for (int i = 0; i < 7; i++) {
       for (int j = 0; j < 3; j++) {
@@ -122,7 +122,7 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
 
           // afternoon timeslots
           case 1:
-            for (int hour = 6; hour < 10; hour++) {
+            for (int hour = 6; hour < 9; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
@@ -171,7 +171,8 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
     void onChangeTimeslotCallback(List<List<bool>> newSelectedTimeslots) {
       widget.innerSetState(() {
         selectedBoolTimeslots = newSelectedTimeslots;
-        timeslots.clear();
+        List<Timeslot> cleanTimeslot = [];
+        timeslots = cleanTimeslot;
         setTimeslots();
       });
     }
@@ -322,11 +323,14 @@ class _AddInstructorDialogWidgetState extends State<AddInstructorDialogWidget> {
 
                   // if instructor is not null, edit
                   if (widget.currentInstructor != null) {
-                    newInstructors[newInstructors.indexWhere(
-                            (element) => element == widget.currentInstructor)] =
+                    newInstructors[newInstructors.indexWhere((element) =>
+                            element.name == widget.currentInstructor?.name)] =
                         instructorToAdd;
+
                     currentTimetable.instructors = newInstructors;
                     isarService.saveTimetable(currentTimetable);
+
+                    widget.onAddDataCallback();
                     return;
                   }
 
