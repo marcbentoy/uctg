@@ -57,7 +57,7 @@ class _AddInputsStepState extends State<AddInputsStep> {
       const DataColumn(label: SizedBox.shrink()),
       const DataColumn(label: Text("Name")),
       const DataColumn(label: Text("Tags")),
-      const DataColumn(label: Text("Units")),
+      const DataColumn(label: Text("Hours")),
       const DataColumn(label: Text("Type")),
     ],
     // instructors

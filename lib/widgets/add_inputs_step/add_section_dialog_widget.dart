@@ -64,7 +64,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
           case 0:
             for (int hour = 0; hour < 5; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -72,9 +72,9 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
               selectedBoolTimeslots[i][j] = false;
             }
           case 1:
-            for (int hour = 6; hour < 10; hour++) {
+            for (int hour = 5; hour < 8; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -82,9 +82,9 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
               selectedBoolTimeslots[i][j] = false;
             }
           case 2:
-            for (int hour = 11; hour < 14; hour++) {
+            for (int hour = 8; hour < 13; hour++) {
               if (timeslots
-                  .where((element) => element.timeCode.contains("$i$hour"))
+                  .where((element) => element.timeCode == "T$i$hour")
                   .isNotEmpty) {
                 selectedBoolTimeslots[i][j] = true;
                 break;
@@ -123,7 +123,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
           // afternoon timeslots
           case 1:
-            for (int hour = 6; hour < 10; hour++) {
+            for (int hour = 5; hour < 8; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
@@ -138,7 +138,7 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
 
           // evening timeslots
           case 2:
-            for (int hour = 9; hour < 14; hour++) {
+            for (int hour = 8; hour < 13; hour++) {
               Timeslot t = Timeslot();
               t.startTime = startTime.copyWith(
                 day: startTime.day + Duration(days: i).inDays,
@@ -172,7 +172,8 @@ class _AddSectinoDialogWidgetState extends State<AddSectionDialogWidget> {
     void onChangeTimeslotCallback(List<List<bool>> newSelectedTimeslots) {
       widget.innerSetState(() {
         selectedBoolTimeslots = newSelectedTimeslots;
-        timeslots.clear();
+        List<Timeslot> cleanTimeslot = [];
+        timeslots = cleanTimeslot;
         setTimeslots();
       });
     }
