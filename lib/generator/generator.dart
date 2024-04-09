@@ -119,6 +119,8 @@ Future<void> evaluate(Timetable timetable) async {
         }
       }
 
+      // Soft Constraint 1
+      // A schedule's timeslot coincides with the instructor's preffered timeslot
       if (individual.schedules[i].instructor.timePreferences
           .where((e) => e.timeCode == individual.schedules[i].timeslot.timeCode)
           .isNotEmpty) {

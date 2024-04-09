@@ -43,5 +43,5 @@ flutter:
 flutter_launcher_icons:
   windows:
     generate: true
-    image_path: "assets/icons/uctg_logo.png"
+    image_path: "assets/icons/swiftsked_logo.png"
     icon_size: 56
