@@ -75,11 +75,11 @@ class ResultStepState extends State<ResultStep> {
                 laneIndex: s.timeslot.startTime.day,
                 startTime: TableEventTime(
                   hour: s.timeslot.startTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
                 endTime: TableEventTime(
                   hour: s.timeslot.endTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
               ),
             );
@@ -104,11 +104,11 @@ class ResultStepState extends State<ResultStep> {
                 laneIndex: s.timeslot.startTime.day,
                 startTime: TableEventTime(
                   hour: s.timeslot.startTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
                 endTime: TableEventTime(
                   hour: s.timeslot.endTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
               ),
             );
@@ -133,11 +133,11 @@ class ResultStepState extends State<ResultStep> {
                 laneIndex: s.timeslot.startTime.day,
                 startTime: TableEventTime(
                   hour: s.timeslot.startTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
                 endTime: TableEventTime(
                   hour: s.timeslot.endTime.hour,
-                  minute: 0,
+                  minute: s.timeslot.startTime.minute,
                 ),
               ),
             );
