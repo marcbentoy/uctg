@@ -6,7 +6,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uctg/app.dart';
 import 'package:uctg/constants/colors.dart';
@@ -149,6 +148,16 @@ class _GenerationStepState extends State<GenerationStep> {
       // update population
       currentTimetable.population = newPopulation;
       await evaluate(currentTimetable);
+
+      for (var i in currentTimetable.population) {
+        // update fittest individual
+        if (i.score > currentTimetable.fittestIndividual.score) {
+          setState(() {
+            currentTimetable.fittestIndividual = i.clone();
+            debugPrint("New fittest individual 🎉");
+          });
+        }
+      }
 
       setState(() {
         currentTimetable.generationCount++;

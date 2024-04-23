@@ -150,12 +150,6 @@ Future<void> evaluate(Timetable timetable) async {
         individual.alignedScheduleInstructorTimeslot ==
             individual.schedules.length;
 
-    // update fittest individual
-    if (individual.score > timetable.fittestIndividual.score) {
-      timetable.fittestIndividual = individual;
-      debugPrint("New fittest individual 🎉");
-    }
-
     // debugPrint("individual score: ${individual.score}");
     history.individualScores.add(individual.score);
   }

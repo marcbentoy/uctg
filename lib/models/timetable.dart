@@ -103,6 +103,27 @@ class Individual {
 
   List<int> hardConstraintValues = [0, 0, 0, 0, 0];
   List<int> softConstraintValues = [0];
+
+  Individual();
+
+  Individual clone() {
+    Individual cloned = Individual()
+      ..score = score
+      ..schedules = List.from(schedules)
+      ..tags = List.from(tags)
+      ..hardConstraints = List.from(hardConstraints)
+      ..softConstraints = List.from(softConstraints)
+      ..conflictingSectionTimeslotCount = conflictingSectionTimeslotCount
+      ..conflictingInstructorTimeslotCount = conflictingInstructorTimeslotCount
+      ..conflictingRoomTimeslotCount = conflictingRoomTimeslotCount
+      ..alignedRoomSubjectType = alignedRoomSubjectType
+      ..alignedSubjectInstructorTags = alignedSubjectInstructorTags
+      ..alignedScheduleInstructorTimeslot = alignedScheduleInstructorTimeslot
+      ..hardConstraintValues = hardConstraintValues
+      ..softConstraintValues = softConstraintValues;
+
+    return cloned;
+  }
 }
 
 @embedded
