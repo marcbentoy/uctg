@@ -152,8 +152,8 @@ Future<void> evaluate(Timetable timetable) async {
 
     // update fittest individual
     if (individual.score > timetable.fittestIndividual.score) {
-      debugPrint("New fittest individual found: ${individual.score}");
       timetable.fittestIndividual = individual;
+      debugPrint("New fittest individual 🎉");
     }
 
     // debugPrint("individual score: ${individual.score}");

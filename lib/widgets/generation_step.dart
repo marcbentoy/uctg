@@ -6,6 +6,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uctg/app.dart';
 import 'package:uctg/constants/colors.dart';
@@ -112,10 +113,11 @@ class _GenerationStepState extends State<GenerationStep> {
       }
       if (!currentTimetable.isInitialized) {
         initialize(currentTimetable);
+        await evaluate(currentTimetable);
       }
 
       // evaluate
-      await evaluate(currentTimetable);
+      // await evaluate(currentTimetable);
 
       List<int> matingPoolIndeces = [];
       for (var i = 0; i < currentTimetable.populationSize; i++) {
@@ -139,16 +141,18 @@ class _GenerationStepState extends State<GenerationStep> {
         Individual offspring = crossover(parentA, parentB);
 
         // mutate
-        mutate(currentTimetable, offspring);
+        // mutate(currentTimetable, offspring);
 
         newPopulation.add(offspring);
       }
 
       // update population
       currentTimetable.population = newPopulation;
+      await evaluate(currentTimetable);
 
       setState(() {
         currentTimetable.generationCount++;
+        currentTimetable;
       });
 
       // check termination condition
